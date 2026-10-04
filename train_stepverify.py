@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import platform
 import random
 from pathlib import Path
 from urllib.request import urlopen
 
 import joblib
 import numpy as np
+import sklearn
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
@@ -151,6 +153,9 @@ def train(output_dir: Path, data_path: Path | None = None) -> dict:
         "first_line_heuristic_exact_accuracy": float(first_line_correct / solution_count),
         "validation_solutions": solution_count,
         "seed": SEED,
+        "python_version": platform.python_version(),
+        "scikit_learn_version": sklearn.__version__,
+        "runtime_platform": platform.platform(),
         "scope_note": "This corpus contains math word problems, not linear algebra or handwritten student work. This exploratory score does not validate the Y? product task.",
     }
     joblib.dump(
