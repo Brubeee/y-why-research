@@ -10,7 +10,7 @@ The only trained model artifact belongs in `artifacts/` after a run. The dataset
 
 ## Run in Colab
 
-Open [the notebook in Google Colab](https://colab.research.google.com/github/Brubeee/y-why-research/blob/main/notebooks/first_error_baseline.ipynb) and run all cells. It fetches the public data, trains on CPU, prints held-out metrics, and writes a model plus a metrics JSON into `artifacts/` in the Colab runtime. Colab's temporary files are not automatically committed to GitHub.
+Open [the notebook in Google Colab](https://colab.research.google.com/github/Brubeee/y-why-research/blob/main/first_error_baseline.ipynb) and run all cells. It fetches the public data, trains on CPU, prints held-out metrics, and writes a model plus a metrics JSON into `artifacts/` in the Colab runtime. Colab's temporary files are not automatically committed to GitHub.
 
 For a local run with Python 3.10+: install `requirements.txt`, then run `python train_stepverify.py`. The script downloads the same source data when no local input is passed.
 
