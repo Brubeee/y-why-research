@@ -27,3 +27,8 @@ Candidate target labels: inverse-operation/sign error; coefficient division omit
 
 The runnable baseline uses word and character TF-IDF features over the problem plus the solution prefix up to each candidate step, and class-weighted logistic regression. It trains on all steps before the teacher-labeled first error (including later steps as negatives for the *first*-error position task), with validation grouped by problem text. It reports per-step metrics and exact first-error location per solution against a first-line heuristic. This task and dataset are broader than the Y? algebra goal. The result is a pipeline check, not product accuracy.
 
+## Current status (2026-10-05)
+
+- **Completed:** CPU baseline in Google Colab and a reproducible local rerun. Both used seed 42 and the same exact-problem grouped split; both reported 25.96% exact first-error accuracy versus 21.63% for the first-line heuristic.
+- **Interpretation:** this is an early pipeline result on math word problems, not evidence of linear-equation diagnosis. See [`MODEL_CARD.md`](MODEL_CARD.md) and the two environment-specific metric files in `artifacts/`.
+- **Next:** review the KDD terms/schema, then build a small teacher-reviewed typed linear-equation benchmark with clear consent or synthetic provenance, learner/template grouped splits, and an abstain label.

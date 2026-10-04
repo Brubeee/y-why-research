@@ -1,0 +1,27 @@
+{
+  "experiment": "stepverify_first_error_localization_baseline",
+  "dataset": "eth-nlped/stepverify",
+  "dataset_url": "https://huggingface.co/datasets/eth-nlped/stepverify",
+  "dataset_rows_downloaded": 1002,
+  "usable_solutions": 1002,
+  "step_examples": 5935,
+  "train_step_examples": 4642,
+  "validation_step_examples": 1293,
+  "validation_unique_problem_groups": 123,
+  "split": "GroupShuffleSplit by exact problem string; seed=42; validation=20% groups",
+  "model": "word+character TF-IDF + class-weighted logistic regression",
+  "per_step_accuracy": 0.6210363495746326,
+  "per_step_precision": 0.21912350597609562,
+  "per_step_recall": 0.5288461538461539,
+  "per_step_f1": 0.30985915492957744,
+  "per_step_macro_f1": 0.5243325625394156,
+  "solution_exact_first_error_accuracy": 0.25961538461538464,
+  "first_line_heuristic_exact_accuracy": 0.21634615384615385,
+  "validation_solutions": 208,
+  "seed": 42,
+  "python_version": "3.10.11",
+  "scikit_learn_version": "1.6.1",
+  "runtime_platform": "Windows-10-10.0.26200-SP0",
+  "scope_note": "This corpus contains math word problems, not linear algebra or handwritten student work. This exploratory score does not validate the Y? product task."
+}
+

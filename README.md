@@ -41,3 +41,6 @@ For a local run with Python 3.10+: install `requirements.txt`, then run `python 
 
 Daheim, N., Macina, J., Kapur, M., Gurevych, I., & Sachan, M. (2024). *Stepwise Verification and Remediation of Student Reasoning Errors with Large Language Model Tutors*. EMNLP 2024. https://aclanthology.org/2024.emnlp-main.478/ (CC BY-SA 4.0 per upstream repository).
 
+## Recorded runs and artifact
+
+The linked Colab notebook was run on CPU with Python 3.13.15 and scikit-learn 1.6.1. Its metrics are in [`artifacts/colab_metrics.json`](artifacts/colab_metrics.json). The committed [`artifacts/stepverify_first_error_baseline.joblib.zip`](artifacts/stepverify_first_error_baseline.joblib.zip) contains a separately regenerated model from the same training script, locally using Python 3.10.11 and scikit-learn 1.6.1. Both fixed-seed runs produced the same held-out metrics. See [MODEL_CARD.md](MODEL_CARD.md) for provenance, intended use, and limitations.
