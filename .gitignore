@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+.venv/
+data/
+artifacts/*.joblib
+artifacts/*.pkl
+.ipynb_checkpoints/
+
