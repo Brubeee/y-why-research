@@ -1,6 +1,6 @@
 # Y? — Kreativity Show Sr. zonal action plan
 
-**Target:** complete a credible zonal package for the Education theme by the team-dashboard deadline of **21 October 2026, 6:00 pm IST**. The exact portal cutoff and upload constraints must be checked on the live zonal form when it opens.
+**Target:** complete a credible zonal package for the Education theme by the team-dashboard deadline of **21 October 2026, 6:00 pm IST**. The exact portal cutoff and upload constraints must be checked on the live zonal form when it opens.\r\n\r\n**Public links:** [Y? site](https://ywhy.vercel.app/) · [Research repository](https://github.com/Brubeee/y-why-research). The typed checker source and this plan are published in GitHub commit `fb6798b`; the new checker route still awaits Vercel deployment and verification.
 
 **Judging aim:** give judges direct evidence for problem solving, STEM/computational thinking, practical implementation, communication, and teamwork. No result guarantees a win; claims stay within what the prototype and evidence establish.
 
@@ -12,7 +12,7 @@
 | Zonal synopsis | Prepared as PDF and editable Markdown | Separates the typed checker from StepVerify research |
 | Video script | Prepared for a 5:40 target, including the two team introductions and a live walkthrough | Not a recorded or finished video; the real team clips and screen capture are still needed |
 | Teacher-review and student-capture sheets | Blank templates prepared | No teacher review or student trial has been completed |
-| Public site and GitHub | Current links are known; checker deployment/source update is pending verification | Do not say the new checker is live until the deployed URL is tested |
+| Public site and GitHub | Repository source and action plan published in commit `fb6798b`; typed checker deploy is pending Vercel access | Existing site is live; do not say the checker route is live until it is deployed and verified |
 | Portal | Dashboard currently labels the zonal round upcoming | Inspect the actual form, file limits, and filename rules when available |
 
 ## Work sequence
@@ -21,7 +21,7 @@
 
 - Check a valid path, a constant-shift candidate, a coefficient-change candidate, an unsupported line, and each fixed-probe answer branch.
 - Show the candidate and downstream step labels, the post-answer rationale, and the teacher-review abstention.
-- Publish only the typed-checker source and blank preparation documents; never include raw dataset records or student-level data.
+- The typed-checker source and public action plan are now in GitHub. Keep review sheets blank until completed with permission; never publish raw dataset records or student-level data.
 - Deploy the checker under the existing Y? site only after verifying its production route and privacy statement.
 
 **Recording paths:** Manan introduces the project and runs the valid/constant-shift path. Vihan introduces himself, runs the coefficient-change path, answers its fixed probe, and tests unclear input. Both close with limitations and next steps. These are actions for the recording, not claims about past contributions.
