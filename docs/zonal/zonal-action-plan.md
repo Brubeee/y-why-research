@@ -1,6 +1,8 @@
 # Y? — Kreativity Show Sr. zonal action plan
 
-**Target:** complete a credible zonal package for the Education theme by the team-dashboard deadline of **21 October 2026, 6:00 pm IST**. The exact portal cutoff and upload constraints must be checked on the live zonal form when it opens.\r\n\r\n**Public links:** [Y? site](https://ywhy.vercel.app/) · [Research repository](https://github.com/Brubeee/y-why-research). The typed checker source was published in commit `fb6798b`; this plan was updated in commit `7b5636e`; the new checker route still awaits Vercel deployment and verification.
+**Target:** complete a credible zonal package for the Education theme by the team-dashboard deadline of **21 October 2026, 6:00 pm IST**. The exact portal cutoff and upload constraints must be checked on the live zonal form when it opens.
+
+**Public links:** [Y? site](https://ywhy.vercel.app/) · [Research repository](https://github.com/Brubeee/y-why-research). The typed checker source is published; the action plan is current; the new checker route still awaits Vercel deployment and verification.
 
 **Judging aim:** give judges direct evidence for problem solving, STEM/computational thinking, practical implementation, communication, and teamwork. No result guarantees a win; claims stay within what the prototype and evidence establish.
 
@@ -12,7 +14,7 @@
 | Zonal synopsis | Prepared as PDF and editable Markdown | Separates the typed checker from StepVerify research |
 | Video script | Prepared for a 5:40 target, including the two team introductions and a live walkthrough | Not a recorded or finished video; the real team clips and screen capture are still needed |
 | Teacher-review and student-capture sheets | Blank templates prepared | No teacher review or student trial has been completed |
-| Public site and GitHub | Checker source published in `fb6798b`; action plan updated in `7b5636e`; typed checker deploy is pending Vercel access | Existing site is live; do not say the checker route is live until it is deployed and verified |
+| Public site and GitHub | Checker source and action plan are published; typed checker deploy is pending Vercel access | Existing site is live; do not say the checker route is live until it is deployed and verified |
 | Portal | Dashboard currently labels the zonal round upcoming | Inspect the actual form, file limits, and filename rules when available |
 
 ## Work sequence
