@@ -14,6 +14,12 @@ Open [the notebook in Google Colab](https://colab.research.google.com/github/Bru
 
 For a local run with Python 3.10+: install `requirements.txt`, then run `python train_stepverify.py`. The script downloads the same source data when no local input is passed.
 
+## Current typed-equation demonstrator
+
+The existing [Y? project site](https://ywhy.vercel.app/) is live. A separate [typed-equation checker](https://ywhy.vercel.app/typed-equations.html) is prepared for deployment; verify this route after the site is updated. Its editable source is in [`prototype/`](prototype/). This is authored, deterministic browser logic: it checks a restricted equation grammar by solution-set equivalence, marks a first non-equivalent transition as a candidate, and abstains on unclear input. It does not load the StepVerify model, infer a learner's intent, or establish a misconception. Typed work is processed in the browser and is not sent or saved; teacher review and student-outcome testing have not been completed.
+
+The [zonal action plan](docs/zonal/zonal-action-plan.md) tracks the remaining prototype, review, recording, and portal checks. No teacher review or student trial is claimed. Do not add identifiable student work or unapproved records to this repository.
+
 ## Data sources and why
 
 1. **StepVerify (training now):** ETH Zurich / TU Darmstadt's public release contains 1,002 multi-step math word-problem solutions with teacher-annotated first-error indices and error categories. It is the closest available quick-start dataset to the *first-error localization* part of Y?. Its domain is arithmetic word problems, so it is deliberately treated as a methodological smoke test. The upstream research repository states CC BY-SA 4.0; see its card and citation before reusing derived outputs. [Dataset card](https://huggingface.co/datasets/eth-nlped/stepverify) · [paper](https://aclanthology.org/2024.emnlp-main.478/) · [upstream code/data and license](https://github.com/eth-lre/verify-then-generate).
