@@ -2,7 +2,7 @@
 
 **Target:** complete a credible zonal package for the Education theme by the team-dashboard deadline of **21 October 2026, 6:00 pm IST**. The exact portal cutoff and upload constraints must be checked on the live zonal form when it opens.
 
-**Public links:** [Y? site](https://ywhy.vercel.app/) · [Research repository](https://github.com/Brubeee/y-why-research). The typed checker source is published; the action plan is current; the new checker route still awaits Vercel deployment and verification.
+**Public links:** [Y? site](https://ywhy.vercel.app/) · [Typed checker](https://ywhy.vercel.app/typed-equations.html) · [Research repository](https://github.com/Brubeee/y-why-research). The checker route and privacy statement were smoke-checked in Chrome after deployment; this is browser evidence, not teacher validation or classroom-readiness evidence.
 
 **Judging aim:** give judges direct evidence for problem solving, STEM/computational thinking, practical implementation, communication, and teamwork. No result guarantees a win; claims stay within what the prototype and evidence establish.
 
@@ -10,12 +10,12 @@
 
 | Item | Status | Evidence boundary |
 |---|---|---|
-| Typed linear-equation checker | Built locally and browser-checked on both authored error patterns, all seven follow-up answers, a valid path, Unicode minus, and unclear input | Rule-based browser demo; no trained-model predictions, teacher validation, or student outcome claims |
+| Typed linear-equation checker | Deployed at the public route; local checks cover both authored error patterns, all seven follow-up answers, a valid path, Unicode minus, and unclear input; production smoke checks covered both error paths | Rule-based browser demo; no trained-model predictions, teacher validation, or student outcome claims |
 | Zonal synopsis | Prepared as PDF and editable Markdown | Separates the typed checker from StepVerify research |
 | Video script | Prepared for a 5:40 target, including the two team introductions and a live walkthrough | Not a recorded or finished video; the real team clips and screen capture are still needed |
 | Teacher-review and student-capture sheets | Blank templates prepared | No teacher review or student trial has been completed |
-| Public site and GitHub | Checker source and action plan are published; typed checker deploy is pending Vercel access | Existing site is live; do not say the checker route is live until it is deployed and verified |
-| Portal | Dashboard currently labels the zonal round upcoming | Inspect the actual form, file limits, and filename rules when available |
+| Public site and GitHub | Existing site and typed checker route are live; checker source and action plan are public | Chrome smoke check only; no teacher validation, student outcomes, or classroom-readiness claims |
+| Portal | Zonal form availability has not been re-confirmed in the latest check | Inspect the actual form, file limits, and filename rules when available |
 
 ## Work sequence
 
@@ -24,7 +24,7 @@
 - Check a valid path, a constant-shift candidate, a coefficient-change candidate, an unsupported line, and each fixed-probe answer branch.
 - Show the candidate and downstream step labels, the post-answer rationale, and the teacher-review abstention.
 - The typed-checker source and public action plan are now in GitHub. Keep review sheets blank until completed with permission; never publish raw dataset records or student-level data.
-- Deploy the checker under the existing Y? site only after verifying its production route and privacy statement.
+- The checker is deployed under the existing Y? site at [typed-equations.html](https://ywhy.vercel.app/typed-equations.html); verify again if code changes before recording.
 
 **Recording paths:** Manan introduces the project and runs the valid/constant-shift path. Vihan introduces himself, runs the coefficient-change path, answers its fixed probe, and tests unclear input. Both close with limitations and next steps. These are actions for the recording, not claims about past contributions.
 
