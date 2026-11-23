@@ -103,3 +103,31 @@ test('partial crop keeps the source visible, maps boxes, withholds a whole-quest
   assert.equal(get('region').hidden,true);
   assert.equal(sentCropped,false);
 });
+
+test('verified distribution opens a fresh task, separates form from correctness, and keeps hint evidence after recheck', () => {
+  get('example').dispatch('click');
+  assert.equal(get('retry').hidden,true);
+  const rr=get('rows').children;
+  rr[0].children[2].children[0].checked=true;rr[0].children[2].children[0].dispatch('change');
+  get('verify').dispatch('click');
+  assert.equal(get('retry').hidden,true);
+  rr[1].children[2].children[0].checked=true;rr[1].children[2].children[0].dispatch('change');
+  get('verify').dispatch('click');
+  assert.equal(get('retry').hidden,false);
+  assert.match(get('retry-question').textContent,/2−4\(2z−3\)/);
+  assert.match(get('curriculum').words(),/We Distribute/);
+  get('answer').value='-3(y-2)';get('probe-form').dispatch('submit');
+  assert.match(get('probe-result').words(),/Equivalent so far/);
+  assert.doesNotMatch(get('probe-result').words(),/Exact expansion/);
+  get('answer').value='6-3y';get('probe-form').dispatch('submit');
+  assert.match(get('probe-result').words(),/This new step is correct/);
+  get('retry-answer').value='2−4(2z−3)';get('retry-form').dispatch('submit');
+  assert.match(get('retry-result').textContent,/Equivalent so far/);
+  assert.match(get('retry-evidence').textContent,/fully correct response is not recorded/);
+  get('retry-hint').dispatch('click');
+  get('verify').dispatch('click');
+  assert.equal(get('retry-hint-text').hidden,false);
+  get('retry-answer').value='14-8z';get('retry-form').dispatch('submit');
+  assert.match(get('retry-evidence').textContent,/First readable response: Equivalent so far/);
+  assert.match(get('retry-evidence').textContent,/fully correct response followed a hint/);
+});

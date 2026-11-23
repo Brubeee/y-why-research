@@ -35,7 +35,15 @@
   <section class="panel result" aria-labelledby="result-heading">
     <div class="step"><span>03</span><h2 id="result-heading">See what changed</h2></div>
     <div id="verdict" role="status"><p>Confirmed steps will appear here.</p></div>
-    <section id="probe" class="probe" hidden aria-labelledby="probe-heading"><h3 id="probe-heading">One short follow-up</h3><p id="probe-question"></p><form id="probe-form"><label for="answer">Your expansion</label><div class="actions"><input id="answer" maxlength="100" autocomplete="off" placeholder="Write the expression"><button class="primary" type="submit">Check response</button></div></form><div id="probe-result" role="status"></div></section>
+    <section id="probe" class="probe" hidden aria-labelledby="probe-heading"><h3 id="probe-heading">One short follow-up</h3><p id="probe-question"></p><form id="probe-form"><label for="answer">Your expansion</label><div class="actions"><input id="answer" maxlength="100" autocomplete="off" ><button class="primary" type="submit">Check response</button></div></form><div id="probe-result" role="status"></div></section>
+  </section>
+  <section class="panel result" id="retry" hidden aria-labelledby="retry-heading">
+    <div class="step"><span>04</span><h2 id="retry-heading">Try the skill again</h2></div>
+    <p>One fresh practice question about distributing a negative factor. It does not grade your paper or measure learning.</p>
+    <p id="retry-question"></p>
+    <form id="retry-form"><label for="retry-answer">Your expansion</label><div class="actions"><input id="retry-answer" maxlength="100" autocomplete="off"><button class="primary" type="submit">Check response</button><button id="retry-hint" type="button">Show hint</button></div></form>
+    <p id="retry-hint-text" hidden></p>
+    <div id="retry-result" role="status"></div><p id="retry-evidence" class="fine"></p>
   </section>
   <section class="panel profile" id="profile" aria-labelledby="profile-title"><div class="step"><span>R</span><h2 id="profile-title">Course profile</h2></div><label for="course">Reference curriculum</label><select id="course"><option value="cbse">CBSE / NCERT reference · Grade 8</option><option value="myp">IB Middle Years Programme</option><option value="other">Other / no match</option></select><p id="curriculum"></p><p class="fine">A curriculum suggestion never changes a maths verdict. Only one supported algebra slice is checked.</p></section>
   <footer>Research reference, not a grade, full-paper marker, or validated diagnosis.</footer>

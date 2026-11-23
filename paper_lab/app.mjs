@@ -1,6 +1,8 @@
-import { verifyRows } from './verify.mjs';
+import { verifyRows, parseExpression } from './verify.mjs';
 import { diagnoseStep, interpretProbe } from './diagnostic.mjs';
 
+import { gradeExpansion } from './expansion_form.mjs';
+import { RETRY_TASK, createRetry, exposeRetryHint, recordRetry } from './memex.mjs';
 import { validateCrop, mapOcrBoxes, encodeImageCrop } from './crop.mjs';
 
 const $ = id => document.getElementById(id);
@@ -18,7 +20,7 @@ const courses = {
   other: { tag: 'No board or chapter match. The checker still supports a limited linear equation grammar.' },
 };
 let rows = [], objectUrl, dims, inflight, revision = 0, diagnosis = null, skillMatch = null;
-let currentFile = null, region = null, selecting = false, corner = null;
+let currentFile = null, region = null, selecting = false, corner = null, retrySession = null;
 const clearAttestation = () => { $('anchor-check').checked = false; };
 function regionButtons() {
   const img = $('image');
@@ -42,6 +44,8 @@ function resetResult(message = 'Run the check on your selected, confirmed lines.
   $('probe').hidden = true;
   $('answer').value = '';
   $('probe-result').replaceChildren();
+  $('retry').hidden = true;
+  $('retry-answer').value = '';
 }
 function overlay(id, box) {
   $(id).hidden = true;
@@ -212,20 +216,65 @@ $('verify').addEventListener('click', () => {
   }
   skillMatch = 'distribution'; course();
   $('probe').hidden = false;
-  $('probe-question').textContent = diagnosis.reason + ' Expand: ' + diagnosis.probe.input.split('=')[0].replaceAll('-','−') + '.';
+  $('probe-question').textContent = diagnosis.reason + ' Expand and simplify: ' + diagnosis.probe.input.split('=')[0].replaceAll('-','−') + '.';
+  retrySession ??= createRetry({diagnostic:diagnosis});
+  if (retrySession) showRetry();
 });
 $('probe-form').addEventListener('submit', e => {
   e.preventDefault();
   if (!diagnosis?.probe) return;
-  const a = $('answer').value.trim(), rhs = diagnosis.probe.input.split('=')[1];
-  const response = interpretProbe(diagnosis, /[=]/.test(a) ? a : a + '=' + rhs);
+  const a = $('answer').value.trim(), [expression,rhs] = diagnosis.probe.input.split('=');
+  const parts = a.split('=');
+  const work = parts.length === 2 && parts[1].trim().replaceAll('−','-') === rhs ? parts[0] : a;
+  const form = gradeExpansion(work, expression);
+  if (!['expanded','wrong'].includes(form.status)) {
+    $('probe-result').replaceChildren(el('p',form.message));
+    return;
+  }
+  const parsed = parseExpression(work);
+  const coefficient = parsed.coefficient === '1' ? '' : parsed.coefficient === '-1' ? '-' : parsed.coefficient;
+  const canonical = coefficient + parsed.variable + (parsed.constant.startsWith('-') ? '' : '+') + parsed.constant + '=' + rhs;
+  const response = interpretProbe(diagnosis, canonical);
   $('probe-result').replaceChildren(el('p',response.reason),el('p',response.followUp || ''));
-  if (!a || response.status === 'unresolved') return;
+  if (response.status === 'unresolved') return;
   $('probe-result').append(el('p', 'Exact expansion: ' + diagnosis.probe.correct.split('=')[0].replaceAll('-','−') + '.'));
 });
+function showRetry() {
+  $('retry').hidden = false;
+  $('retry-question').textContent = RETRY_TASK.instruction + ' ' + RETRY_TASK.prompt;
+  const hasHint = retrySession.hintExposedAt !== null;
+  $('retry-hint').disabled = hasHint || retrySession.events.length >= 120;
+  $('retry-hint-text').hidden = !hasHint;
+  $('retry-hint-text').textContent = hasHint ? RETRY_TASK.hint : '';
+  const last = retrySession.lastEvent;
+  $('retry-result').textContent = last?.kind === 'attempt' ? last.message : '';
+  const first = retrySession.firstParseable, success = retrySession.firstSuccess;
+  const firstText = first ? 'First readable response: ' + first.message : 'No readable response yet.';
+  const solvedText = success
+    ? success.mode === 'hint-aided' ? ' First fully correct response followed a hint.' : ' First fully correct response used no hint for this question.'
+    : ' A fully correct response is not recorded yet.';
+  $('retry-evidence').textContent = firstText + solvedText + ' This log is for the current page session only.';
+}
+$('retry-hint').addEventListener('click', () => {
+  if (!diagnosis?.probe || !retrySession || $('retry').hidden) return;
+  retrySession = exposeRetryHint(retrySession);showRetry();
+});
+$('retry-form').addEventListener('submit', e => {
+  e.preventDefault();
+  if (!diagnosis?.probe || !retrySession || $('retry').hidden) return;
+  retrySession = recordRetry(retrySession,{text:$('retry-answer').value});showRetry();
+});
+
 function course() {
   const c = courses[$('course').value] || courses.other;
   $('curriculum').replaceChildren(document.createTextNode(skillMatch ? c.tag + (skillMatch === 'distribution' ? ' The flagged line is also a candidate for negative distribution practice.' : '') : 'Profile selected. Check a supported linear equation to get a skill suggestion.'));
+  if (skillMatch === 'distribution' && c === courses.cbse) {
+    const resource = el('a','NCERT Grade 8 · Ganita Prakash Part 1, Ch. 6: We Distribute, Yet Things Multiply');
+    resource.href = 'https://ciet.ncert.gov.in/activity/grade8?lang=en';
+    resource.rel = 'noreferrer';
+    $('curriculum').append(document.createTextNode(' Review resource, not an identification of your paper’s chapter: '),resource);
+    return;
+  }
   if (c.url) { const a = el('a',c.label); a.href = c.url; a.rel='noreferrer'; $('curriculum').append(document.createTextNode(' '),a); }
 }
 $('course').addEventListener('change',course);

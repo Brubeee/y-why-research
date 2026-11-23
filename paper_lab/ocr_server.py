@@ -26,7 +26,7 @@ RUNNERS = threading.BoundedSemaphore(2)
 MIMES = {'.html':'text/html; charset=utf-8','.mjs':'text/javascript; charset=utf-8',
          '.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8',
          '.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.json':'application/json; charset=utf-8'}
-LAB = {'index.html','style.css','app.mjs','diagnostic.mjs','verify.mjs','memex.mjs','crop.mjs'}
+LAB = {'index.html','style.css','app.mjs','diagnostic.mjs','verify.mjs','memex.mjs','crop.mjs','expansion_form.mjs'}
 PROTOTYPE = {'typed-equations.html','typed-equations.js','typed-equations.css'}
 NAME = re.compile(r'^[a-zA-Z0-9_.-]+$')
 PNG = b'\x89PNG\r\n\x1a\n'

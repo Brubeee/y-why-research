@@ -37,3 +37,10 @@ The Python synthetic-image test needs Pillow and DejaVu Sans Mono; the OCR endpo
 - Curriculum reference: [NCERT Grade 8 bridge programme](https://www.ncert.nic.in/pdf/Bridge_Programme/Grade8/Bridge_Programme-Mathematics-Grade_8.pdf) and [IB MYP mathematics framework](https://www.ibo.org/programmes/middle-years-programme/curriculum/mathematics/); the selected course is a suggestion, not a reproduced syllabus.
 - Diagnostic precedent: Brown & Burton, [Diagnostic Models for Procedural Bugs](https://doi.org/10.1207/s15516709cog0202_4), and Rafferty et al., [Assessing Mathematics Misunderstandings via Bayesian Inverse Planning](https://doi.org/10.1111/cogs.12900). No first-of-its-kind claim.
 - OCR dependency: [Tesseract](https://github.com/tesseract-ocr/tesseract). This branch does not bundle training data or models. The separate StepVerify baseline is not loaded here.
+
+## Mistake-to-retry experiment
+
+The [retry lab](RETRY_LAB.md) links a supported verified distribution mistake to
+one exact, form-aware practice question. It keeps first attempts apart from
+hint-aided responses in the current session. It does not yet schedule a
+delayed review or measure learning.
