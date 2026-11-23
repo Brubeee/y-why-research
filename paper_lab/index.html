@@ -19,13 +19,16 @@
       <p>Choose a JPEG or PNG, up to 6 MiB. Typed lines are also supported. Only use anonymous practice pages in this research build.</p>
       <div class="actions"><label class="primary file">Choose photo<input id="photo" type="file" accept="image/png,image/jpeg" capture="environment"></label><button id="example" type="button">Load a typed example</button><button id="clear" type="button">Clear</button></div>
       <p id="scan-status" class="status" role="status">No photo loaded. OCR drafts are never treated as verified maths.</p>
-      <div id="photo-view" class="photo" hidden><img id="image" alt="Your selected practice-paper photo"><span id="crop" hidden></span></div>
+      <div id="photo-view" class="photo" hidden><img id="image" alt="Your selected practice-paper photo"><span id="region" hidden></span><span id="crop" hidden></span></div>
+      <div class="actions" id="region-tools" hidden><button id="select-region" type="button">Select one question</button><button id="read-region" type="button" disabled>Read selected area</button><button id="read-full" type="button">Read full photo</button></div>
+      <p id="region-help" class="fine" aria-live="polite" hidden></p>
       <small>OCR is run by Tesseract on the machine hosting this app. Do not send real test papers to a remote host.</small>
     </section>
     <section class="panel" aria-labelledby="read-heading">
       <div class="step"><span>02</span><h2 id="read-heading">Confirm one solution</h2></div>
       <p>Select in reading order only the lines for one question. The first selected line must be the original equation. Do not omit unclear intermediate steps. Edit OCR mistakes and confirm every selected line.</p>
       <div id="rows"></div>
+      <label class="photo-attestation" id="anchor-control" hidden><input id="anchor-check" type="checkbox"> I checked the full photo: the first selected line is the original equation, and no active step is missing between the selected lines.</label>
       <div class="actions"><button id="add" type="button">Add a line</button><button id="verify" type="button" class="primary">Check selected work</button></div>
     </section>
   </div>
