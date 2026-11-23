@@ -39,6 +39,16 @@ globalThis.fetch = async (url,init) => {
     ]}),
   };
 };
+let clockMs=100;
+const systemNow=Date.now;
+Date.now=()=>clockMs;
+const local=new Map();
+globalThis.window={localStorage:{
+  getItem:key=>local.get(key)??null,
+  setItem:(key,value)=>local.set(key,value),
+  removeItem:key=>local.delete(key),
+}};
+test.after(()=>{Date.now=systemNow;});
 get('course').value='cbse';
 await import('./app.mjs');
 
@@ -130,4 +140,35 @@ test('verified distribution opens a fresh task, separates form from correctness,
   get('retry-answer').value='14-8z';get('retry-form').dispatch('submit');
   assert.match(get('retry-evidence').textContent,/First readable response: Equivalent so far/);
   assert.match(get('retry-evidence').textContent,/fully correct response followed a hint/);
+});
+
+test('delayed review UI requires opt-in, hides prompt before the real due time, and locks the first readable result', async () => {
+  assert.equal(local.size,0);
+  assert.equal(get('delayed-save').hidden,false);
+  get('delayed-save').dispatch('click');
+  assert.equal(local.size,1);
+  assert.equal(get('delayed-form').hidden,true);
+  assert.equal(get('delayed-prompt').textContent,'');
+  get('clear').dispatch('click');
+  assert.equal(local.size,1,'clearing the photo does not clear explicitly saved practice');
+  const card1=get('delayed-status').textContent;
+  await import('./app.mjs?early-reload');
+  assert.equal(get('delayed-status').textContent,card1);
+  assert.equal(get('delayed-prompt').textContent,'');
+  clockMs+=86400000;
+  await import('./app.mjs?due-reload');
+  assert.equal(get('delayed-form').hidden,false);
+  assert.match(get('delayed-prompt').textContent,/3−5\(3w−4\)/);
+  get('delayed-answer').value='??';get('delayed-form').dispatch('submit');
+  assert.match(get('delayed-status').textContent,/No response was recorded/);
+  get('delayed-answer').value='-1-15w';get('delayed-form').dispatch('submit');
+  assert.match(get('delayed-status').textContent,/not equivalent/);
+  assert.equal(get('delayed-answer').value,'');
+  await import('./app.mjs?post-result');
+  assert.equal(get('delayed-form').hidden,true);
+  assert.equal(get('delayed-prompt').textContent,'');
+  assert.match(get('delayed-status').textContent,/not equivalent/);
+  get('delayed-clear').dispatch('click');
+  assert.equal(local.size,0);
+  assert.equal(get('delayed').hidden,true);
 });

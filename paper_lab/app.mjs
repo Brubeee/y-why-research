@@ -2,6 +2,7 @@ import { verifyRows, parseExpression } from './verify.mjs';
 import { diagnoseStep, interpretProbe } from './diagnostic.mjs';
 
 import { gradeExpansion } from './expansion_form.mjs';
+import { createDelayedReview } from './delayed_review.mjs';
 import { RETRY_TASK, createRetry, exposeRetryHint, recordRetry } from './memex.mjs';
 import { validateCrop, mapOcrBoxes, encodeImageCrop } from './crop.mjs';
 
@@ -12,6 +13,7 @@ const el = (tag, text, cls) => {
   if (cls) item.className = cls;
   return item;
 };
+const delayedReview = createDelayedReview({store:() => window.localStorage});
 const MAX_BYTES = 6 * 1024 ** 2;
 const MAX_ROWS = 45;
 const courses = {
@@ -46,6 +48,7 @@ function resetResult(message = 'Run the check on your selected, confirmed lines.
   $('probe-result').replaceChildren();
   $('retry').hidden = true;
   $('retry-answer').value = '';
+  showDelayed();
 }
 function overlay(id, box) {
   $(id).hidden = true;
@@ -254,6 +257,7 @@ function showRetry() {
     ? success.mode === 'hint-aided' ? ' First fully correct response followed a hint.' : ' First fully correct response used no hint for this question.'
     : ' A fully correct response is not recorded yet.';
   $('retry-evidence').textContent = firstText + solvedText + ' This log is for the current page session only.';
+  showDelayed();
 }
 $('retry-hint').addEventListener('click', () => {
   if (!diagnosis?.probe || !retrySession || $('retry').hidden) return;
@@ -264,6 +268,48 @@ $('retry-form').addEventListener('submit', e => {
   if (!diagnosis?.probe || !retrySession || $('retry').hidden) return;
   retrySession = recordRetry(retrySession,{text:$('retry-answer').value});showRetry();
 });
+
+function canSaveReview() {
+  return !!diagnosis?.probe && !$('retry').hidden && !!retrySession?.firstSuccess;
+}
+function showDelayed(state=delayedReview.inspect()) {
+  const offer = canSaveReview() && state.status==='empty';
+  const ready = state.status==='ready';
+  const text = {
+    empty: offer ? 'Save a different exercise to try without a hint tomorrow.' : '',
+    waiting: state.dueAt ? 'Available after ' + new Date(state.dueAt).toLocaleString() + ' (this device’s clock).' : '',
+    ready: state.needsReadable ? 'Enter one readable expression without an equals sign. No response was recorded.' : 'One readable response will be recorded. No hints are shown for this question.',
+    complete: {
+      correct:'First readable answer: correct and fully simplified.',
+      'not-yet':'First readable answer: not equivalent to the original.',
+      unfinished:'First readable answer: equivalent but not fully simplified.',
+      'outside-supported-form':'First readable answer: outside the form this checker can score.',
+    }[state.outcome],
+    unavailable:'The saved review couldn’t be read or updated. No result can be confirmed. You can try deleting the saved review.',
+  };
+  $('delayed').hidden = state.status==='empty' ? !offer : false;
+  $('delayed-save').hidden = !offer;
+  $('delayed-refresh').hidden = state.status!=='waiting';
+  $('delayed-clear').hidden = state.status==='empty';
+  $('delayed-status').textContent = text[state.status] || '';
+  $('delayed-form').hidden = !ready;
+  $('delayed-prompt').textContent = ready ? 'Expand and simplify without an equals sign: ' + state.prompt : '';
+  if (!ready) $('delayed-answer').value = '';
+}
+$('delayed-save').addEventListener('click', () => {
+  if (canSaveReview()) showDelayed(delayedReview.optIn({consent:true}));
+});
+$('delayed-refresh').addEventListener('click', () => showDelayed());
+$('delayed-clear').addEventListener('click', () => {
+  $('delayed-answer').value = '';
+  showDelayed(delayedReview.clear());
+});
+$('delayed-form').addEventListener('submit', e => {
+  e.preventDefault();
+  if ($('delayed-form').hidden) return;
+  showDelayed(delayedReview.submit($('delayed-answer').value));
+});
+globalThis.addEventListener?.('focus', () => showDelayed());
 
 function course() {
   const c = courses[$('course').value] || courses.other;
@@ -278,4 +324,4 @@ function course() {
   if (c.url) { const a = el('a',c.label); a.href = c.url; a.rel='noreferrer'; $('curriculum').append(document.createTextNode(' '),a); }
 }
 $('course').addEventListener('change',course);
-add(); add(); renderRows(); course();
+add(); add(); renderRows(); course(); showDelayed();

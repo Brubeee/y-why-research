@@ -45,6 +45,13 @@
     <p id="retry-hint-text" hidden></p>
     <div id="retry-result" role="status"></div><p id="retry-evidence" class="fine"></p>
   </section>
+  <section class="panel result" id="delayed" aria-labelledby="delayed-heading" hidden>
+    <div class="step"><span>05</span><h2 id="delayed-heading">Come back to the skill</h2></div>
+    <p class="fine">Optional: save one review on this browser, due in 24 hours. It stores the review item, due time, and first readable result, not your photo or answer. There is no reminder.</p>
+    <div class="actions"><button id="delayed-save" type="button" hidden>Save one review in this browser</button><button id="delayed-refresh" type="button" hidden>Check whether it’s ready</button><button id="delayed-clear" type="button" hidden>Delete saved review</button></div>
+    <div id="delayed-status" role="status"></div>
+    <form id="delayed-form" hidden><p id="delayed-prompt"></p><label for="delayed-answer">Your expansion</label><div class="actions"><input id="delayed-answer" maxlength="100" autocomplete="off"><button class="primary" type="submit">Record first response</button></div></form>
+  </section>
   <section class="panel profile" id="profile" aria-labelledby="profile-title"><div class="step"><span>R</span><h2 id="profile-title">Course profile</h2></div><label for="course">Reference curriculum</label><select id="course"><option value="cbse">CBSE / NCERT reference · Grade 8</option><option value="myp">IB Middle Years Programme</option><option value="other">Other / no match</option></select><p id="curriculum"></p><p class="fine">A curriculum suggestion never changes a maths verdict. Only one supported algebra slice is checked.</p></section>
   <footer>Research reference, not a grade, full-paper marker, or validated diagnosis.</footer>
 </main>
