@@ -29,7 +29,7 @@ python -m unittest discover -s paper_lab -p '*_test.py' -v
 
 The Python synthetic-image test needs Pillow and DejaVu Sans Mono; the OCR endpoint will run without Pillow. Synthetic image and equation fixtures are smoke tests, not handwriting or learning benchmarks. On the available Tesseract build, a synthetic printed `2 + 3 = 5` was even misread as `2+32=5`. That is why confirmation is mandatory.
 
-**Next:** diagnose page/line segmentation failures with a frozen held-out corpus of anonymous practice pages, then compare math-aware local recognizers (report exact line match by writer, first-error accuracy after confirmation and end-to-end, false marks, abstention and coverage). Add one source-versioned curriculum slice, a deliberate separate practice stage, and delayed no-hint MEMEX replay only after correct routing is shown.
+**OCR accuracy:** See the [synthetic stress test](OCR_BENCHMARK.md) for the current baseline, sparse-mode comparison, explicit abstentions and independent exact-math reference controls. The result does not support a production mode switch. Next test a user-selected crop against the full-page baseline, then assess real anonymous practice photos before claiming handwriting accuracy.
 
 ## Scope and sources
 
