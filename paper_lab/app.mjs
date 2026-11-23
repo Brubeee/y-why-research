@@ -1,0 +1,151 @@
+import { verifyRows } from './verify.mjs';
+import { diagnoseStep, interpretProbe } from './diagnostic.mjs';
+
+const $ = id => document.getElementById(id);
+const el = (tag, text, cls) => {
+  const item = document.createElement(tag);
+  if (text) item.textContent = text;
+  if (cls) item.className = cls;
+  return item;
+};
+const MAX_BYTES = 6 * 1024 ** 2;
+const MAX_ROWS = 45;
+const courses = {
+  cbse: { tag: 'Suggested skill: Algebra · one-variable linear equations. Grade 8 reference; confirm against your school’s edition.', label: 'NCERT Grade 8 Mathematics bridge programme', url: 'https://www.ncert.nic.in/pdf/Bridge_Programme/Grade8/Bridge_Programme-Mathematics-Grade_8.pdf' },
+  myp: { tag: 'Suggested IB MYP strand: Algebra. No school-year sequence or chapter is inferred.', label: 'IB MYP mathematics framework', url: 'https://www.ibo.org/programmes/middle-years-programme/curriculum/mathematics/' },
+  other: { tag: 'No board or chapter match. The checker still supports a limited linear equation grammar.' },
+};
+let rows = [], objectUrl, dims, inflight, revision = 0, diagnosis = null, skillMatch = null;
+function status(text) { $('scan-status').textContent = text; }
+function resetResult(message = 'Run the check on your selected, confirmed lines.') {
+  diagnosis = null;
+  skillMatch = null; course();
+  $('verdict').replaceChildren(el('p', message));
+  $('probe').hidden = true;
+  $('answer').value = '';
+  $('probe-result').replaceChildren();
+}
+function updateCrop(box) {
+  $('crop').hidden = true;
+  const img = $('image');
+  if (!box || !dims?.width || !dims?.height || img.naturalWidth !== dims.width || img.naturalHeight !== dims.height) return;
+  for (const [key, unit, value] of [['left','width',box.x],['top','height',box.y],['width','width',box.width],['height','height',box.height]]) {
+    $('crop').style[key] = (100 * value / dims[unit]) + '%';
+  }
+  $('crop').hidden = false;
+}
+function renderRows() {
+  $('rows').replaceChildren();
+  $('add').disabled = rows.length >= MAX_ROWS;
+  for (const [i, row] of rows.entries()) {
+    const box = el('div', '', 'row'), select = el('input'), field = el('input'), confirm = el('input');
+    select.type = 'checkbox'; select.checked = row.selected;
+    select.setAttribute('aria-label', 'Include line ' + (i + 1));
+    field.type = 'text'; field.maxLength = 180; field.value = row.text; field.autocomplete = 'off';
+    field.setAttribute('aria-label', 'Line ' + (i + 1) + ' transcription');
+    confirm.type = 'checkbox'; confirm.checked = row.confirmed; confirm.disabled = !row.selected;
+    const label = el('label', '', 'confirm');
+    label.append(confirm, document.createTextNode(' I confirm the transcription of line ' + (i + 1)));
+    select.addEventListener('change', () => {
+      row.selected = select.checked; confirm.disabled = !row.selected;
+      row.confirmed = confirm.checked = false;
+      resetResult();
+    });
+    confirm.addEventListener('change', () => { row.confirmed = confirm.checked; resetResult(); });
+    field.addEventListener('input', () => {
+      row.text = field.value; row.confirmed = confirm.checked = false; resetResult();
+    });
+    field.addEventListener('focus', () => updateCrop(row.box));
+    box.append(select, field, label); $('rows').append(box);
+  }
+}
+function add(text = '', selected = true) { if (rows.length < MAX_ROWS) rows.push({text,selected,confirmed:false}); }
+function clearPhoto() {
+  inflight?.abort(); inflight = null; revision++;
+  if (objectUrl) URL.revokeObjectURL(objectUrl);
+  objectUrl = null; dims = null;
+  $('image').removeAttribute('src'); $('photo-view').hidden = true; $('crop').hidden = true; $('photo').value = '';
+}
+$('clear').addEventListener('click', () => {
+  clearPhoto(); rows = []; add(); add(); renderRows(); resetResult();
+  status('No photo loaded. OCR drafts are never treated as verified maths.');
+});
+$('example').addEventListener('click', () => {
+  clearPhoto(); rows = [];
+  for (const t of ['−(x−4)=12', '−x−4=12', 'x=−16']) add(t);
+  renderRows(); resetResult();
+  status('A typed, synthetic example. Review and confirm each line before checking.');
+});
+$('add').addEventListener('click', () => { add(); renderRows(); resetResult(); $('rows').lastElementChild?.querySelector('input[type=text]').focus(); });
+$('photo').addEventListener('change', async () => {
+  const file = $('photo').files?.[0];
+  if (!file) return;
+  clearPhoto(); rows = []; add(); add(); renderRows(); resetResult();
+  if (!['image/png','image/jpeg'].includes(file.type) || !file.size || file.size > MAX_BYTES) {
+    status('Choose a PNG or JPEG no larger than 6 MiB. You can still enter the lines by hand.');
+    return;
+  }
+  objectUrl = URL.createObjectURL(file); $('image').src = objectUrl; $('photo-view').hidden = false;
+  inflight = new AbortController(); const current = revision;
+  status('Reading photo on the local host. The result will be an unconfirmed draft.');
+  try {
+    const r = await fetch('/api/ocr', {method:'POST',headers:{'Content-Type':file.type},body:file,signal:inflight.signal});
+    const data = await r.json();
+    if (current !== revision) return;
+    if (!r.ok) throw new Error(data.error || 'OCR could not read this photo.');
+    if (data.status !== 'draft' || !Array.isArray(data.lines)) throw new Error('The OCR response was not usable.');
+    dims = data.image;
+    if (data.lines.length) {
+      rows = data.lines.slice(0,MAX_ROWS).map(l => ({text:String(l.text).slice(0,180),selected:false,confirmed:false,box:l.box}));
+      renderRows();
+    }
+    status(data.lines.length
+      ? 'Draft ready: ' + data.lines.length + ' detected lines. Select a single question and verify signs, brackets, and reading order.' + (data.lines.length > MAX_ROWS ? ' Only the first ' + MAX_ROWS + ' lines are shown; crop a smaller area if needed.' : '') + (data.warnings?.length ? ' ' + data.warnings.join(' ') : '')
+      : 'No text detected. Type the work manually or try a flat, well-lit photo.');
+  } catch (e) {
+    if (current === revision) status(e.name === 'AbortError' ? 'OCR cancelled.' : 'OCR draft unavailable. ' + e.message + ' You can still type the lines.');
+  }
+});
+$('verify').addEventListener('click', () => {
+  resetResult();
+  const picked = rows.map((r,i)=>({...r,sourceIndex:i})).filter(r => r.selected);
+  if (picked.length < 2 || picked.length > 12) { resetResult('Select between 2 and 12 lines for one question, starting with its original equation.'); return; }
+  for (let i=1; i<picked.length; i++) {
+    if (picked[i].sourceIndex !== picked[i-1].sourceIndex+1) { resetResult('Select consecutive lines. Crop or type only your solution if the photograph combines unrelated items.'); return; }
+  }
+  const [anchor,...steps] = picked;
+  const result = verifyRows({anchor,rows:steps});
+  const labels = {equivalent:'Same solution set',changed:'First verified change',unsupported:'Cannot check this line',unconfirmed:'Needs transcription confirmation','not-considered':'Not checked'};
+  if (result.anchor.status === 'confirmed' && result.anchor.solution?.kind === 'unique') { skillMatch = 'linear'; course(); }
+  const out = $('verdict'); out.replaceChildren(el('p','Original equation: ' + anchor.text + '. ' + result.anchor.message));
+  result.rows.forEach((r,i) => {
+    const p = el('p', 'Line ' + (steps[i].sourceIndex+1) + ' · ' + (labels[r.status] || r.status) + ' · ' + steps[i].text + ' — ' + r.message, 'step-result ' + r.status);
+    out.append(p);
+  });
+  if (!result.rows.some(r => r.status === 'changed')) return;
+  const i = result.rows.findIndex(r => r.status === 'changed');
+  diagnosis = diagnoseStep(picked[i].text,picked[i+1].text);
+  if (diagnosis.status !== 'ambiguous' || !diagnosis.probe) {
+    out.append(el('p','The maths changed. This prototype does not have enough evidence to say why.'));
+    return;
+  }
+  skillMatch = 'distribution'; course();
+  $('probe').hidden = false;
+  $('probe-question').textContent = diagnosis.reason + ' Expand: ' + diagnosis.probe.input.split('=')[0].replaceAll('-','−') + '.';
+});
+$('probe-form').addEventListener('submit', e => {
+  e.preventDefault();
+  if (!diagnosis?.probe) return;
+  const a = $('answer').value.trim(), rhs = diagnosis.probe.input.split('=')[1];
+  const response = interpretProbe(diagnosis, /[=]/.test(a) ? a : a + '=' + rhs);
+  $('probe-result').replaceChildren(el('p',response.reason),el('p',response.followUp || ''));
+  if (!a || response.status === 'unresolved') return;
+  $('probe-result').append(el('p', 'Exact expansion: ' + diagnosis.probe.correct.split('=')[0].replaceAll('-','−') + '.'));
+});
+function course() {
+  const c = courses[$('course').value] || courses.other;
+  $('curriculum').replaceChildren(document.createTextNode(skillMatch ? c.tag + (skillMatch === 'distribution' ? ' The flagged line is also a candidate for negative distribution practice.' : '') : 'Profile selected. Check a supported linear equation to get a skill suggestion.'));
+  if (c.url) { const a = el('a',c.label); a.href = c.url; a.rel='noreferrer'; $('curriculum').append(document.createTextNode(' '),a); }
+}
+$('course').addEventListener('change',course);
+add(); add(); renderRows(); course();

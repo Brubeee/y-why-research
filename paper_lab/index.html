@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="A local Y? research prototype for checking one confirmed chain of algebra steps from your paper.">
+  <meta name="theme-color" content="#f3f1e9">
+  <title>Paper Lab · Y?</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.mjs"></script>
+</head>
+<body>
+<main>
+  <header class="mast"><strong class="mark">Y?</strong><span>Paper Lab · R&amp;D reference</span><a href="#profile">Course profile</a></header>
+  <section class="intro"><p class="eyebrow">01 / Test-paper workflow</p><h1>Your work.<br><em>Your next move.</em></h1><p>Photograph a practice paper, confirm how it was read, then check one chain of algebra steps. The checker can spot a changed solution; it can’t read your mind.</p></section>
+  <div class="workbench">
+    <section class="panel" aria-labelledby="photo-heading">
+      <div class="step"><span>01</span><h2 id="photo-heading">Start with the paper</h2></div>
+      <p>Choose a JPEG or PNG, up to 6 MiB. Typed lines are also supported. Only use anonymous practice pages in this research build.</p>
+      <div class="actions"><label class="primary file">Choose photo<input id="photo" type="file" accept="image/png,image/jpeg" capture="environment"></label><button id="example" type="button">Load a typed example</button><button id="clear" type="button">Clear</button></div>
+      <p id="scan-status" class="status" role="status">No photo loaded. OCR drafts are never treated as verified maths.</p>
+      <div id="photo-view" class="photo" hidden><img id="image" alt="Your selected practice-paper photo"><span id="crop" hidden></span></div>
+      <small>OCR is run by Tesseract on the machine hosting this app. Do not send real test papers to a remote host.</small>
+    </section>
+    <section class="panel" aria-labelledby="read-heading">
+      <div class="step"><span>02</span><h2 id="read-heading">Confirm one solution</h2></div>
+      <p>Select in reading order only the lines for one question. The first selected line must be the original equation. Do not omit unclear intermediate steps. Edit OCR mistakes and confirm every selected line.</p>
+      <div id="rows"></div>
+      <div class="actions"><button id="add" type="button">Add a line</button><button id="verify" type="button" class="primary">Check selected work</button></div>
+    </section>
+  </div>
+  <section class="panel result" aria-labelledby="result-heading">
+    <div class="step"><span>03</span><h2 id="result-heading">See what changed</h2></div>
+    <div id="verdict" role="status"><p>Confirmed steps will appear here.</p></div>
+    <section id="probe" class="probe" hidden aria-labelledby="probe-heading"><h3 id="probe-heading">One short follow-up</h3><p id="probe-question"></p><form id="probe-form"><label for="answer">Your expansion</label><div class="actions"><input id="answer" maxlength="100" autocomplete="off" placeholder="Write the expression"><button class="primary" type="submit">Check response</button></div></form><div id="probe-result" role="status"></div></section>
+  </section>
+  <section class="panel profile" id="profile" aria-labelledby="profile-title"><div class="step"><span>R</span><h2 id="profile-title">Course profile</h2></div><label for="course">Reference curriculum</label><select id="course"><option value="cbse">CBSE / NCERT reference · Grade 8</option><option value="myp">IB Middle Years Programme</option><option value="other">Other / no match</option></select><p id="curriculum"></p><p class="fine">A curriculum suggestion never changes a maths verdict. Only one supported algebra slice is checked.</p></section>
+  <footer>Research reference, not a grade, full-paper marker, or validated diagnosis.</footer>
+</main>
+</body>
+</html>
