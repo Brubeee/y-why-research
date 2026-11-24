@@ -1,6 +1,7 @@
 import { verifyRows, parseExpression } from './verify.mjs';
 import { diagnoseStep, interpretProbe } from './diagnostic.mjs';
 
+import { curriculumReference } from './curriculum.mjs';
 import { gradeExpansion } from './expansion_form.mjs';
 import { createDelayedReview, REVIEW_KEY } from './delayed_review.mjs';
 import { RETRY_TASK, createRetry, exposeRetryHint, recordRetry } from './memex.mjs';
@@ -16,11 +17,6 @@ const el = (tag, text, cls) => {
 const delayedReview = createDelayedReview({store:() => window.localStorage});
 const MAX_BYTES = 6 * 1024 ** 2;
 const MAX_ROWS = 45;
-const courses = {
-  cbse: { tag: 'Suggested skill: Algebra · one-variable linear equations. Grade 8 reference; confirm against your school’s edition.', label: 'NCERT Grade 8 Mathematics bridge programme', url: 'https://www.ncert.nic.in/pdf/Bridge_Programme/Grade8/Bridge_Programme-Mathematics-Grade_8.pdf' },
-  myp: { tag: 'Suggested IB MYP strand: Algebra. No school-year sequence or chapter is inferred.', label: 'IB MYP mathematics framework', url: 'https://www.ibo.org/programmes/middle-years-programme/curriculum/mathematics/' },
-  other: { tag: 'No board or chapter match. The checker still supports a limited linear equation grammar.' },
-};
 let rows = [], objectUrl, dims, inflight, revision = 0, draftRevision = 0, diagnosis = null, skillMatch = null;
 let currentFile = null, region = null, selecting = false, corner = null, retrySession = null;
 let currentProbe = null, firstSeparator = null, photoCandidate = null;
@@ -507,16 +503,15 @@ globalThis.addEventListener?.('storage', event => {
 });
 
 function course() {
-  const c = courses[$('course').value] || courses.other;
-  $('curriculum').replaceChildren(document.createTextNode(skillMatch ? c.tag + (skillMatch === 'distribution' ? ' The flagged line is also a candidate for negative distribution practice.' : '') : 'Profile selected. Check a supported linear equation to get a skill suggestion.'));
-  if (skillMatch === 'distribution' && c === courses.cbse) {
-    const resource = el('a','NCERT Grade 8 · Ganita Prakash Part 1, Ch. 6: We Distribute, Yet Things Multiply');
-    resource.href = 'https://ciet.ncert.gov.in/activity/grade8?lang=en';
-    resource.rel = 'noreferrer';
-    $('curriculum').append(document.createTextNode(' Review resource, not an identification of your paper’s chapter: '),resource);
-    return;
+  const { text, reference } = curriculumReference($('course').value,skillMatch);
+  const out = $('curriculum');
+  out.replaceChildren(document.createTextNode(text));
+  if (reference) {
+    const link = el('a',reference.label);
+    link.href = reference.url;
+    link.rel = 'noreferrer';
+    out.append(document.createTextNode(' '),link);
   }
-  if (c.url) { const a = el('a',c.label); a.href = c.url; a.rel='noreferrer'; $('curriculum').append(document.createTextNode(' '),a); }
 }
 $('course').addEventListener('change',course);
 add(); add(); renderRows(); course(); showDelayed();

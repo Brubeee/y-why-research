@@ -52,7 +52,20 @@
     <div id="delayed-status" role="status"></div>
     <form id="delayed-form" hidden><p id="delayed-prompt"></p><label for="delayed-answer">Your expansion</label><div class="actions"><input id="delayed-answer" maxlength="100" autocomplete="off"><button class="primary" type="submit">Record first response</button></div></form>
   </section>
-  <section class="panel profile" id="profile" aria-labelledby="profile-title"><div class="step"><span>R</span><h2 id="profile-title">Course profile</h2></div><label for="course">Reference curriculum</label><select id="course"><option value="cbse">CBSE / NCERT reference · Grade 8</option><option value="myp">IB Middle Years Programme</option><option value="other">Other / no match</option></select><p id="curriculum"></p><p class="fine">A curriculum suggestion never changes a maths verdict. Only one supported algebra slice is checked.</p></section>
+  <section class="panel profile" id="profile" aria-labelledby="profile-title">
+    <div class="step"><span>R</span><h2 id="profile-title">Course profile</h2></div>
+    <label for="course">Which book or programme do you use?</label>
+    <select id="course">
+      <option value="">Choose a profile (optional)</option>
+      <option value="ncert-g7-p2">NCERT Ganita Prakash · Grade 7, Part II</option>
+      <option value="ncert-g8-p1">NCERT Ganita Prakash · Grade 8, Part I</option>
+      <option value="cbse">CBSE / NCERT · Different or unknown book</option>
+      <option value="myp">IB Middle Years Programme</option>
+      <option value="other">Other / not sure</option>
+    </select>
+    <p id="curriculum" aria-live="polite"></p>
+    <p class="fine">This prototype covers two textbook references. Suggestions never change a maths verdict.</p>
+  </section>
   <footer>Research reference, not a grade, full-paper marker, or validated diagnosis.</footer>
 </main>
 </body>

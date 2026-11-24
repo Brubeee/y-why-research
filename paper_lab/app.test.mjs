@@ -57,7 +57,7 @@ globalThis.window={localStorage:{
   removeItem:key=>local.delete(key),
 }};
 test.after(()=>{Date.now=systemNow;});
-get('course').value='cbse';
+get('course').value='';
 await import('./app.mjs');
 
 test('OCR draft cannot mark; confirmation exposes first changed step, a separating probe, and edit invalidation', async () => {
@@ -133,7 +133,10 @@ test('verified distribution opens a fresh task, separates form from correctness,
   rr[1].children[2].children[0].checked=true;rr[1].children[2].children[0].dispatch('change');
   get('verify').dispatch('click');
   assert.equal(get('retry').hidden,true,'practice waits until the separator closes');
+  assert.doesNotMatch(get('curriculum').words(),/Chapter 6/);
+  get('course').value='ncert-g8-p1';get('course').dispatch('change');
   assert.match(get('curriculum').words(),/We Distribute/);
+  get('course').value='';get('course').dispatch('change');
   get('answer').value='-3(y-2)';get('probe-form').dispatch('submit');
   assert.match(get('probe-result').words(),/No response was recorded/);
   assert.doesNotMatch(get('probe-result').words(),/Equivalent|Exact expansion/);
@@ -743,4 +746,35 @@ test('staged photo cannot override old-work edits or rereads, a newer eligible p
     assert.equal(get('photo-view').hidden,true);
     assert.doesNotMatch(get('rows').children.map(r=>r.children[1].value).join(),/x=73/);
   }
+});
+
+test('course choice changes only the review reference and a draft edit clears it', async () => {
+  await import('./app.mjs?fresh-course-reference');
+  const course = get('course'), output = get('curriculum');
+  course.value='ncert-g7-p2'; course.dispatch('change');
+  const rr=get('rows').children;
+  for (const [i,value] of ['2x+3=9','x=3'].entries()) {
+    rr[i].children[1].value=value; rr[i].children[1].dispatch('input');
+  }
+  get('verify').dispatch('click');
+  assert.match(output.words(),/Check a supported equation/);
+  for (const row of rr) {
+    row.children[2].children[0].checked=true; row.children[2].children[0].dispatch('change');
+  }
+  get('verify').dispatch('click');
+  assert.match(output.words(),/Chapter 7: Finding the Unknown/);
+  const verdict = get('verdict').words();
+  assert.match(verdict,/Same solution set/);
+  for (const profile of ['', 'ncert-g8-p1', 'cbse', 'myp']) {
+    course.value=profile; course.dispatch('change');
+    assert.doesNotMatch(output.words(),/Chapter [67]/);
+    assert.equal(get('verdict').words(),verdict);
+  }
+  course.value='ncert-g7-p2'; course.dispatch('change');
+  assert.match(output.words(),/Chapter 7/);
+  rr[0].children[1].value='x^2=9'; rr[0].children[1].dispatch('input');
+  assert.doesNotMatch(output.words(),/Chapter 7/);
+  rr[0].children[2].children[0].checked=true; rr[0].children[2].children[0].dispatch('change');
+  get('verify').dispatch('click');
+  assert.match(output.words(),/Check a supported equation/);
 });
