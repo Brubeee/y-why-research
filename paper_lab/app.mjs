@@ -21,7 +21,7 @@ const courses = {
   myp: { tag: 'Suggested IB MYP strand: Algebra. No school-year sequence or chapter is inferred.', label: 'IB MYP mathematics framework', url: 'https://www.ibo.org/programmes/middle-years-programme/curriculum/mathematics/' },
   other: { tag: 'No board or chapter match. The checker still supports a limited linear equation grammar.' },
 };
-let rows = [], objectUrl, dims, inflight, revision = 0, diagnosis = null, skillMatch = null;
+let rows = [], objectUrl, dims, inflight, revision = 0, draftRevision = 0, diagnosis = null, skillMatch = null;
 let currentFile = null, region = null, selecting = false, corner = null, retrySession = null;
 const clearAttestation = () => { $('anchor-check').checked = false; };
 function regionButtons() {
@@ -40,6 +40,7 @@ function clearRegion() {
 
 function status(text) { $('scan-status').textContent = text; }
 function resetResult(message = 'Run the check on your selected, confirmed lines.') {
+  draftRevision++;
   diagnosis = null;
   skillMatch = null; course();
   $('verdict').replaceChildren(el('p', message));
@@ -107,34 +108,66 @@ $('example').addEventListener('click', () => {
 $('add').addEventListener('click', () => { add(); renderRows(); clearAttestation(); resetResult(); $('rows').lastElementChild?.querySelector('input[type=text]').focus(); });
 async function readDraft(target = null) {
   if (!currentFile) return;
-  inflight?.abort(); inflight = new AbortController();
-  const current = ++revision, signal = inflight.signal, imageSize = dims;
-  rows = []; add(); add(); renderRows(); clearAttestation(); resetResult(); updateCrop(null);
-  status('Reading ' + (target ? 'the selected area' : 'the full photo') + ' on the local host. The result will be an unconfirmed draft.');
+  inflight?.abort();
+  const owner = new AbortController();
+  inflight = owner;
+  const current = ++revision, source = currentFile, draft = draftRevision;
+  const imageSize = dims && {...dims}, requested = target && {...target};
+  const latest = () => current === revision && source === currentFile;
+  const applicable = () => {
+    if (!latest()) return false;
+    if (draft === draftRevision) return true;
+    status('Kept your current work. The earlier reread was not applied.');
+    return false;
+  };
+  status('Reading ' + (requested ? 'the selected area' : 'the full photo') + ' on the local host. Your current work stays in place for now.');
   try {
-    let file = currentFile, cropped = null;
-    if (target) {
-      cropped = await encodeImageCrop($('image'), target, imageSize);
-      if (current !== revision) return;
+    let file = source, cropped = null;
+    if (requested) {
+      cropped = await encodeImageCrop($('image'), requested, imageSize);
+      if (!applicable()) return;
       file = cropped.blob;
     }
-    const r = await fetch('/api/ocr', {method:'POST',headers:{'Content-Type':file.type},body:file,signal});
+    const r = await fetch('/api/ocr', {method:'POST',headers:{'Content-Type':file.type},body:file,signal:owner.signal});
+    if (!applicable()) return;
     let data = await r.json();
-    if (current !== revision) return;
-    if (!r.ok) throw new Error(data.error || 'OCR could not read this photo.');
-    if (data.status !== 'draft' || !Array.isArray(data.lines)) throw new Error('The OCR response was not usable.');
+    if (!applicable()) return;
+    if (!r.ok) throw new Error(data?.error || 'OCR could not read this photo.');
+    if (data?.status !== 'draft' || !Array.isArray(data.lines)) throw new Error('The OCR response was not usable.');
     if (cropped) data = mapOcrBoxes(data, cropped.rect, imageSize, cropped);
-    else dims = data.image;
-    regionButtons();
-    if (data.lines.length) {
-      rows = data.lines.slice(0,MAX_ROWS).map(l => ({text:String(l.text).slice(0,180),selected:false,confirmed:false,box:cropped || currentFile.type === 'image/png' ? l.box : null}));
-      renderRows();
+    const nextSize = data.image;
+    if (!nextSize || !['width','height'].every(k => Number.isSafeInteger(nextSize[k]) &&
+        nextSize[k] > 0 && (!imageSize || nextSize[k] === imageSize[k])))
+      throw new Error('OCR returned unexpected photo dimensions.');
+    if (!data.lines.length) {
+      if (!imageSize && !requested) {
+        dims = {...nextSize};
+        regionButtons();
+      }
+      status('No text detected. Kept your current work. Try another area or type the lines.');
+      return;
     }
-    status(data.lines.length
-      ? 'Draft ready: ' + data.lines.length + ' detected lines. ' + (target ? 'Selected area only. Compare with the full photo to check for missing work. ' : 'Select one question and verify signs, brackets, and reading order. ') + (data.lines.length > MAX_ROWS ? 'Only the first ' + MAX_ROWS + ' lines are shown. Try selecting a smaller area.' : '')
-      : 'No text detected. Type the work manually or try a flat, well-lit photo.');
+    if (data.lines.some(l => typeof l?.text !== 'string' || !l.text.trim()))
+      throw new Error('The OCR response contained unusable text.');
+    const nextRows = data.lines.slice(0,MAX_ROWS).map(l => ({
+      text:l.text.slice(0,180),selected:false,confirmed:false,
+      box:cropped || source.type === 'image/png' ? validateCrop(l.box,nextSize) : null,
+    }));
+    if (!applicable()) return;
+    // Commit the replacement only after all fallible encoding/validation.
+    dims = {...nextSize};
+    rows = nextRows;
+    if (!requested) clearRegion();
+    updateCrop(null);
+    clearAttestation();
+    resetResult();
+    renderRows();
+    regionButtons();
+    status('Draft ready: ' + data.lines.length + ' detected lines. ' + (requested ? 'Selected area only. Compare with the full photo to check for missing work. ' : 'Select one question and verify signs, brackets, and reading order. ') + (data.lines.length > MAX_ROWS ? 'Only the first ' + MAX_ROWS + ' lines are shown. Try selecting a smaller area.' : ''));
   } catch (e) {
-    if (current === revision) status(e.name === 'AbortError' ? 'OCR cancelled.' : 'OCR draft unavailable. ' + e.message + ' You can still type the lines.');
+    if (applicable()) status((e.name === 'AbortError' ? 'OCR cancelled.' : 'OCR draft unavailable. ' + e.message) + ' Kept your current work.');
+  } finally {
+    if (inflight === owner) inflight = null;
   }
 }
 
@@ -155,6 +188,7 @@ $('photo').addEventListener('change', async () => {
 $('image').addEventListener('load', regionButtons);
 $('select-region').addEventListener('click', () => {
   if ($('select-region').disabled) return;
+  draftRevision++;
   clearRegion(); selecting = true;
   $('photo-view').classList?.add('selecting');
   $('region-help').hidden = false;
@@ -168,6 +202,7 @@ $('image').addEventListener('click', e => {
   const point = ['width','height'].map((dim, i) => Math.round(dims[dim] * Math.max(0, Math.min(1,
     ((i ? e.clientY : e.clientX) - (i ? box.top : box.left))/box[dim]))));
   if (point.some(x => !Number.isFinite(x))) return;
+  draftRevision++;
   if (!corner) {
     corner = point;
     $('region-help').textContent = 'Now tap the opposite corner.';
@@ -187,7 +222,7 @@ $('image').addEventListener('click', e => {
   regionButtons();
 });
 $('read-region').addEventListener('click', () => { if (!$('read-region').disabled && region) return readDraft(region); });
-$('read-full').addEventListener('click', () => { clearRegion(); return readDraft(); });
+$('read-full').addEventListener('click', () => readDraft());
 $('anchor-check').addEventListener('change', () => resetResult());
 $('verify').addEventListener('click', () => {
   resetResult();
