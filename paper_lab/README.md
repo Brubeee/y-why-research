@@ -44,3 +44,9 @@ The [retry lab](RETRY_LAB.md) links a supported verified distribution mistake to
 one exact, form-aware practice question. It keeps first attempts apart from
 hint-aided responses in the current session. It does not yet schedule a
 delayed review or measure learning.
+
+- A photographed gap can be skipped only after you confirm that an entire
+  separately highlighted OCR row is crossed out and contains no active work.
+  Keep mixed or uncertain rows unmarked and correct the draft instead. The
+  option needs dependable source boxes (full JPEG OCR does not show them);
+  it does not detect strike-through, missing rows, or mixed text inside a box.

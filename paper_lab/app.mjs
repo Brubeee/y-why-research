@@ -61,7 +61,19 @@ function overlay(id, box) {
   $(id).hidden = false;
 }
 const updateCrop = box => overlay('crop',box);
+function canMarkCrossedOut(index) {
+  const row = rows[index], img = $('image');
+  if (!currentFile || idxOutsideInterior(index) || !row?.box || row.selected || row.confirmed ||
+      !dims || img.naturalWidth !== dims.width || img.naturalHeight !== dims.height) return false;
+  const {y,height} = row.box;
+  return !rows.some((other,i) => i !== index && other.box &&
+    y < other.box.y + other.box.height && other.box.y < y + height);
+}
+const idxOutsideInterior = i => i <= 0 || i >= rows.length - 1;
+
+let syncPhotoDispositions = [];
 function renderRows() {
+  syncPhotoDispositions = [];
   $('rows').replaceChildren();
   $('add').disabled = rows.length >= MAX_ROWS;
   for (const [i, row] of rows.entries()) {
@@ -73,18 +85,46 @@ function renderRows() {
     confirm.type = 'checkbox'; confirm.checked = row.confirmed; confirm.disabled = !row.selected;
     const label = el('label', '', 'confirm');
     label.append(confirm, document.createTextNode(' I confirm the transcription of line ' + (i + 1)));
+    let crossedOut;
+    function syncDisposition() {
+      if (!crossedOut) return;
+      crossedOut.checked = !!row.crossedOut;
+      crossedOut.disabled = !canMarkCrossedOut(i);
+    }
     select.addEventListener('change', () => {
       row.selected = select.checked; confirm.disabled = !row.selected;
+      row.crossedOut = false;
       row.confirmed = confirm.checked = false;
+      syncDisposition();
       clearAttestation();
       resetResult();
     });
     confirm.addEventListener('change', () => { row.confirmed = confirm.checked; resetResult(); });
     field.addEventListener('input', () => {
-      row.text = field.value; row.confirmed = confirm.checked = false; clearAttestation(); resetResult();
+      row.text = field.value; row.confirmed = confirm.checked = false; row.crossedOut = false;
+      syncDisposition(); clearAttestation(); resetResult();
     });
     field.addEventListener('focus', () => updateCrop(row.box));
-    box.append(select, field, label); $('rows').append(box);
+    box.append(select, field, label);
+    if (currentFile && row.box && !idxOutsideInterior(i)) {
+      crossedOut = el('input');
+      crossedOut.type = 'checkbox';
+      const disposition = el('label', '', 'confirm');
+      disposition.append(crossedOut, document.createTextNode(' Line ' + (i+1) +
+        ': the entire highlighted row is crossed out on the photo and contains no active work.'));
+      crossedOut.addEventListener('focus', () => updateCrop(row.box));
+      crossedOut.addEventListener('change', () => {
+        updateCrop(row.box);
+        row.crossedOut = crossedOut.checked && canMarkCrossedOut(i) && !$('crop').hidden;
+        syncDisposition();
+        clearAttestation();
+        resetResult();
+      });
+      syncDisposition();
+      syncPhotoDispositions.push(syncDisposition);
+      box.append(disposition);
+    }
+    $('rows').append(box);
   }
 }
 function add(text = '', selected = true) { if (rows.length < MAX_ROWS) rows.push({text,selected,confirmed:false}); }
@@ -185,7 +225,7 @@ $('photo').addEventListener('change', async () => {
   regionButtons();
   await readDraft();
 });
-$('image').addEventListener('load', regionButtons);
+$('image').addEventListener('load', () => { regionButtons(); syncPhotoDispositions.forEach(sync => sync()); });
 $('select-region').addEventListener('click', () => {
   if ($('select-region').disabled) return;
   draftRevision++;
@@ -229,7 +269,15 @@ $('verify').addEventListener('click', () => {
   const picked = rows.map((r,i)=>({...r,sourceIndex:i})).filter(r => r.selected);
   if (picked.length < 2 || picked.length > 12) { resetResult('Select between 2 and 12 lines for one question, starting with its original equation.'); return; }
   for (let i=1; i<picked.length; i++) {
-    if (picked[i].sourceIndex !== picked[i-1].sourceIndex+1) { resetResult('Select consecutive lines. Crop or type only your solution if the photograph combines unrelated items.'); return; }
+    for(let skipped=picked[i-1].sourceIndex+1;skipped<picked[i].sourceIndex;skipped++) {
+      if (!rows[skipped].crossedOut || !canMarkCrossedOut(skipped) ||
+          !picked[i-1].box || !picked[i].box ||
+          picked[i-1].box.y + picked[i-1].box.height > rows[skipped].box.y ||
+          rows[skipped].box.y + rows[skipped].box.height > picked[i].box.y) {
+        resetResult('Select consecutive active lines. A gap can be skipped only if the entire isolated row is confirmed crossed out on the photo.');
+        return;
+      }
+    }
   }
   const [anchor,...steps] = picked;
   if (currentFile && anchor.confirmed && !$('anchor-check').checked) {
@@ -241,6 +289,8 @@ $('verify').addEventListener('click', () => {
   if (result.anchor.status === 'confirmed' && result.anchor.solution?.kind === 'unique') { skillMatch = 'linear'; course(); }
   const out = $('verdict'); out.replaceChildren(el('p','Original equation: ' + anchor.text + '. ' + result.anchor.message));
   if (currentFile) out.append(el('p','Selected steps only. This is not a pass or grade for the whole question.','fine'));
+  const skippedLines = rows.map((row,i)=>row.crossedOut && i>anchor.sourceIndex && i<picked.at(-1).sourceIndex ? i+1 : null).filter(Boolean);
+  if (skippedLines.length) out.append(el('p', 'Marked crossed out; not checked: line ' + skippedLines.join(', ') + '.', 'fine'));
   result.rows.forEach((r,i) => {
     const p = el('p', 'Line ' + (steps[i].sourceIndex+1) + ' · ' + (labels[r.status] || r.status) + ' · ' + steps[i].text + ' — ' + r.message, 'step-result ' + r.status);
     out.append(p);

@@ -317,3 +317,62 @@ test('initial empty draft retains typing and enables crop via valid image metada
   assert.equal(get('select-region').disabled,false);
   assert.match(get('scan-status').textContent,/No text detected/);
 });
+
+test('isolated source-confirmed canceled row is skipped, not erased; later real error keeps its displayed line number',async t=>{
+  t.after(()=>{globalThis.fetch=savedFetch;get('clear').dispatch('click');});
+  function source(text,y,height=12) {return {text,box:{x:1,y,width:80,height}};}
+  const lines=[source('3x+9=0',1),source('x=3',19),source('x=-3',37),source('x=5',55)];
+  const act=row=>{
+    row.children[0].checked=true;row.children[0].dispatch('change');
+    row.children[2].children[0].checked=true;row.children[2].children[0].dispatch('change');
+  };
+  const attest=()=>{get('anchor-check').checked=true;get('anchor-check').dispatch('change');};
+  globalThis.fetch=async()=>response(lines);
+  await loadPhoto('synthetic strike fixture');
+  let rows=get('rows').children;
+  [0,2,3].forEach(i=>act(rows[i]));
+  attest();get('verify').dispatch('click');
+  assert.match(get('verdict').words(),/gap can be skipped only/);
+  const canceled=rows[1].children[3].children[0];
+  assert.equal(canceled.disabled,false);
+  canceled.dispatch('focus');
+  assert.equal(get('crop').style.top,'19%');
+  canceled.checked=true;canceled.dispatch('change');
+  assert.equal(get('anchor-check').checked,false);
+  attest();get('verify').dispatch('click');
+  assert.match(get('verdict').words(),/not checked: line 2/);
+  assert.match(get('verdict').words(),/Line 3 · Same solution set/);
+  assert.match(get('verdict').words(),/Line 4 · First verified change/);
+  assert.equal(rows[1].children[1].value,'x=3');
+  globalThis.fetch=async()=>response();
+  await get('read-full').dispatch('click');
+  assert.equal(canceled.checked,true);
+  assert.match(get('verdict').words(),/Line 4 · First verified change/);
+
+  rows[1].children[1].value='x=4';rows[1].children[1].dispatch('input');
+  assert.equal(canceled.checked,false);
+  assert.equal(get('anchor-check').checked,false);
+  attest();get('verify').dispatch('click');
+  assert.match(get('verdict').words(),/gap can be skipped only/);
+  canceled.checked=true;canceled.dispatch('change');
+  rows[1].children[0].checked=true;rows[1].children[0].dispatch('change');
+  assert.equal(canceled.checked,false);
+  assert.equal(rows[1].children[2].children[0].checked,false);
+
+  globalThis.fetch=async()=>response(lines);
+  await get('read-full').dispatch('click');
+  assert.equal(get('rows').children[1].children[3].children[0].checked,false);
+  assert.equal(get('anchor-check').checked,false);
+  globalThis.fetch=async()=>response([lines[0],source('x=3 x=-3',18,30),lines[2],lines[3]]);
+  await get('read-full').dispatch('click');
+  rows=get('rows').children;
+  const overlap=rows[1].children[3].children[0];
+  assert.equal(overlap.disabled,true);
+  [0,2,3].forEach(i=>act(rows[i]));
+  overlap.checked=true;overlap.dispatch('change'); // even a scripted change fails the guard
+  assert.equal(overlap.checked,false);
+  attest();get('verify').dispatch('click');
+  assert.match(get('verdict').words(),/gap can be skipped only/);
+  get('example').dispatch('click');
+  assert.ok(get('rows').children.every(row=>row.children.length===3));
+});
