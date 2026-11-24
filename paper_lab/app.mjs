@@ -23,7 +23,7 @@ const courses = {
 };
 let rows = [], objectUrl, dims, inflight, revision = 0, draftRevision = 0, diagnosis = null, skillMatch = null;
 let currentFile = null, region = null, selecting = false, corner = null, retrySession = null;
-let currentProbe = null, firstSeparator = null;
+let currentProbe = null, firstSeparator = null, photoCandidate = null;
 const clearAttestation = () => { $('anchor-check').checked = false; };
 function regionButtons() {
   const img = $('image');
@@ -129,7 +129,20 @@ function renderRows() {
   }
 }
 function add(text = '', selected = true) { if (rows.length < MAX_ROWS) rows.push({text,selected,confirmed:false}); }
+function disposePhotoCandidate(owner) {
+  if (owner.preview) owner.preview.removeAttribute('src');
+  if (owner.url) URL.revokeObjectURL(owner.url);
+}
+function cancelPhotoCandidate() {
+  if (!photoCandidate) return;
+  const owner = photoCandidate;
+  photoCandidate = null;
+  owner.abort.abort();
+  disposePhotoCandidate(owner);
+  owner.preview = null; owner.url = null;
+}
 function clearPhoto() {
+  cancelPhotoCandidate();
   inflight?.abort(); inflight = null; revision++;
   if (objectUrl) URL.revokeObjectURL(objectUrl);
   objectUrl = null; dims = null; currentFile = null; clearRegion(); clearAttestation();
@@ -147,8 +160,24 @@ $('example').addEventListener('click', () => {
   status('A typed, synthetic example. Review and confirm each line before checking.');
 });
 $('add').addEventListener('click', () => { add(); renderRows(); clearAttestation(); resetResult(); $('rows').lastElementChild?.querySelector('input[type=text]').focus(); });
+function prepareRows(data, imageSize, useBoxes) {
+  if (data?.status !== 'draft' || !Array.isArray(data.lines))
+    throw new Error('The OCR response was not usable.');
+  const size = data.image;
+  if (!size || !['width','height'].every(k => Number.isSafeInteger(size[k]) &&
+      size[k] > 0 && (!imageSize || size[k] === imageSize[k])))
+    throw new Error('OCR returned unexpected photo dimensions.');
+  if (data.lines.some(l => typeof l?.text !== 'string' || !l.text.trim()))
+    throw new Error('The OCR response contained unusable text.');
+  const prepared = data.lines.slice(0,MAX_ROWS).map(l => ({
+    text:l.text.slice(0,180),selected:false,confirmed:false,
+    box:useBoxes ? validateCrop(l.box,size) : null,
+  }));
+  return {size,prepared};
+}
 async function readDraft(target = null) {
   if (!currentFile) return;
+  cancelPhotoCandidate();
   inflight?.abort();
   const owner = new AbortController();
   inflight = owner;
@@ -176,11 +205,8 @@ async function readDraft(target = null) {
     if (!r.ok) throw new Error(data?.error || 'OCR could not read this photo.');
     if (data?.status !== 'draft' || !Array.isArray(data.lines)) throw new Error('The OCR response was not usable.');
     if (cropped) data = mapOcrBoxes(data, cropped.rect, imageSize, cropped);
-    const nextSize = data.image;
-    if (!nextSize || !['width','height'].every(k => Number.isSafeInteger(nextSize[k]) &&
-        nextSize[k] > 0 && (!imageSize || nextSize[k] === imageSize[k])))
-      throw new Error('OCR returned unexpected photo dimensions.');
-    if (!data.lines.length) {
+    const {size:nextSize,prepared:nextRows} = prepareRows(data,imageSize,cropped || source.type === 'image/png');
+    if (!nextRows.length) {
       if (!imageSize && !requested) {
         dims = {...nextSize};
         regionButtons();
@@ -188,12 +214,6 @@ async function readDraft(target = null) {
       status('No text detected. Kept your current work. Try another area or type the lines.');
       return;
     }
-    if (data.lines.some(l => typeof l?.text !== 'string' || !l.text.trim()))
-      throw new Error('The OCR response contained unusable text.');
-    const nextRows = data.lines.slice(0,MAX_ROWS).map(l => ({
-      text:l.text.slice(0,180),selected:false,confirmed:false,
-      box:cropped || source.type === 'image/png' ? validateCrop(l.box,nextSize) : null,
-    }));
     if (!applicable()) return;
     // Commit the replacement only after all fallible encoding/validation.
     dims = {...nextSize};
@@ -220,12 +240,60 @@ $('photo').addEventListener('change', async () => {
     status('Choose a nonempty PNG or JPEG no larger than 6 MiB.');
     return;
   }
-  clearPhoto(); resetResult(); rows = []; add(); add(); renderRows();
-  currentFile = file;
-  objectUrl = URL.createObjectURL(file); $('image').src = objectUrl; $('photo-view').hidden = false;
-  $('region-tools').hidden = false; $('anchor-control').hidden = false;
-  regionButtons();
-  await readDraft();
+  cancelPhotoCandidate();
+  const owner = {abort:new AbortController(), url:null, preview:null};
+  photoCandidate = owner;
+  const draft = draftRevision;
+  const applicable = () => {
+    if (photoCandidate !== owner) return false;
+    if (draft === draftRevision) return true;
+    status('Kept your current work. The selected photo was not applied.');
+    return false;
+  };
+  status('Checking the selected photo on the local host. Your current work stays in place for now.');
+  try {
+    const result = await fetch('/api/ocr', {method:'POST',headers:{'Content-Type':file.type},body:file,signal:owner.abort.signal});
+    if (!applicable()) return;
+    const data = await result.json();
+    if (!applicable()) return;
+    if (!result.ok) {
+      const detail = data?.error || 'OCR could not read this photo.';
+      const reason = [413,415,422].includes(result.status) ? detail : 'OCR temporarily unavailable. ' + detail;
+      $('photo').value='';
+      status(reason + ' Photo not replaced. You can try another image or enter lines by hand.');
+      return;
+    }
+    const {size,prepared} = prepareRows(data,null,file.type === 'image/png');
+    owner.url = URL.createObjectURL(file);
+    owner.preview = document.createElement('img');
+    owner.preview.src = owner.url;
+    try { await owner.preview.decode(); }
+    catch { throw new Error('The photo could not be opened for preview.'); }
+    if (!applicable()) return;
+
+    // All validation is complete. Adopt only the still-current candidate;
+    // then reset the previous photo and cancel its pending reads once.
+    const url = owner.url;
+    owner.url = null; photoCandidate = null;
+    clearPhoto();
+    currentFile = file; objectUrl = url; dims = {...size};
+    $('image').src = objectUrl; $('photo-view').hidden = false;
+    $('region-tools').hidden = false; $('anchor-control').hidden = false;
+    rows = prepared;
+    if (!rows.length) { add(); add(); }
+    resetResult(); renderRows(); regionButtons();
+    status(data.lines.length
+      ? 'Draft ready: ' + data.lines.length + ' detected lines. Select one question and verify signs, brackets, and reading order. ' + (data.lines.length > MAX_ROWS ? 'Only the first ' + MAX_ROWS + ' lines are shown. Try selecting a smaller area.' : '')
+      : 'No text detected in the new photo. Try another area or type the lines.');
+  } catch (e) {
+    if (applicable()) {
+      $('photo').value='';
+      status('Photo not replaced. ' + e.message + ' Try again or type the lines.');
+    }
+  } finally {
+    if (photoCandidate === owner) photoCandidate = null;
+    disposePhotoCandidate(owner);
+  }
 });
 $('image').addEventListener('load', () => { regionButtons(); syncPhotoDispositions.forEach(sync => sync()); });
 $('select-region').addEventListener('click', () => {

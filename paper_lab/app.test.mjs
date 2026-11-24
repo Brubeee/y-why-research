@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {REVIEW_KEY,REVIEW_DELAY_MS} from './delayed_review.mjs';
 
+let decodeCandidate = () => Promise.resolve();
 class Element {
   constructor() { this.children=[]; this.events={}; this.textContent=''; this.value=''; this.hidden=false; this.style={}; this.attributes={}; }
   append(...v) { this.children.push(...v); }
@@ -10,6 +11,7 @@ class Element {
   setAttribute(k,v) { this.attributes[k]=v; }
   removeAttribute(k) { delete this[k]; }
   focus() { globalThis.document.activeElement=this; }
+  decode() { return decodeCandidate(this); }
   dispatch(k, arg={preventDefault(){}}) { return this.events[k]?.(arg); }
   words() { return [this.textContent,...this.children.map(x=>typeof x==='string'?x:x.words())].join(' '); }
 }
@@ -650,4 +652,95 @@ test('a rejected pick leaves the current OCR owner and edit guard intact; a real
   old.done(response([replyLine('x=12')]));await old.task; // mocked transport ignores abort
   assert.equal(get('rows').children,rows);
   assert.equal(rows[0].children[1].value,'x=30');
+});
+
+test('server rejection of a nominal replacement keeps the verified active photo', async t=>{
+  t.after(()=>{globalThis.fetch=savedFetch;get('clear').dispatch('click');});
+  const rows=await correctedDraft(), source=img.src, verdict=get('verdict').words();
+  get('select-region').dispatch('click');
+  img.dispatch('click',{clientX:5,clientY:20});img.dispatch('click',{clientX:95,clientY:70});
+  rows[1].children[1].dispatch('focus');
+  globalThis.fetch=async()=>({ok:false,status:422,json:async()=>({status:'error',error:'The local OCR engine could not decode this image.'})});
+  await loadPhoto('synthetic nominal replacement');
+  assert.equal(img.src,source);
+  assert.equal(get('rows').children,rows);
+  assert.equal(get('anchor-check').checked,true);
+  assert.equal(get('region').hidden,false);
+  assert.equal(get('crop').hidden,false);
+  assert.equal(get('verdict').words(),verdict);
+  assert.match(get('scan-status').textContent,/could not decode.*not replaced/i);
+});
+
+test('transient OCR and detached preview failures keep the checked source; a blank replacement remains crop-ready', async t=>{
+  const decode=decodeCandidate, revoke=URL.revokeObjectURL, abandoned=[];
+  URL.revokeObjectURL=(url)=>{abandoned.push(url);revoke(url);};
+  t.after(()=>{decodeCandidate=decode;URL.revokeObjectURL=revoke;globalThis.fetch=savedFetch;get('clear').dispatch('click');});
+  const rows=await correctedDraft(), source=img.src, verdict=get('verdict').words();
+  globalThis.fetch=async()=>({ok:false,status:503,json:async()=>({status:'error',error:'The local OCR engine is busy. Try again.'})});
+  await loadPhoto('unavailable');
+  assert.equal(img.src,source);assert.equal(get('rows').children,rows);
+  assert.match(get('scan-status').textContent,/temporarily unavailable.*not replaced/i);
+  let detached;
+  decodeCandidate=node=>{detached=node;return Promise.reject(new Error('invalid test image'));};
+  globalThis.fetch=async()=>response([replyLine('x=18')]);
+  await loadPhoto('unopenable preview');
+  assert.equal(img.src,source);assert.equal(get('rows').children,rows);
+  assert.equal(get('verdict').words(),verdict);
+  assert.match(get('scan-status').textContent,/not replaced.*could not be opened/i);
+  assert.equal(detached.src,undefined);assert.equal(abandoned.length,1);assert.notEqual(abandoned[0],source);
+  decodeCandidate=decode;globalThis.fetch=async()=>response();
+  await loadPhoto('valid blank');
+  assert.notEqual(img.src,source);assert.ok(abandoned.includes(source));
+  assert.deepEqual(get('rows').children.map(r=>r.children[1].value),['','']);
+  assert.equal(get('select-region').disabled,false);
+  assert.equal(get('anchor-check').checked,false);
+  assert.match(get('scan-status').textContent,/No text detected in the new photo/);
+});
+
+test('staged photo cannot override old-work edits or rereads, a newer eligible pick, Clear, or Example',async t=>{
+  const decode=decodeCandidate;
+  t.after(()=>{decodeCandidate=decode;globalThis.fetch=savedFetch;get('clear').dispatch('click');});
+  const rows=await correctedDraft(), source=img.src;
+  function staged(name='pending candidate'){
+    const net=defer();let signal;
+    globalThis.fetch=(_path,opts)=>{signal=opts.signal;return net.promise;};
+    const task=loadPhoto(name);
+    return {net,task,signal};
+  }
+  const edited=staged();
+  const field=rows[1].children[1];
+  field.value='x=99';field.dispatch('input');
+  edited.net.resolve(response([replyLine('x=70')]));await edited.task;
+  assert.equal(img.src,source);assert.equal(field.value,'x=99');
+  assert.match(get('scan-status').textContent,/selected photo was not applied/);
+
+  const existing=staged();
+  globalThis.fetch=async()=>response([replyLine('x=22')]);
+  await get('read-full').dispatch('click');
+  assert.equal(existing.signal.aborted,true);
+  existing.net.resolve(response([replyLine('x=71')]));await existing.task;
+  assert.equal(img.src,source);assert.equal(get('rows').children[0].children[1].value,'x=22');
+
+  // Candidate one is in preview decode, not fetch. Cancellation must still
+  // detach its staged resource, and a late decode must not alter the new work.
+  const decodeStage=defer(), entered=defer();
+  let preview;
+  decodeCandidate=node=>{preview=node;entered.resolve();return decodeStage.promise;};
+  globalThis.fetch=async()=>response([replyLine('x=72')]);
+  const late=loadPhoto('decode in progress');await entered.promise;
+  decodeCandidate=decode;
+  globalThis.fetch=async()=>response([replyLine('x=33')]);
+  await loadPhoto('current replacement');
+  assert.equal(preview.src,undefined);
+  decodeStage.resolve();await late;
+  assert.equal(get('rows').children[0].children[1].value,'x=33');
+
+  for (const action of ['clear','example']){
+    const c=staged();
+    get(action).dispatch('click');
+    assert.equal(c.signal.aborted,true);
+    c.net.resolve(response([replyLine('x=73')]));await c.task;
+    assert.equal(get('photo-view').hidden,true);
+    assert.doesNotMatch(get('rows').children.map(r=>r.children[1].value).join(),/x=73/);
+  }
 });
