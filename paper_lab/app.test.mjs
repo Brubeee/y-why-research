@@ -376,3 +376,35 @@ test('isolated source-confirmed canceled row is skipped, not erased; later real 
   get('example').dispatch('click');
   assert.ok(get('rows').children.every(row=>row.children.length===3));
 });
+
+test('full JPEG shows usable text but never assigns source row geometry even when dimensions match',async t=>{
+  const original=[img.naturalWidth,img.naturalHeight];
+  t.after(()=>{
+    [img.naturalWidth,img.naturalHeight]=original;
+    globalThis.fetch=savedFetch;get('clear').dispatch('click');
+  });
+  globalThis.fetch=async (url,req)=>{
+    assert.equal(url,'/api/ocr');
+    assert.equal(req.headers['Content-Type'],'image/jpeg');
+    return {ok:true,json:async()=>({status:'draft',image:{width:640,height:440},lines:[
+      {text:'3x+12=24',box:{x:87,y:98,width:211,height:43}},
+      {text:'3x=12',box:{x:87,y:158,width:108,height:43}},
+      {text:'x=4',box:{x:87,y:218,width:81,height:43}},
+    ]})};
+  };
+  // Mocked observed browser dimensions, not a native EXIF decoder result.
+  // Mirror/180° variants can have the same dimensions despite different pixels.
+  for (const [width,height,cropEnabled] of [[640,440,true],[440,640,false]]) {
+    [img.naturalWidth,img.naturalHeight]=[width,height];
+    get('photo').files=[new Blob(['mock jpeg orientation'],{type:'image/jpeg'})];
+    await get('photo').dispatch('change');
+    img.dispatch('load');
+    assert.match(get('scan-status').textContent,/Draft ready: 3 detected lines/);
+    assert.equal(get('select-region').disabled,!cropEnabled);
+    const rows=get('rows').children;
+    assert.equal(rows[1].children[1].value,'3x=12');
+    assert.equal(rows[1].children.length,3,'No checkbox may be backed by an untrusted JPEG box');
+    rows[1].children[1].dispatch('focus');
+    assert.equal(get('crop').hidden,true,'Raw server JPEG coordinates cannot produce a visible highlight');
+  }
+});
