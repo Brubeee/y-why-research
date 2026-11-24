@@ -50,3 +50,8 @@ delayed review or measure learning.
   Keep mixed or uncertain rows unmarked and correct the draft instead. The
   option needs dependable source boxes (full JPEG OCR does not show them);
   it does not detect strike-through, missing rows, or mixed text inside a box.
+
+- If OCR misses an active row, use **Insert line above** on the next visible row
+  to type the missing work where it belongs. This creates no OCR highlight and
+  does not assume what was written. Check the full photo again and confirm the
+  new transcription before relying on the verdict.

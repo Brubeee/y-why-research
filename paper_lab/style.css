@@ -8,3 +8,5 @@ a{color:inherit;text-underline-offset:3px}.intro{padding:2.1rem 0 2.35rem;displa
 .photo span#region{border:2px dashed #285c20;background:#d4f99026}.photo.selecting img{cursor:crosshair}.photo-attestation{display:block;font-size:.88rem;line-height:1.4;margin:.6rem 0 1rem}button:disabled{opacity:.55;cursor:not-allowed}.photo img{user-select:none;-webkit-user-drag:none}
 
 #retry-answer{font:1rem ui-monospace,monospace;border:1px solid var(--line);background:var(--paper);padding:.46rem;width:min(18rem,100%);color:var(--ink);min-height:2.5rem}#retry-form .actions{margin-top:.45rem}
+
+.row .manual-source,.row .insert-line{grid-column:2}.row .insert-line{justify-self:start;font-size:.82rem}

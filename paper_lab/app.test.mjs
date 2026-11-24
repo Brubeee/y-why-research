@@ -417,7 +417,8 @@ test('full JPEG shows usable text but never assigns source row geometry even whe
     assert.equal(get('select-region').disabled,!cropEnabled);
     const rows=get('rows').children;
     assert.equal(rows[1].children[1].value,'3x=12');
-    assert.equal(rows[1].children.length,3,'No checkbox may be backed by an untrusted JPEG box');
+    assert.equal(rows[1].children.length,4,'Only the standard controls and insert button, no crossing checkbox backed by an untrusted JPEG box');
+    assert.equal(rows[1].children.at(-1).type,'button');
     rows[1].children[1].dispatch('focus');
     assert.equal(get('crop').hidden,true,'Raw server JPEG coordinates cannot produce a visible highlight');
   }
@@ -777,4 +778,53 @@ test('course choice changes only the review reference and a draft edit clears it
   rr[0].children[2].children[0].checked=true; rr[0].children[2].children[0].dispatch('change');
   get('verify').dispatch('click');
   assert.match(output.words(),/Check a supported equation/);
+});
+
+test('photo draft can restore a missed middle line without inventing source geometry or skipping confirmation',async t=>{
+  t.after(()=>{globalThis.fetch=savedFetch;get('clear').dispatch('click');});
+  globalThis.fetch=async()=>response([
+    {text:'-3(y-2)=12',box:{x:1,y:3,width:85,height:14}},
+    {text:'y=-2',box:{x:1,y:53,width:75,height:14}},
+  ]);
+  await loadPhoto('synthetic missing-row regression');
+  let rows = get('rows').children;
+  const act = row=>{
+    row.children[0].checked=true;row.children[0].dispatch('change');
+    row.children[2].children[0].checked=true;row.children[2].children[0].dispatch('change');
+  };
+  const attest=()=>{get('anchor-check').checked=true;get('anchor-check').dispatch('change');};
+  rows.forEach(act);
+  attest();
+  rows[1].children[1].dispatch('focus');
+  assert.equal(get('crop').style.top,'53%');
+  let resolveReread;
+  const pending = new Promise(resolve=>{resolveReread=resolve;});
+  globalThis.fetch=()=>pending;
+  const reread=get('read-full').dispatch('click');
+  rows[1].children.at(-1).dispatch('click');
+  rows = get('rows').children;
+  assert.equal(rows.length,3);
+  assert.equal(get('crop').hidden,true);
+  assert.equal(get('anchor-check').checked,false);
+  get('verify').dispatch('click');
+  assert.match(get('verdict').words(),/No verdict was issued/);
+  assert.equal(document.activeElement,rows[1].children[1]);
+  assert.match(rows[1].words(),/Typed from photo; no detected highlight/);
+  assert.equal(rows[1].children[0].checked,true);
+  assert.equal(rows[1].children[2].children[0].checked,false);
+  assert.equal(rows[2].children[1].value,'y=-2');
+  assert.equal(rows[2].children[2].children[0].checked,true);
+  rows[1].children[1].dispatch('focus');
+  assert.equal(get('crop').hidden,true);
+  rows[1].children[1].value='-3y-6=12';rows[1].children[1].dispatch('input');
+  attest();get('verify').dispatch('click');
+  assert.match(get('verdict').words(),/Line 2 · Needs transcription confirmation/);
+  assert.equal(get('probe').hidden,true);
+  rows[1].children[2].children[0].checked=true;rows[1].children[2].children[0].dispatch('change');
+  get('verify').dispatch('click');
+  assert.match(get('verdict').words(),/Line 2 · First verified change/);
+  assert.match(get('verdict').words(),/Line 3 · Not checked/);
+  resolveReread(response([{text:'replacement',box:{x:1,y:3,width:85,height:14}}]));
+  await reread;
+  assert.equal(get('rows').children[1].children[1].value,'-3y-6=12');
 });

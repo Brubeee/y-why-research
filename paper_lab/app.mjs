@@ -71,6 +71,7 @@ const idxOutsideInterior = i => i <= 0 || i >= rows.length - 1;
 let syncPhotoDispositions = [];
 function renderRows() {
   syncPhotoDispositions = [];
+  const fields = [];
   $('rows').replaceChildren();
   $('add').disabled = rows.length >= MAX_ROWS;
   for (const [i, row] of rows.entries()) {
@@ -103,6 +104,8 @@ function renderRows() {
     });
     field.addEventListener('focus', () => updateCrop(row.box));
     box.append(select, field, label);
+    fields.push(field);
+    if (row.manual) box.append(el('small', 'Typed from photo; no detected highlight.', 'manual-source'));
     if (currentFile && row.box && !idxOutsideInterior(i)) {
       crossedOut = el('input');
       crossedOut.type = 'checkbox';
@@ -121,8 +124,24 @@ function renderRows() {
       syncPhotoDispositions.push(syncDisposition);
       box.append(disposition);
     }
+    if (currentFile) {
+      const insert = el('button','Insert line above','insert-line');
+      insert.type = 'button';
+      insert.disabled = rows.length >= MAX_ROWS;
+      insert.setAttribute('aria-label','Insert a missed line above line ' + (i + 1));
+      insert.addEventListener('click', () => {
+        if (!currentFile || rows[i] !== row || rows.length >= MAX_ROWS) return;
+        rows.splice(i, 0, {text:'',selected:true,confirmed:false,manual:true});
+        updateCrop(null);
+        clearAttestation();
+        resetResult();
+        renderRows()[i].focus();
+      });
+      box.append(insert);
+    }
     $('rows').append(box);
   }
+  return fields;
 }
 function add(text = '', selected = true) { if (rows.length < MAX_ROWS) rows.push({text,selected,confirmed:false}); }
 function disposePhotoCandidate(owner) {
