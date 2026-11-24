@@ -55,3 +55,7 @@ delayed review or measure learning.
   to type the missing work where it belongs. This creates no OCR highlight and
   does not assume what was written. Check the full photo again and confirm the
   new transcription before relying on the verdict.
+  A handwritten line entered this way does not prove the photo order around a
+  crossed-out row. In that case the checker names the unlocated line and
+  stops; reread a crop of the question if available and reconfirm the new draft
+  only if the needed lines have their own nonoverlapping highlights.

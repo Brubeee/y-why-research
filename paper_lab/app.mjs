@@ -355,11 +355,26 @@ $('verify').addEventListener('click', () => {
   if (picked.length < 2 || picked.length > 12) { resetResult('Select between 2 and 12 lines for one question, starting with its original equation.'); return; }
   for (let i=1; i<picked.length; i++) {
     for(let skipped=picked[i-1].sourceIndex+1;skipped<picked[i].sourceIndex;skipped++) {
-      if (!rows[skipped].crossedOut || !canMarkCrossedOut(skipped) ||
-          !picked[i-1].box || !picked[i].box ||
-          picked[i-1].box.y + picked[i-1].box.height > rows[skipped].box.y ||
-          rows[skipped].box.y + rows[skipped].box.height > picked[i].box.y) {
+      const skippedRow = rows[skipped];
+      if (!skippedRow.crossedOut || !canMarkCrossedOut(skipped)) {
         resetResult('Select consecutive active lines. A gap can be skipped only if the entire isolated row is confirmed crossed out on the photo.');
+        return;
+      }
+      const missing = [picked[i-1], picked[i]].filter(row => !row.box);
+      if (missing.length) {
+        const line = missing.length === 1 ? 'line ' : 'lines ';
+        const labels = missing.map(row => row.sourceIndex + 1).join(' and ');
+        const suggestion = !$('select-region').disabled
+          ? ' Try Select one question, then Read selected area. A successful reread can replace this draft; check and confirm the new lines again.'
+          : '';
+        resetResult('I couldn’t locate ' + line + labels + ' in the photo, so I can’t verify where crossed-out line ' + (skipped + 1) +
+          ' belongs. No verdict was issued.' + suggestion);
+        return;
+      }
+      if (picked[i-1].box.y + picked[i-1].box.height > skippedRow.box.y ||
+          skippedRow.box.y + skippedRow.box.height > picked[i].box.y) {
+        resetResult('The photo highlights do not put crossed-out line ' + (skipped + 1) +
+          ' between the selected lines. No verdict was issued.');
         return;
       }
     }

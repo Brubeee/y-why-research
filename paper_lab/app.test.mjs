@@ -828,3 +828,57 @@ test('photo draft can restore a missed middle line without inventing source geom
   await reread;
   assert.equal(get('rows').children[1].children[1].value,'-3y-6=12');
 });
+
+test('mixed crossed-out and manually restored rows explain why checking stopped and require a real boxed reread', async t => {
+  t.after(()=>{globalThis.fetch=savedFetch;get('clear').dispatch('click');});
+  const source=(text,y)=>({text,box:{x:1,y,width:80,height:14}});
+  const lines=[source('4(t-2)=20',3),source('4t-2=20',23),source('t=7',63)];
+  globalThis.fetch=async()=>response(lines);
+  await loadPhoto('synthetic strike and missed middle row');
+  get('rows').children[2].children.at(-1).dispatch('click');
+  let draft=get('rows').children;
+  draft[2].children[1].value='4t-8=20';
+  draft[2].children[1].dispatch('input');
+  const markAndCheck=()=>{
+    const canceled=draft[1].children[3].children[0];
+    assert.equal(canceled.disabled,false);
+    canceled.checked=true;canceled.dispatch('change');
+    for(const i of [0,2,3]){
+      const row=draft[i];
+      row.children[0].checked=true;row.children[0].dispatch('change');
+      row.children[2].children[0].checked=true;row.children[2].children[0].dispatch('change');
+    }
+    get('anchor-check').checked=true;get('anchor-check').dispatch('change');
+    get('verify').dispatch('click');
+  };
+  markAndCheck();
+  assert.match(get('verdict').words(),/couldn’t locate line 3 in the photo/);
+  assert.match(get('verdict').words(),/Select one question.*Read selected area.*can replace.*confirm.*again/);
+  assert.doesNotMatch(get('verdict').words(),/Same solution set|First verified change/);
+  assert.equal(get('probe').hidden,true);
+  assert.equal(get('retry').hidden,true);
+  assert.equal(draft[1].children[3].children[0].checked,true);
+  assert.equal(draft[2].children[1].value,'4t-8=20');
+  get('verify').dispatch('click');
+  assert.match(get('verdict').words(),/No verdict was issued/);
+
+  get('select-region').dispatch('click');
+  img.dispatch('click',{clientX:0,clientY:0});
+  img.dispatch('click',{clientX:95,clientY:86});
+  assert.equal(get('read-region').disabled,false);
+  globalThis.fetch=async (url,req)=>{
+    assert.equal(await req.body.text(),'mocked-crop');
+    return response([...lines.slice(0,2),source('4t-8=20',43),lines[2]].map(line=>({...line,words:[]})),{width:95,height:86});
+  };
+  await get('read-region').dispatch('click');
+  draft=get('rows').children;
+  assert.equal(draft.length,4);
+  assert.equal(get('anchor-check').checked,false);
+  assert.equal(draft[2].children[2].children[0].checked,false);
+  draft[2].children[1].dispatch('focus');
+  assert.equal(get('crop').style.top,'43%');
+  markAndCheck();
+  assert.match(get('verdict').words(),/not checked: line 2/);
+  assert.match(get('verdict').words(),/Line 3 · Same solution set/);
+  assert.match(get('verdict').words(),/Line 4 · Same solution set/);
+});
