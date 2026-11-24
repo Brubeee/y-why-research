@@ -23,6 +23,7 @@ const courses = {
 };
 let rows = [], objectUrl, dims, inflight, revision = 0, draftRevision = 0, diagnosis = null, skillMatch = null;
 let currentFile = null, region = null, selecting = false, corner = null, retrySession = null;
+let currentProbe = null, firstSeparator = null;
 const clearAttestation = () => { $('anchor-check').checked = false; };
 function regionButtons() {
   const img = $('image');
@@ -41,10 +42,10 @@ function clearRegion() {
 function status(text) { $('scan-status').textContent = text; }
 function resetResult(message = 'Run the check on your selected, confirmed lines.') {
   draftRevision++;
-  diagnosis = null;
+  diagnosis = null; currentProbe = null;
   skillMatch = null; course();
   $('verdict').replaceChildren(el('p', message));
-  $('probe').hidden = true;
+  $('probe').hidden = true; $('probe-form').hidden = true; $('probe-skip').hidden = true;
   $('answer').value = '';
   $('probe-result').replaceChildren();
   $('retry').hidden = true;
@@ -304,28 +305,58 @@ $('verify').addEventListener('click', () => {
   }
   skillMatch = 'distribution'; course();
   $('probe').hidden = false;
-  $('probe-question').textContent = diagnosis.reason + ' Expand and simplify: ' + diagnosis.probe.input.split('=')[0].replaceAll('-','−') + '.';
+  $('probe-question').textContent = firstSeparator ? 'Separator closed for this page.' : diagnosis.reason + ' Expand and simplify: ' + diagnosis.probe.input.split('=')[0].replaceAll('-','−') + '.';
+  // Only a currently verified source pair can display the historical response.
+  // These ephemeral references are never serialized.
+  currentProbe = [picked[i],picked[i+1]].map(r => ({row:rows[r.sourceIndex],text:r.text}));
+  showSeparator();
+});
+function showSeparator() {
+  const open = !firstSeparator;
+  $('probe-form').hidden = !open; $('probe-skip').hidden = !open;
+  if (open) return;
+  $('probe-question').textContent = 'Separator closed for this page.';
+  const prior=firstSeparator;
+  const same=prior.source.every(({row,text},i)=>row===currentProbe[i].row && text===currentProbe[i].text);
+  const out=$('probe-result');
+  if (prior.skipped) out.replaceChildren(el('p','Separator skipped. Practice only; no diagnostic evidence was recorded.'));
+  else if (!same) out.replaceChildren(el('p','Related feedback or practice is already available on this page. This separator is closed; no evidence was recorded for this source.'));
+  else {
+    const msg=prior.response;
+    out.replaceChildren(el('p','Earlier first response: ' + msg.reason));
+    if (msg.status==='unresolved') out.append(el('p','No diagnostic evidence was recorded. Further work is practice only.'));
+    else out.append(el('p',msg.followUp || ''),el('p','Exact expansion: ' + prior.exact + '.'));
+  }
   retrySession ??= createRetry({diagnostic:diagnosis});
   if (retrySession) showRetry();
+}
+function awaitingSeparator() {
+  return !!currentProbe && !!diagnosis?.probe && !firstSeparator && !$('probe').hidden && !$('probe-form').hidden;
+}
+$('probe-skip').addEventListener('click', () => {
+  if (!awaitingSeparator() || $('probe-skip').hidden) return;
+  firstSeparator={skipped:true,source:currentProbe};
+  $('answer').value='';
+  showSeparator();
 });
 $('probe-form').addEventListener('submit', e => {
   e.preventDefault();
-  if (!diagnosis?.probe) return;
+  if (!awaitingSeparator()) return;
   const a = $('answer').value.trim(), [expression,rhs] = diagnosis.probe.input.split('=');
   const parts = a.split('=');
   const work = parts.length === 2 && parts[1].trim().replaceAll('−','-') === rhs ? parts[0] : a;
   const form = gradeExpansion(work, expression);
   if (!['expanded','wrong'].includes(form.status)) {
-    $('probe-result').replaceChildren(el('p',form.message));
+    $('probe-result').replaceChildren(el('p','Enter a simplified variable term and an integer constant, or skip to practice. No response was recorded.'));
     return;
   }
   const parsed = parseExpression(work);
   const coefficient = parsed.coefficient === '1' ? '' : parsed.coefficient === '-1' ? '-' : parsed.coefficient;
   const canonical = coefficient + parsed.variable + (parsed.constant.startsWith('-') ? '' : '+') + parsed.constant + '=' + rhs;
   const response = interpretProbe(diagnosis, canonical);
-  $('probe-result').replaceChildren(el('p',response.reason),el('p',response.followUp || ''));
-  if (response.status === 'unresolved') return;
-  $('probe-result').append(el('p', 'Exact expansion: ' + diagnosis.probe.correct.split('=')[0].replaceAll('-','−') + '.'));
+  firstSeparator={source:currentProbe,response,exact:diagnosis.probe.correct.split('=')[0].replaceAll('-','−')};
+  $('answer').value='';
+  showSeparator();
 });
 function showRetry() {
   $('retry').hidden = false;
@@ -345,12 +376,12 @@ function showRetry() {
   showDelayed();
 }
 $('retry-hint').addEventListener('click', () => {
-  if (!diagnosis?.probe || !retrySession || $('retry').hidden) return;
+  if (!currentProbe || !firstSeparator || !diagnosis?.probe || !retrySession || $('retry').hidden) return;
   retrySession = exposeRetryHint(retrySession);showRetry();
 });
 $('retry-form').addEventListener('submit', e => {
   e.preventDefault();
-  if (!diagnosis?.probe || !retrySession || $('retry').hidden) return;
+  if (!currentProbe || !firstSeparator || !diagnosis?.probe || !retrySession || $('retry').hidden) return;
   retrySession = recordRetry(retrySession,{text:$('retry-answer').value});showRetry();
 });
 

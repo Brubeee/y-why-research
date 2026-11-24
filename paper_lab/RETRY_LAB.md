@@ -16,6 +16,15 @@ integer variable term and integer constant. See [STACK's documentation on
 equivalence and form](https://docs.stack-assessment.org/en/Authoring/Answer_Tests/Equivalence/)
 for precedent.
 
+Before related practice or its hint can open, the separator accepts one
+supported, simplified response or an explicit skip. Blank, unsupported and
+unfinished work gets neutral format guidance without an exact answer or hint.
+An unmodeled simplified response closes the separator as unresolved; skipping
+also records no diagnostic evidence. Later practice cannot replace the first
+response, and rechecking or editing in the same tab does not create a new
+unaided opportunity. The earlier response is shown only for the same verified
+source rows; the bookkeeping is in memory, not in saved review storage.
+
 The retry keeps the first parseable response and first completed success
 separate. Once the hint button is used, subsequent success is recorded as
 hint-aided. Receiving correctness feedback on a previous attempt is not the

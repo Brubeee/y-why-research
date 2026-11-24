@@ -120,7 +120,8 @@ test('partial crop keeps the source visible, maps boxes, withholds a whole-quest
   assert.equal(sentCropped,false);
 });
 
-test('verified distribution opens a fresh task, separates form from correctness, and keeps hint evidence after recheck', () => {
+test('verified distribution opens a fresh task, separates form from correctness, and keeps hint evidence after recheck', async () => {
+  await import('./app.mjs?fresh-separator-correct');
   get('example').dispatch('click');
   assert.equal(get('retry').hidden,true);
   const rr=get('rows').children;
@@ -129,14 +130,16 @@ test('verified distribution opens a fresh task, separates form from correctness,
   assert.equal(get('retry').hidden,true);
   rr[1].children[2].children[0].checked=true;rr[1].children[2].children[0].dispatch('change');
   get('verify').dispatch('click');
-  assert.equal(get('retry').hidden,false);
-  assert.match(get('retry-question').textContent,/2−4\(2z−3\)/);
+  assert.equal(get('retry').hidden,true,'practice waits until the separator closes');
   assert.match(get('curriculum').words(),/We Distribute/);
   get('answer').value='-3(y-2)';get('probe-form').dispatch('submit');
-  assert.match(get('probe-result').words(),/Equivalent so far/);
-  assert.doesNotMatch(get('probe-result').words(),/Exact expansion/);
+  assert.match(get('probe-result').words(),/No response was recorded/);
+  assert.doesNotMatch(get('probe-result').words(),/Equivalent|Exact expansion/);
+  assert.equal(get('retry').hidden,true);
   get('answer').value='6-3y';get('probe-form').dispatch('submit');
   assert.match(get('probe-result').words(),/This new step is correct/);
+  assert.equal(get('retry').hidden,false);
+  assert.match(get('retry-question').textContent,/2−4\(2z−3\)/);
   get('retry-answer').value='2−4(2z−3)';get('retry-form').dispatch('submit');
   assert.match(get('retry-result').textContent,/Equivalent so far/);
   assert.match(get('retry-evidence').textContent,/fully correct response is not recorded/);
@@ -478,4 +481,89 @@ test('relevant cross-tab localStorage events refresh review UI and invalidate on
   assert.equal(document.activeElement,get('probe-question'),'never steals focus elsewhere in the app');
   form.dispatch('submit');
   assert.equal(store.getItem(REVIEW_KEY),null,'clear and stale form submission cannot recreate a review');
+});
+
+async function startSeparator(name){
+  await import('./app.mjs?'+name);
+  get('example').dispatch('click');
+  const rows=get('rows').children;
+  for(const row of rows.slice(0,2)){
+    const confirm=row.children[2].children[0];confirm.checked=true;confirm.dispatch('change');
+  }
+  get('verify').dispatch('click');
+  return rows;
+}
+const sendProbe=value=>{get('answer').value=value;get('probe-form').dispatch('submit');};
+test('hidden practice events cannot coach; neutral retries do not consume; an unmodeled first answer consumes without evidence',async()=>{
+  await startSeparator('separator-unmodeled');
+  const probe=get('probe-form'), retry=get('retry'), result=get('probe-result');
+  assert.equal(probe.hidden,false);
+  assert.equal(retry.hidden,true);
+  get('retry-hint').dispatch('click');
+  get('retry-answer').value='14-8z';get('retry-form').dispatch('submit');
+  assert.equal(retry.hidden,true);
+  for(const text of ['', '-3(y-2)', '6-3z', 'log(y)']) {
+    sendProbe(text);
+    assert.equal(probe.hidden,false);
+    assert.match(result.words(),/No response was recorded/);
+    assert.doesNotMatch(result.words(),/Exact expansion|Equivalent/);
+  }
+  sendProbe('-3y-7');
+  assert.equal(probe.hidden,true);
+  assert.equal(retry.hidden,false);
+  assert.equal(get('retry-hint-text').hidden,true);
+  assert.match(get('retry-evidence').textContent,/No readable response yet/);
+  assert.match(result.words(),/No diagnostic evidence/);
+  const first=result.words();
+  sendProbe('-3y-6');get('probe-skip').dispatch('click');
+  assert.equal(result.words(),first);
+  get('verify').dispatch('click');
+  assert.equal(result.words(),first);
+});
+test('skip unlocks practice only and the hint and skip survive exact recheck and same-page edits',async()=>{
+  const rows=await startSeparator('separator-skip');
+  const result=get('probe-result');
+  get('probe-skip').dispatch('click');
+  assert.match(result.words(),/No diagnostic evidence|no diagnostic evidence/);
+  assert.equal(get('probe-form').hidden,true);
+  get('retry-hint').dispatch('click');
+  assert.equal(get('retry-hint-text').hidden,false);
+  sendProbe('-3y-6');
+  assert.doesNotMatch(result.words(),/matches one simulated rule/);
+  const field=rows[1].children[1];
+  field.value='-x-2=12';field.dispatch('input');
+  assert.equal(get('probe').hidden,true);
+  assert.equal(get('retry').hidden,true);
+  get('probe-skip').dispatch('click');sendProbe('-3y-6');
+  assert.equal(result.words().trim(),'');
+  field.value='-x-4=12';field.dispatch('input');
+  const confirm=rows[1].children[2].children[0];confirm.checked=true;confirm.dispatch('change');
+  get('verify').dispatch('click');
+  assert.equal(get('probe-form').hidden,true);
+  assert.equal(get('retry-hint-text').hidden,false);
+  assert.match(result.words(),/Separator skipped/);
+  get('retry-answer').value='14-8z';get('retry-form').dispatch('submit');
+  assert.match(get('retry-evidence').textContent,/followed a hint/);
+});
+test('first modeled evidence is immutable and never attached to a newly verified pair after editing',async()=>{
+  const rows=await startSeparator('separator-modeled');
+  sendProbe('-3y-6');
+  const result=get('probe-result'),first=result.words();
+  assert.match(first,/not a confirmed misconception/);
+  assert.match(first,/Exact expansion: −3y\+6/);
+  sendProbe('6-3y');
+  assert.equal(result.words(),first);
+  get('verify').dispatch('click');
+  assert.equal(result.words(),first);
+  for (const [i,text] of ['-(x-5)=12','-x-5=12'].entries()){
+    const field=rows[i].children[1];field.value=text;field.dispatch('input');
+    const c=rows[i].children[2].children[0];c.checked=true;c.dispatch('change');
+  }
+  assert.equal(get('probe').hidden,true);
+  sendProbe('-3y-6');
+  assert.equal(result.words().trim(),'');
+  get('verify').dispatch('click');
+  assert.equal(get('probe-form').hidden,true);
+  assert.match(result.words(),/no evidence was recorded for this source/i);
+  assert.doesNotMatch(result.words(),/Exact expansion|matches one simulated rule/);
 });
