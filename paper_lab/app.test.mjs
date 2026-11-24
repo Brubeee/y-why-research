@@ -567,3 +567,87 @@ test('first modeled evidence is immutable and never attached to a newly verified
   assert.match(result.words(),/no evidence was recorded for this source/i);
   assert.doesNotMatch(result.words(),/Exact expansion|matches one simulated rule/);
 });
+
+test('a cancelled picker or rejected MIME, empty, or oversize selection preserves confirmed photo work',async t=>{
+  t.after(()=>{globalThis.fetch=savedFetch;get('clear').dispatch('click');});
+  const rows=await correctedDraft(), verdict=get('verdict').words(), src=img.src, picker=get('photo');
+  get('select-region').dispatch('click');
+  img.dispatch('click',{clientX:5,clientY:20});img.dispatch('click',{clientX:95,clientY:70});
+  rows[1].children[1].dispatch('focus');
+  const before=get('scan-status').textContent;
+  globalThis.fetch=async()=>assert.fail('cancelled and rejected picks must not reach OCR');
+  picker.files=[];await picker.dispatch('change');
+  assert.equal(get('scan-status').textContent,before);
+  const limit=6*1024*1024;
+  for(const file of [
+    new Blob(['synthetic unsupported file'],{type:'application/pdf'}),
+    new Blob([],{type:'image/jpeg'}),
+    new Blob([new Uint8Array(limit+1)],{type:'image/jpeg'}),
+  ]){
+    picker.files=[file];picker.value='mock selected filename';await picker.dispatch('change');
+    assert.equal(picker.value,'');
+    assert.equal(img.src,src);
+    assert.equal(get('photo-view').hidden,false);
+    assert.equal(get('region').hidden,false);
+    assert.equal(get('region').style.left,'5%');
+    assert.equal(get('crop').hidden,false);
+    assert.equal(get('rows').children,rows);
+    assert.equal(rows[1].children[1].value,'-x-4 = 12');
+    assert.equal(rows[1].children[0].checked,true);
+    assert.equal(rows[1].children[2].children[0].checked,true);
+    assert.equal(get('anchor-check').checked,true);
+    assert.equal(get('verdict').words(),verdict);
+    assert.match(get('scan-status').textContent,/Choose a nonempty PNG or JPEG no larger than 6 MiB/);
+  }
+});
+
+test('a rejected pick leaves the current OCR owner and edit guard intact; a real PNG replacement wins',async t=>{
+  t.after(()=>{globalThis.fetch=savedFetch;get('clear').dispatch('click');});
+  await correctedDraft();
+  const picker=get('photo');
+  async function rejectPick(){
+    picker.files=[new Blob([],{type:'image/jpeg'})];
+    picker.value='empty JPEG';
+    await picker.dispatch('change');
+    assert.equal(picker.value,'');
+  }
+  function pendingReread(){
+    const d=defer();let signal;
+    globalThis.fetch=(url,opts)=>{signal=opts.signal;return d.promise;};
+    const task=get('read-full').dispatch('click');
+    assert.ok(signal);
+    return {signal,task,done:d.resolve};
+  }
+  const unchanged=pendingReread();
+  await rejectPick();assert.equal(unchanged.signal.aborted,false);
+  unchanged.done(response([replyLine('x=10')]));await unchanged.task;
+  assert.equal(get('rows').children[0].children[1].value,'x=10','still-current OCR may commit');
+
+  const changed=pendingReread();
+  const row=get('rows').children[0].children[1];
+  row.value='x=99';row.dispatch('input');
+  await rejectPick();assert.equal(changed.signal.aborted,false);
+  changed.done(response([replyLine('x=11')]));await changed.task;
+  assert.equal(get('rows').children[0].children[1],row);
+  assert.equal(row.value,'x=99','prior edit remains authoritative');
+  assert.match(get('scan-status').textContent,/not applied/);
+
+  const old=pendingReread(), oldSource=img.src;
+  await rejectPick();assert.equal(old.signal.aborted,false);
+  const replacement=photo('new valid PNG');
+  globalThis.fetch=async(url,opts)=>{
+    assert.equal(opts.body,replacement);
+    assert.equal(opts.headers['Content-Type'],'image/png');
+    return response([replyLine('x=30')]);
+  };
+  picker.files=[replacement];await picker.dispatch('change');
+  assert.equal(old.signal.aborted,true);
+  assert.notEqual(img.src,oldSource);
+  assert.equal(get('anchor-check').checked,false);
+  assert.equal(get('region').hidden,true);
+  const rows=get('rows').children;
+  assert.equal(rows[0].children[1].value,'x=30');
+  old.done(response([replyLine('x=12')]));await old.task; // mocked transport ignores abort
+  assert.equal(get('rows').children,rows);
+  assert.equal(rows[0].children[1].value,'x=30');
+});

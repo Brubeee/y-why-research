@@ -215,11 +215,12 @@ async function readDraft(target = null) {
 $('photo').addEventListener('change', async () => {
   const file = $('photo').files?.[0];
   if (!file) return;
-  clearPhoto(); resetResult(); rows = []; add(); add(); renderRows();
   if (!['image/png','image/jpeg'].includes(file.type) || !file.size || file.size > MAX_BYTES) {
-    status('Choose a PNG or JPEG no larger than 6 MiB. You can still enter the lines by hand.');
+    $('photo').value = '';
+    status('Choose a nonempty PNG or JPEG no larger than 6 MiB.');
     return;
   }
+  clearPhoto(); resetResult(); rows = []; add(); add(); renderRows();
   currentFile = file;
   objectUrl = URL.createObjectURL(file); $('image').src = objectUrl; $('photo-view').hidden = false;
   $('region-tools').hidden = false; $('anchor-control').hidden = false;
