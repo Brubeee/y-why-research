@@ -1,0 +1,36 @@
+// Frozen synthetic, hand-authored next-action preference labels, not diagnosis.
+// Group = operation/surface family, never variable names or coefficient values.
+const raw=[
+ ['fit','explicit-distribution','d1','-3(x-4)=12','-3x-12=12','inspect_sign'],
+ ['fit','explicit-distribution','d2','-3(x-4)=12','-3x-4=12','ask_operation'],
+ ['fit','explicit-distribution','d3','-(x-4)=12','-x-4=12','separating_probe'],
+ ['fit','explicit-distribution','d4','-3(x-4)=12','-3x-12=13','compare_sides'],
+ ['fit','move-addend','m1','x+5=12','x=17','ask_operation'],
+ ['fit','move-addend','m2','x+5=12','x+5=-12','inspect_sign'],
+ ['fit','move-addend','m3','2x+3=9','2x-3=-9','compare_sides'],
+ ['fit','unary-variable','u1','-x=2','x=2','inspect_sign'],
+ ['fit','unary-variable','u2','-x=2','x=-3','compare_sides'],
+ ['fit','unary-variable','u3','-x=2','2x=2','ask_operation'],
+ ['dev','denominator-clearing','f1','x/3=9','x/3=-9','inspect_sign'],
+ ['dev','denominator-clearing','f2','x/3=9','x=9','ask_operation'],
+ ['dev','denominator-clearing','f3','x/3=9','2x=26','compare_sides'],
+ ['dev','two-sided-subtraction','s1','2x+7=x+9','x+7=x+9','ask_operation'],
+ ['dev','two-sided-subtraction','s2','2x+7=x+9','2x-7=x+9','inspect_sign'],
+ ['dev','two-sided-subtraction','s3','2x+7=x+9','3x+7=x-9','compare_sides'],
+ ['held','mirrored-equations','h1','12=5x+2','-12=5x+2','inspect_sign'],
+ ['held','mirrored-equations','h2','12=5x+2','12=5x','ask_operation'],
+ ['held','mirrored-equations','h3','12=5x+2','10=5x-2','compare_sides'],
+ ['held','mirrored-equations','h4','12=5x+2','10=5x','blocked'],
+ ['held','outside-addend','h5','2-4(2z-3)=10','2+4(2z-3)=10','inspect_sign'],
+ ['held','outside-addend','h6','3-5(3w-4)=8','-15w+7=8','ask_operation'],
+ ['held','outside-addend','h7','3-5(3w-4)=8','-15w-17=9','compare_sides'],
+ ['held','outside-addend','h8','2-4(2z-3)=10','-8z+14=10','blocked'],
+ ['held','unsupported-rewrites','h9','12=5x+2','12=5x²','blocked'],
+ ['held','unsupported-rewrites','h10','3-5(3w-4)=8','-15w+7=8','blocked',false],
+ ['held','unsupported-rewrites','h11','12=5x+2','12=5x+2=0','blocked'],
+ ['held','unsupported-rewrites','h12','12=5x+2','12=5x','blocked',true,false],
+ ['held','unsupported-rewrites','h13','12=5x+2','12=5x','blocked',true,true,[['12=5x+2',false]]],
+ ['held','unsupported-rewrites','h14','12=5x+2','12=5x','blocked',true,true,[['12=5x²',true]]],
+];
+export const CASES=Object.freeze(raw.map(([split,group,id,before,after,label,confirmed=true,anchorConfirmed=true,prior=[]])=>
+ Object.freeze({split,group,id,before,after,label,confirmed,anchorConfirmed,prior:Object.freeze(prior.map(([text,confirmed])=>Object.freeze({text,confirmed})))})));
