@@ -2,7 +2,7 @@ import { verifyRows, parseExpression } from './verify.mjs';
 import { diagnoseStep, interpretProbe } from './diagnostic.mjs';
 
 import { gradeExpansion } from './expansion_form.mjs';
-import { createDelayedReview } from './delayed_review.mjs';
+import { createDelayedReview, REVIEW_KEY } from './delayed_review.mjs';
 import { RETRY_TASK, createRetry, exposeRetryHint, recordRetry } from './memex.mjs';
 import { validateCrop, mapOcrBoxes, encodeImageCrop } from './crop.mjs';
 
@@ -395,6 +395,16 @@ $('delayed-form').addEventListener('submit', e => {
   showDelayed(delayedReview.submit($('delayed-answer').value));
 });
 globalThis.addEventListener?.('focus', () => showDelayed());
+globalThis.addEventListener?.('storage', event => {
+  if (event.key !== REVIEW_KEY && event.key !== null) return;
+  try {
+    if (!event.storageArea || event.storageArea !== window.localStorage) return;
+  } catch { return; } // Storage can be inaccessible in restricted contexts.
+  // Read current state, not the possibly queued event payload. A replaced
+  // ready review may look identical, but must not inherit its old draft.
+  $('delayed-answer').value = '';
+  showDelayed();
+});
 
 function course() {
   const c = courses[$('course').value] || courses.other;

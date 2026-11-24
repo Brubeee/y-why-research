@@ -16,6 +16,11 @@ resetting the review also removes its attempt history; a known item cannot be
 treated as new evidence after a reset. The client clock and profile are not
 tamper-proof, and simultaneous tabs are not transactionally locked.
 
+When another same-origin tab changes the saved review or clears local browser
+storage, this page refreshes from the current record and discards any unsubmitted
+review answer without moving focus. Changes to other keys or session storage do
+not disturb that draft. This sync does not make concurrent submissions atomic.
+
 The fixed-clock tests show gating and recording mechanics. This is a new example
 of the same algebra skill, not a measured improvement in retention or an exam
 result. No real student data was used.

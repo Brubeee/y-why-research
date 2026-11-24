@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {REVIEW_KEY,REVIEW_DELAY_MS} from './delayed_review.mjs';
 
 class Element {
   constructor() { this.children=[]; this.events={}; this.textContent=''; this.value=''; this.hidden=false; this.style={}; this.attributes={}; }
@@ -8,6 +9,7 @@ class Element {
   addEventListener(k,f) { this.events[k]=f; }
   setAttribute(k,v) { this.attributes[k]=v; }
   removeAttribute(k) { delete this[k]; }
+  focus() { globalThis.document.activeElement=this; }
   dispatch(k, arg={preventDefault(){}}) { return this.events[k]?.(arg); }
   words() { return [this.textContent,...this.children.map(x=>typeof x==='string'?x:x.words())].join(' '); }
 }
@@ -39,6 +41,10 @@ globalThis.fetch = async (url,init) => {
     ]}),
   };
 };
+const windowEvents = new Map();
+// Cache-busting reload tests reuse the fake DOM; retain the latest document's listener.
+globalThis.addEventListener=(type, callback)=>windowEvents.set(type,callback);
+const storageEvent=(key,storageArea,newValue=null)=>windowEvents.get('storage')?.({key,storageArea,newValue});
 let clockMs=100;
 const systemNow=Date.now;
 Date.now=()=>clockMs;
@@ -407,4 +413,69 @@ test('full JPEG shows usable text but never assigns source row geometry even whe
     rows[1].children[1].dispatch('focus');
     assert.equal(get('crop').hidden,true,'Raw server JPEG coordinates cannot produce a visible highlight');
   }
+});
+
+test('relevant cross-tab localStorage events refresh review UI and invalidate only its unsubmitted draft', t=>{
+  const store=window.localStorage;
+  const sessionStorage={};
+  const ans=get('delayed-answer'), form=get('delayed-form'), prompt=get('delayed-prompt'), status=get('delayed-status');
+  const oldClock=clockMs;
+  clockMs=REVIEW_DELAY_MS+100;
+  t.after(()=>{
+    local.clear();clockMs=oldClock;
+    windowEvents.get('focus')?.();document.activeElement=null;
+  });
+  const record={version:1,item:'negative-distribution-delayed-w-v1',dueAt:REVIEW_DELAY_MS,outcome:null};
+  const set=(r)=>{const serialized=JSON.stringify(r);store.setItem(REVIEW_KEY,serialized);return serialized;};
+  const due=set(record);
+  storageEvent(REVIEW_KEY,store,due);
+  assert.equal(form.hidden,false,'another tab makes a due review immediately visible');
+  assert.match(prompt.textContent,/3−5\(3w−4\)/);
+  ans.value='unsent';
+  ans.focus();
+  store.setItem('unrelated','true');
+  storageEvent('unrelated',store,'true');
+  storageEvent(REVIEW_KEY,sessionStorage);
+  storageEvent(null,sessionStorage);
+  assert.equal(ans.value,'unsent','unrelated localStorage and all sessionStorage events preserve the draft');
+  assert.equal(document.activeElement,ans);
+
+  const readyReplacement=set({...record,dueAt:REVIEW_DELAY_MS+1});
+  storageEvent(REVIEW_KEY,store,readyReplacement);
+  assert.equal(form.hidden,false);
+  assert.equal(ans.value,'','even a ready→ready external replacement invalidates the old draft');
+  assert.equal(document.activeElement,ans,'no focus reset when readiness remains unchanged');
+
+  ans.value='another unsent draft';
+  const completed=set({...record,outcome:'unfinished'});
+  storageEvent(REVIEW_KEY,store,readyReplacement); // queued event payload is stale; the store is authoritative
+  assert.equal(form.hidden,true);
+  assert.equal(ans.value,'');
+  assert.equal(prompt.textContent,'');
+  assert.match(status.textContent,/equivalent but not fully simplified/);
+  assert.equal(store.getItem(REVIEW_KEY),completed);
+
+  store.removeItem(REVIEW_KEY);
+  storageEvent(REVIEW_KEY,store);
+  assert.equal(get('delayed-clear').hidden,true);
+  const future=set({...record,dueAt:clockMs+REVIEW_DELAY_MS});
+  storageEvent(REVIEW_KEY,store,future);
+  assert.match(status.textContent,/Available after/);
+  assert.equal(prompt.textContent,'');
+  assert.equal(get('delayed-refresh').hidden,false);
+
+  storageEvent(REVIEW_KEY,store,set(record));
+  assert.equal(form.hidden,false);
+  ans.value='unsubmitted at clear';
+  get('probe-question').focus();
+  local.clear();
+  storageEvent(null,store);
+  assert.equal(form.hidden,true);
+  assert.equal(ans.value,'');
+  assert.equal(prompt.textContent,'');
+  assert.equal(get('delayed-refresh').hidden,true);
+  assert.equal(get('delayed-clear').hidden,true);
+  assert.equal(document.activeElement,get('probe-question'),'never steals focus elsewhere in the app');
+  form.dispatch('submit');
+  assert.equal(store.getItem(REVIEW_KEY),null,'clear and stale form submission cannot recreate a review');
 });
