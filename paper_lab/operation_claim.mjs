@@ -1,4 +1,4 @@
-// Offline research only. The application and its exact checker do not use this.
+// A separate, conditional form check. Exact solution-set results are never changed.
 import { gradeExpansion } from './expansion_form.mjs';
 import { verifyRows } from './verify.mjs';
 

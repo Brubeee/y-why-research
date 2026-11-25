@@ -882,3 +882,35 @@ test('mixed crossed-out and manually restored rows explain why checking stopped 
   assert.match(get('verdict').words(),/Line 3 · Same solution set/);
   assert.match(get('verdict').words(),/Line 4 · Same solution set/);
 });
+
+test('optional written expansion check never equates a changed right side with the declared operation', () => {
+  get('clear').dispatch('click');
+  const draft=get('rows').children, out=get('verdict');
+  const typed=(i,text,confirmed=true)=>{
+    const row=draft[i],input=row.children[1], confirm=row.children[2].children[0];
+    input.value=text;input.dispatch('input');
+    row.children[0].checked=true;row.children[0].dispatch('change');
+    if(confirmed){confirm.checked=true;confirm.dispatch('change');}
+  };
+  typed(0,'2(x+3)=10');typed(1,'2x+6=10',false);get('verify').dispatch('click');
+  assert.doesNotMatch(out.words(),/What if I only expanded/);
+  for (const [written, expected] of [
+    ['2x+6=10',/expanded and simplified, and the right side is unchanged/],
+    ['2x+3=7',/right side was rewritten.*valid combined step/],
+    ['2*x+2*3=10',/expansion or arithmetic is not finished/],
+  ]){
+    typed(1,written);get('verify').dispatch('click');
+    assert.match(out.words(),/Line 2 · Same solution set/);
+    assert.match(out.words(),/Lines 1 → 2: What if I only expanded the left bracket\?/);
+    assert.match(out.words(),expected);
+    assert.equal(get('probe').hidden,true);
+  }
+  typed(1,'2x+3=10');get('verify').dispatch('click');
+  assert.match(out.words(),/First verified change/);
+  assert.doesNotMatch(out.words(),/What if I only expanded/);
+  typed(1,'2x+6=10');get('verify').dispatch('click');
+  assert.match(out.words(),/What if I only expanded/);
+  draft[1].children[1].dispatch('input');
+  assert.doesNotMatch(out.words(),/What if I only expanded/);
+  get('clear').dispatch('click');
+});

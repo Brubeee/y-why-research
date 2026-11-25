@@ -1,4 +1,5 @@
 import { verifyRows, parseExpression } from './verify.mjs';
+import { checkOperationClaim } from './operation_claim.mjs';
 import { diagnoseStep, interpretProbe } from './diagnostic.mjs';
 
 import { curriculumReference } from './curriculum.mjs';
@@ -395,6 +396,25 @@ $('verify').addEventListener('click', () => {
     const p = el('p', 'Line ' + (steps[i].sourceIndex+1) + ' · ' + (labels[r.status] || r.status) + ' · ' + steps[i].text + ' — ' + r.message, 'step-result ' + r.status);
     out.append(p);
   });
+  // Only an entirely confirmed, equivalent selection receives the optional
+  // form check. It never competes with the first-error follow-up.
+  if (result.anchor.status === 'confirmed' && result.rows.every(r => r.status === 'equivalent')) {
+    for (let i=1; i<picked.length; i++) {
+      const before=picked[i-1], after=picked[i];
+      const {status}=checkOperationClaim({before,after,claim:'expand-left-only'});
+      const wording={
+        'fits-written-claim':'The bracket is expanded and simplified, and the right side is unchanged.',
+        'unfinished':'The right side is unchanged, but the expansion or arithmetic is not finished.',
+        'right-side-rewritten':'The right side was rewritten. That can be a valid combined step, but it is not just a left-side expansion.',
+      }[status];
+      if (!wording) continue;
+      const detail=el('details','','fine');
+      detail.append(el('summary','Lines ' + (before.sourceIndex+1) + ' → ' + (after.sourceIndex+1) +
+        ': What if I only expanded the left bracket?'),
+        el('p',wording + ' The solution set is unchanged; this does not show how you worked it out.'));
+      out.append(detail);
+    }
+  }
   if (!result.rows.some(r => r.status === 'changed')) return;
   const i = result.rows.findIndex(r => r.status === 'changed');
   diagnosis = diagnoseStep(picked[i].text,picked[i+1].text);

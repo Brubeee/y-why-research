@@ -1,4 +1,4 @@
-# Explicit operation claim: offline experiment
+# Explicit operation claim: optional Paper Lab check
 
 The verifier's solution-set result and a student's claim about a written
 transition are separate. After `2(x+3)=10`, both `2x+6=10` and
@@ -14,5 +14,7 @@ unfinished arithmetic are not a completed expansion. None of these results
 proves how the student thought or what action they took.
 
 Run `node --test paper_lab/operation_claim.test.mjs` from the repository root.
-Fixtures are synthetic; this experiment is not wired into the app or OCR and
-does not modify the exact verifier, diagnoses, or grades.
+Paper Lab offers a collapsed conditional explanation only after every selected
+line is confirmed and equivalent. It never blocks an equivalent result, changes
+a maths verdict, infers a claimed operation from handwriting or opens a probe.
+Fixtures are synthetic; there are no phone or learning-outcome measurements.

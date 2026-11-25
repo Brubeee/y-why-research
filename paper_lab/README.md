@@ -59,3 +59,9 @@ delayed review or measure learning.
   crossed-out row. In that case the checker names the unlocated line and
   stops; reread a crop of the question if available and reconfirm the new draft
   only if the needed lines have their own nonoverlapping highlights.
+
+- After all selected lines are confirmed and preserve the solution, some
+  steps include an optional [written expansion check](OPERATION_CLAIM.md).
+  Changing both sides can be mathematically valid. The optional check
+  only answers whether the written step fits expanding the left bracket
+  without rewriting the right side. It does not infer how you solved it.
