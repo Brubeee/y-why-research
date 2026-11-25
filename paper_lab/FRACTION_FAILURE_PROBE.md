@@ -37,3 +37,24 @@ For a next app-facing check, use the existing manual insert/crop workflow to
 see if a user can recover the missing final line without a misleading verdict
 about the entire paper. Do not reuse this fixture to estimate general OCR
 performance or change automatic preprocessing based on it.
+
+## Manual recovery through the running server and app handlers
+
+Run `python paper_lab/final_line_flow.py` (also requires Node). Two separate,
+upright synthetic PNGs share the first two equations; one actually shows
+`q = 2` and the other shows `q = 3`. The production photo-picker and crop-read
+handlers send a real request to the local OCR endpoint for each full raster
+and each crop. The DOM and image decode are mocked. The canvas shim checks
+the requested coordinates and supplies the corresponding Pillow crop rather
+than simulating OCR. No raw results are edited before the app consumes them.
+
+Tesseract 5.5.0 omitted the final line from both crops, returning two exact
+rows each. Checking just those two rows never mentioned line 3 and labeled
+the result as selected steps only. In both cases the operator simulation
+typed the visible final line manually; the app required fresh photo
+attestation and confirmation of the new line. It then reported no change for
+`q = 2` and marked line 3 as the first change for `q = 3`. The appended row
+had no fabricated source highlight. The workflow relies on comparing the
+draft to the photo, not on automatic missing-line detection. This is a
+local integration check, not a browser, phone, learner, or new OCR accuracy
+test.
