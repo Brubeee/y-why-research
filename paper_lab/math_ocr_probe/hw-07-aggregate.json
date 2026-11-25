@@ -1,0 +1,48 @@
+{
+  "all": {
+    "samples": 24,
+    "stock_exact": 6,
+    "tesseract_exact": 0,
+    "both_exact": 0,
+    "stock_blank": 0,
+    "tesseract_blank": 3
+  },
+  "splits": {
+    "valid": {
+      "fraction": {
+        "samples": 4,
+        "stock_exact": 0,
+        "tesseract_exact": 0,
+        "both_exact": 0,
+        "stock_blank": 0,
+        "tesseract_blank": 1
+      },
+      "nonfraction": {
+        "samples": 8,
+        "stock_exact": 2,
+        "tesseract_exact": 0,
+        "both_exact": 0,
+        "stock_blank": 0,
+        "tesseract_blank": 1
+      }
+    },
+    "test": {
+      "fraction": {
+        "samples": 4,
+        "stock_exact": 1,
+        "tesseract_exact": 0,
+        "both_exact": 0,
+        "stock_blank": 0,
+        "tesseract_blank": 1
+      },
+      "nonfraction": {
+        "samples": 8,
+        "stock_exact": 3,
+        "tesseract_exact": 0,
+        "both_exact": 0,
+        "stock_blank": 0,
+        "tesseract_blank": 0
+      }
+    }
+  }
+}

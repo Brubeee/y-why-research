@@ -307,3 +307,65 @@ the recognizer on anonymous handwritten formulas separately from
 continuous-page detection; these paired renders do not measure handwriting.
 
 [Raw crop and transcription output](rule-06-results.json).
+
+## Isolated human handwriting, before page finding
+
+This compares recognizers on **individual contributor-written formulas**
+from the official [Google MathWriting excerpt](https://github.com/google-research/google-research/tree/master/mathwriting)
+(CC BY-NC-SA 4.0). It does not include student papers, whole handwritten
+solutions, or phone captures. Within each labeled publisher split, the
+probe selects four stacked-fraction and eight other formulas using a
+predeclared hash of the sample ID. These are excerpt strata, not a random
+sample of school math. Some formulas are outside the app's affine grammar;
+publisher split names do not establish writer independence or absence from
+model training. The recognizer's overlap with these samples is unverified.
+
+Input is a clean, known formula crop rendered from X/Y coordinates with
+a uniform aspect-preserving fit, round stroke ends, and white margins.
+Tests require a one-point mark to appear and a pen-up gap to stay white.
+A visual preview before inference showed no clipping or obvious joined
+strokes. Potential ambiguity in letters, delimiters and superscripts did
+not change any selection or label. The reference is the published
+`normalizedLabel`. The score keeps signs, fractions, scripts and bracket
+structure; it does not compare algebraic equivalence or convert slashes to
+stacked fractions. The eight inference packs are a batching convention
+and do not represent worked chains.
+
+Both recognizers get identical frozen PNG bytes: local Tesseract English
+single-line mode (`--psm 7`, not the shipped full-page endpoint) and the
+existing pinned stock q4 TexTeller revision with greedy decoding. No raw
+corpus data, weights, rendering or model output is checked in.
+
+```sh
+python mathwriting_probe.py freeze /path/to/mathwriting-2024-excerpt.tgz frozen_hw_07
+python mathwriting_probe.py tesseract frozen_hw_07 > hw-07-tess-local.json
+YWHY_MODEL_CACHE="$PWD/model-cache" node page_recognize.mjs frozen_hw_07 > hw-07-stock-local.json
+python mathwriting_probe.py score hw-07-stock-local.json hw-07-tess-local.json
+```
+
+Official excerpt SHA-256:
+`cba038def001480a89962b25cb20a60df4c4145e94c86ef9d2af65f192cb82bc`.
+Frozen recognizer manifest SHA-256:
+`b37cb6688995a45fac6217e4c5b098f35cf039925708b4fcde70d08a81edda9a`.
+
+| Publisher split and stratum | Exact q4 TexTeller | Exact Tesseract 5.5.0 |
+| --- | ---: | ---: |
+| Valid, stacked fraction | 0/4 | 0/4 |
+| Valid, other | 2/8 | 0/8 |
+| Test, stacked fraction | 1/4 | 0/4 |
+| Test, other | 3/8 | 0/8 |
+| Total | **6/24** | **0/24** |
+
+The learned formula reader returns nonempty output for all 24, including
+substantial wrong outputs; a nonblank response is not a reliability signal.
+The text reader is blank three times. Qualitative failure types include
+confusing letters, dropping script structure, and emitting extra control
+tokens. Do not switch the live recognizer based on this sample. Measure
+how well it reads the intended one-variable equation class separately
+and test real phone capture apart from clean stroke rendering. Using a
+different raster density or model should be a prespecified comparison,
+not a post hoc reinterpretation of these reference strings.
+
+[Aggregate results](hw-07-aggregate.json). Local raw output SHA-256
+(stock, then Tesseract): `a86f2369784b66bf4524c713b9efa8fc76b65d1341530b38086501414a58e39b`,
+`66ba420c0e20d9e2f80489f019d5fdbd266148c814fbb13839dd70d7563675fc`.
