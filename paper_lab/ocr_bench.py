@@ -63,6 +63,22 @@ def score_page(page, lines):
         })
     active = [row for row in result if row['status'] == 'active']
     indexes = [row['index'] for row in active]
+    found_in_order = bool(indexes) and None not in indexes and indexes == sorted(indexes)
+    # The annotated heading and canceled ink are the only scope exclusions in
+    # these fixtures. Never hide an unmatched line based on its recognized text.
+    # Require whole-box containment to avoid excluding a mixed/merged row.
+    excluded = {
+        i for i, line in enumerate(lines)
+        if any(row['status'] in ('context', 'canceled') and overlap(line['box'], row['box']) == 1
+               for row in page['rows'])
+        and not any(row['status'] == 'active' and overlap(line['box'], row['box']) > 0
+                    for row in page['rows'])
+    }
+    in_scope = [i for i in range(len(lines)) if i not in excluded]
+    exact_chain = (
+        found_in_order and indexes == in_scope and all(row['exact'] for row in active)
+        if page['support'] == 'bounded_linear' else None
+    )
     # This naive strategy is a cautionary comparison, not a release feature:
     # treat all matched work rows as active without checking crossed-out ink.
     crossed_out_in_naive_selection = sum(row['status'] == 'canceled' and row['index'] is not None
@@ -70,7 +86,10 @@ def score_page(page, lines):
     return {
         'id': page['id'], 'support': page['support'], 'layout_cohort': page['layout_cohort'],
         'condition': page['condition'], 'rows': result,
-        'all_active_found_in_order': (bool(indexes) and None not in indexes and indexes == sorted(indexes)),
+        'all_active_found_in_order': found_in_order,
+        'raw_chain_exact': exact_chain,
+        'raw_lines': [{**line, 'out_of_scope':i in excluded} for i, line in enumerate(lines)],
+        'unmatched_in_scope_indexes': [i for i in in_scope if i not in indexes],
         'unmatched_ocr_lines': [line['text'] for i, line in enumerate(lines) if i not in links.values()],
         'canceled_rows_in_naive_selection': crossed_out_in_naive_selection,
     }
@@ -115,6 +134,8 @@ def totals(pages):
         'pages': len(pages), 'active_rows': len(active), 'active_exact': sum(row['exact'] for row in active),
         'active_covered': len(covered), 'active_exact_when_covered': sum(row['exact'] for row in covered),
         'pages_all_active_found_in_order': sum(p['all_active_found_in_order'] for p in pages),
+        'pages_raw_chain_eligible': sum(p['raw_chain_exact'] is not None for p in pages),
+        'pages_raw_chain_exact': sum(p['raw_chain_exact'] is True for p in pages),
         'canceled_rows': sum(r['status'] == 'canceled' for p in pages for r in p['rows']),
         'canceled_rows_in_naive_selection': sum(p['canceled_rows_in_naive_selection'] for p in pages),
     }
@@ -136,7 +157,7 @@ def run(directory, cohort):
         scores['baseline_psm3'].append(score_page(page, draft_ocr(path.read_bytes(), mime)['lines']))
         scores['sparse_psm11'].append(score_page(page, compare_candidate(path, page)))
     return {
-        'protocol_version': 1, 'cohort': cohort, 'synthetic': True,
+        'protocol_version': 2, 'cohort': cohort, 'synthetic': True,
         'fixture_manifest_sha256': hashlib.sha256(json.dumps(manifest, sort_keys=True).encode()).hexdigest(),
         'image_sha256': hashes, 'pillow': PIL.__version__,
         'tesseract': subprocess.check_output(['tesseract', '--version'], text=True).splitlines()[0],

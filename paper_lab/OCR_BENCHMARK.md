@@ -73,3 +73,25 @@ This could improve the workflow even if automatic page layout is still poor.
 Motivation: [Seong et al., EMNLP 2026](https://aclanthology.org/2026.emnlp-main.476/)
 documented semantic over-correction by vision-language OCR. This experiment
 does not use those models or reproduce their reported scores.
+
+### Protocol 2: raw exact chain
+
+In addition to geometry-only coverage, the report now counts complete exact
+selected-solution drafts before any edits or confidence gating. Eligible
+fixtures have one bounded chain. Compare the raw engine order and all literal
+lines, allowing only the same presentation normalization as the row metric.
+Only a line box wholly contained in a preannotated heading or canceled row,
+and not overlapping any active box, is excluded. Other unmatched detections
+count as extras, even if their text resembles a heading. This conservative
+policy can penalize poor localization as well as poor transcription. It is
+a scoring use of annotations, not automatic identification of handwriting or
+crossed-out work by the app. Stacked-fraction, two-column and nonlinear
+fixtures remain in legacy coverage counts, not the bounded-chain denominator.
+
+On the existing frozen printed/synthetic set with Tesseract 5.5.0, whole-page
+PSM 3 found all active geometry in order on 4/6 fixtures but scored 0/3
+eligible exact chains. PSM 11 found ordered geometry on 2/6 and scored 1/3
+eligible exact chains. This small historical set is not a basis to change
+defaults and is not handwriting or phone evidence. A correctly transcribed
+written error passes the OCR metric; a silently corrected line or a spurious
+in-scope line fails, even when geometry alone passes.
