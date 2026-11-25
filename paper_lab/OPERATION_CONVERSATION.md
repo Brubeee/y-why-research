@@ -14,9 +14,10 @@ operations cannot produce a side-specific prompt.
 The result can identify a side only when the whole exact comparison is
 supported. It points first to the left side when that side does not match the
 claim; otherwise it can point to a mismatching right side after verifying the
-left side matches. If comparison is unavailable, it asks for one intermediate
-equation or abstains. This is evidence about the selected action and written
-lines, not a claim about the student's intent.
+left side matches. If both sides mismatch, comparison is unavailable, or the
+action is combined/uncertain, it asks for one neutral intermediate equation or
+abstains. This is evidence about the selected action and written lines, not a
+claim about the student's intent.
 
 The new form appears only for the typed fallback. The existing negative
 distribution retry stays on its authored path, and the photo/OCR flow is not
@@ -114,5 +115,39 @@ this R&D change.
 
 ## Verification limits
 
-The phone action-response path remains unverified because the browser overlay
-blocked the controls. No learner/effectiveness claim is in scope.
+The phone action-response path was unverified at the time of the first browser
+rehearsal because the browser overlay blocked the controls. The later typed
+tutoring iteration below records a completed 390 × 844 CSS-pixel Chrome
+viewport rehearsal; no physical handset or learner/effectiveness claim is in
+scope.
+
+## Later safety classification (2026-11-26)
+
+The frozen 28 interactions and their labels were kept unchanged. A later
+classifier revision stopped identifying a side when both sides failed the
+student's declared single action. The frozen script was rerun against the same
+fixture checksum after this safety change:
+
+| Measure | Later result |
+|---|---:|
+| Fixture checksum | matches the frozen SHA-256 |
+| Correct claims matched | 7/7 |
+| Correct side-targeted prompts | 8/10 expected prompts |
+| Wrong confident prompts | 0/28 |
+| Missed targeted prompts | 2/10 expected prompts |
+| Flow abstentions | 19/28 |
+| Checker verdict changes | 0/28 |
+| Exact-status mismatches | 0/28 |
+
+The two misses, `demo-divide-points-left` and `negative-exact-constant`, have
+`comparison: {left:false,right:false}`. They now take the neutral/abstain route
+instead of receiving a guessed side prompt. The earlier 10/10 target result
+above records the behavior before this safety change; use the later result for
+the current branch. These remain authored synthetic agreement counts, not
+student evidence.
+
+The full typed repair, retry, reset, and ambiguity rehearsal and the confirmed
+ordered-lines boundary are documented in
+[`TYPED_TUTORING_TRACK.md`](TYPED_TUTORING_TRACK.md). The separately frozen
+learned-selector comparison and no-go decision are in
+[`QUESTION_SELECTOR_EXPERIMENT.md`](QUESTION_SELECTOR_EXPERIMENT.md).

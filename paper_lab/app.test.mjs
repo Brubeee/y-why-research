@@ -95,7 +95,7 @@ test('OCR draft cannot mark; confirmation exposes first changed step, a separati
   get('clear').dispatch('click');
 });
 
-test('typed chain confirms, shows the exact changed pair and witness, and clears feedback on edit',async t=>{
+test('typed distribution repair reaches a different fresh problem and edits clear every later response',async t=>{
   t.after(()=>get('clear').dispatch('click'));
   await import('./app.mjs?typed-diagnostic-studio');
   get('clear').dispatch('click');
@@ -112,14 +112,36 @@ test('typed chain confirms, shows the exact changed pair and witness, and clears
   assert.match(get('verdict').words(),/12 = 12/);
   assert.doesNotMatch(get('verdict').words(),/x\s*=\s*-8\b/);
   assert.equal(get('probe').hidden,false);
-  assert.match(get('probe-question').textContent,/−3\(y−2\)=12/);
+  assert.match(get('probe-question').textContent,/Choose one move/);
   assert.doesNotMatch(get('probe-question').textContent,/x\s*=\s*-8\b/);
-  assert.equal(get('operation-claim-panel').hidden,true,'the authored negative-distribution retry keeps its existing path');
+  assert.equal(get('operation-claim-panel').hidden,false);
+  assert.equal(get('typed-repair-form').hidden,true);
+
+  get('operation-kind').value='distribution-left';get('operation-kind').dispatch('change');
+  get('operation-claim-form').dispatch('submit');
+  assert.equal(get('typed-repair-form').hidden,false);
+  assert.match(get('typed-repair-question').textContent,/distribute the factor on the left/i);
+  get('typed-repair-answer').value='−x+4=12';get('typed-repair-form').dispatch('submit');
+  assert.match(get('typed-repair-feedback').textContent,/preserves the preceding solution set and shows the declared move/);
+  assert.equal(get('typed-retry').hidden,false);
+  assert.match(get('typed-retry-question').textContent,/3−5\(2z\+1\)=8/);
+  assert.equal(get('typed-retry-hint').disabled,true,'the first retry response is captured before a hint is available');
+  assert.equal(get('typed-retry-submit').textContent,'Check first response');
+  get('typed-retry-answer').value='not an equation';get('typed-retry-form').dispatch('submit');
+  assert.equal(get('typed-retry-hint').disabled,true,'unparseable text cannot unlock the hint');
+  assert.match(get('typed-retry-result').textContent,/outside the supported exact check/);
+  assert.match(get('typed-retry-evidence').textContent,/No evaluable equation has been checked yet/);
+  assert.equal(get('typed-retry-submit').textContent,'Check first response');
+  get('typed-retry-answer').value='3−10z−5=8';get('typed-retry-form').dispatch('submit');
+  assert.match(get('typed-retry-evidence').textContent,/First evaluable response before help: The exact equation and declared move match/);
+  assert.match(get('typed-retry-evidence').textContent,/First supported response: before help/);
 
   const changed=get('rows').children[1];
   changed.children[1].value='−x+4=12';
   changed.children[1].dispatch('input');
   assert.equal(get('probe').hidden,true);
+  assert.equal(get('typed-retry').hidden,true,'editing the source closes the fresh retry');
+  assert.equal(get('typed-retry-evidence').textContent,'');
   assert.doesNotMatch(get('verdict').words(),/One exact value/);
   assert.equal(changed.children[2].children[0].checked,false);
   changed.children[2].children[0].checked=true;
@@ -129,7 +151,7 @@ test('typed chain confirms, shows the exact changed pair and witness, and clears
   assert.equal(get('probe').hidden,true);
 });
 
-test('weak-evidence typed change asks only the neutral operation question',async t=>{
+test('weak-evidence typed change uses the declared division and checks a predecessor-specific repair',async t=>{
   t.after(()=>get('clear').dispatch('click'));
   await import('./app.mjs?typed-clarification');
   get('clear').dispatch('click');
@@ -145,12 +167,19 @@ test('weak-evidence typed change asks only the neutral operation question',async
   assert.match(verdict,/10 ≠ 14/);
   assert.match(verdict,/7 = 7/);
   assert.equal(get('probe').hidden,false);
-  assert.equal(get('probe-question').textContent,'What operation did you apply here?');
+  assert.match(get('probe-question').textContent,/Choose one move/);
   assert.equal(get('probe-form').hidden,true);
   assert.equal(get('operation-claim-panel').hidden,false);
   assert.equal(get('operation-feedback').textContent,'');
   assert.equal(get('probe-skip').hidden,true);
   assert.equal(get('retry').hidden,true);
+  get('operation-kind').value='divide';get('operation-kind').dispatch('change');
+  get('operation-constant').value='2';get('operation-constant').dispatch('input');
+  get('operation-claim-form').dispatch('submit');
+  assert.match(get('operation-feedback').textContent,/matches the declared action on the right side/i);
+  get('typed-repair-answer').value='x+3=7';get('typed-repair-form').dispatch('submit');
+  assert.match(get('typed-repair-feedback').textContent,/preserves the preceding solution set/);
+  assert.equal(get('typed-retry').hidden,false);
 });
 
 test('same changed typed pair routes subtract and divide claims to exact side checks',async t=>{
@@ -166,26 +195,39 @@ test('same changed typed pair routes subtract and divide claims to exact side ch
   get('operation-constant').value='6';get('operation-constant').dispatch('input');
   get('operation-claim-form').dispatch('submit');
   let feedback=get('operation-feedback').textContent;
-  assert.match(feedback,/left side matches/i);
-  assert.match(feedback,/right side: what is 14−6\?/);
-  assert.match(feedback,/written right side is 9/);
+  assert.match(feedback,/matches the declared action on the left side/i);
+  assert.match(get('typed-repair-question').textContent,/subtract 6 from both sides/i);
+  assert.equal(get('typed-repair-form').hidden,false);
   assert.doesNotMatch(feedback,/x\s*=\s*4\b/);
   assert.match(get('verdict').words(),/One exact value to check/,'the original verified witness remains visible');
+  get('typed-repair-answer').value='2x=8';get('typed-repair-form').dispatch('submit');
+  assert.equal(get('typed-retry').hidden,false);
+  get('typed-retry-answer').value='m+5=10';get('typed-retry-form').dispatch('submit');
+  assert.match(get('typed-retry-result').textContent,/changes the solution set/);
+  assert.equal(get('typed-retry-hint').disabled,false,'help becomes available only after the first response');
+  assert.equal(get('typed-retry-submit').textContent,'Check another response');
+  get('typed-retry-hint').dispatch('click');
+  assert.equal(get('typed-retry-hint-text').hidden,false);
+  assert.equal(get('typed-retry-submit').textContent,'Check aided correction');
+  get('typed-retry-answer').value='m+5=11';get('typed-retry-form').dispatch('submit');
+  assert.match(get('typed-retry-evidence').textContent,/First evaluable response before help: The response changes the solution set/);
+  assert.match(get('typed-retry-evidence').textContent,/First supported response: after a hint/);
 
   get('operation-kind').value='divide';get('operation-kind').dispatch('change');
   assert.equal(get('operation-feedback').textContent,'','changing the declared action clears prior feedback');
   get('operation-constant').value='2';get('operation-constant').dispatch('input');
   get('operation-claim-form').dispatch('submit');
   feedback=get('operation-feedback').textContent;
-  assert.match(feedback,/every term on the left/i);
-  assert.match(feedback,/\(2x\+6\) ÷ 2/);
-  assert.match(feedback,/written left side is 2x/);
+  assert.match(feedback,/Neither side matches that single action/i);
+  assert.match(get('typed-repair-question').textContent,/neutral intermediate equation/i);
+  assert.equal(get('typed-retry').hidden,true,'an ambiguous action does not produce a fresh retry');
   assert.doesNotMatch(feedback,/x\s*=\s*4\b/);
 
   get('operation-kind').value='other';get('operation-kind').dispatch('change');
   assert.equal(get('operation-feedback').textContent,'');
   get('operation-claim-form').dispatch('submit');
-  assert.match(get('operation-feedback').textContent,/add one intermediate equation/i);
+  assert.match(get('operation-feedback').textContent,/cannot separate one supported move/i);
+  assert.equal(get('typed-repair-form').hidden,false,'not sure gets a neutral line, not an inferred operation');
 
   const source=get('typed-work').value;
   get('edit-typed').dispatch('click');
@@ -197,6 +239,24 @@ test('same changed typed pair routes subtract and divide claims to exact side ch
   assert.equal(get('operation-feedback').textContent,'','reconfirmation cannot restore old claim feedback');
   assert.equal(get('operation-kind').value,'');
   assert.equal(get('operation-constant').value,'');
+});
+
+test('typed retry labels a second pre-hint correction as after feedback',async t=>{
+  t.after(()=>get('clear').dispatch('click'));
+  await import('./app.mjs?typed-after-feedback');
+  get('clear').dispatch('click');
+  get('typed-work').value='2x+6=14\n2x=9';
+  get('typed-work').dispatch('input');
+  get('confirm-typed').dispatch('click');
+  get('operation-kind').value='subtract';get('operation-kind').dispatch('change');
+  get('operation-constant').value='6';get('operation-constant').dispatch('input');
+  get('operation-claim-form').dispatch('submit');
+  get('typed-repair-answer').value='2x=8';get('typed-repair-form').dispatch('submit');
+  get('typed-retry-answer').value='m+5=10';get('typed-retry-form').dispatch('submit');
+  get('typed-retry-answer').value='m+5=11';get('typed-retry-form').dispatch('submit');
+  assert.match(get('typed-retry-evidence').textContent,/First evaluable response before help: The response changes the solution set/);
+  assert.match(get('typed-retry-evidence').textContent,/First supported response: after feedback/);
+  assert.equal(get('typed-retry-hint').disabled,false,'the hint may follow the first evaluable response');
 });
 
 test('typed unsupported chains and unresolved prefixes never open witness or follow-up',async t=>{

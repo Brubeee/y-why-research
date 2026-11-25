@@ -68,3 +68,45 @@ This branch is based on `8c20183d50a8791658e16b8b5f7eb53e77e22cd5` and has not b
 - The diagnostic only separates its two authored negative-distribution rules. A matching response is evidence about that response, not a diagnosis of intent.
 - No handheld device test, handwriting/OCR accuracy test, learner study, or learning-improvement claim is included.
 - In the declared-operation iteration, a real Chromium browser confirmed both desktop prompts. At a 390 px viewport the workbench and line comparison stacked in one column with no horizontal overflow. The phone action-response interaction could not be completed because a browser consent-reminder overlay covered the controls; the phone flow remains unverified.
+
+## Complete typed tutoring iteration (2026-11-26)
+
+The later iteration adds a typed repair line bound to the actual immediately
+preceding confirmed equation, separates exact solution-set preservation from
+the declared operation check, and opens a different fixed transfer task only
+after a supported repair. The first fresh-task response is evaluated before
+the hint unlocks; an aided correction remains labeled separately. Combined or
+uncertain actions use a neutral intermediate-line check, and edits/reset clear
+downstream feedback. The photo/OCR route and its existing retry were not
+changed. The implementation and one-minute camera-failure demo are in
+[`TYPED_TUTORING_TRACK.md`](TYPED_TUTORING_TRACK.md).
+
+Current branch evidence: `node --test paper_lab/*.test.mjs` passed 91/91 tests
+after the retry-label and grouped-equivalence fixes. Unparseable retry text does
+not unlock hints; the first evaluable response remains the comparison point,
+and a later correction before a hint is labeled after feedback. Equivalent
+parenthesized negative-factor products remain uncredited until distribution is
+shown. The Python suite ran 24
+tests: 19 passed and 5 Tesseract-dependent cases skipped because the local OCR
+binary is unavailable. The static page/module-graph route test passed; new
+helpers are kept inside the existing allowlisted shared module, and no
+OCR-owned server or test file was edited.
+The separate grouped selector run is frozen and documented in
+[`QUESTION_SELECTOR_EXPERIMENT.md`](QUESTION_SELECTOR_EXPERIMENT.md): the rule
+matched 12/12 expected held prompts; the learned selector matched 5/12, made
+one confident wrong selection, and abstained on 6/12 expected-question cases.
+Only 10 independent eligible groups were held, below the declared 20-group
+floor, so the learned selector remains out of the app.
+
+Google Chrome rehearsal later completed the full typed flow at the desktop
+viewport and a 390 × 844 CSS-pixel viewport. The phone-sized viewport had no
+horizontal overflow (390 px viewport, 375 px document width). Both viewports
+covered input, exact witness, action feedback, repair, fresh retry, reset, and
+the combined-move ambiguity path. This is browser responsive emulation, not a
+physical handset test. The older incomplete phone note above describes the
+earlier browser session; this later completion supersedes it for this branch.
+
+The learned selector is a no-go. These fixtures were written by the authors and
+do not establish student benefit, a misconception diagnosis, or learning
+gains. Review `TYPED_TUTORING_TRACK.md` for the OCR confirmed-ordered-lines
+boundary and the decisions Manan and Vihan should make before integration.

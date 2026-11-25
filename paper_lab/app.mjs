@@ -1,5 +1,5 @@
 import { findEquationWitness, verifyRows, parseExpression } from './verify.mjs';
-import { checkOperationClaim, checkTwoSidedOperationClaim, formatOperationExpression } from './operation_claim.mjs';
+import { checkOperationClaim, classifyTypedStep, checkTypedRepair, checkNeutralIntermediate, freshTaskForClaim, createTypedRetry, exposeTypedRetryHint, recordTypedRetry } from './operation_claim.mjs';
 import { diagnoseStep, interpretProbe } from './diagnostic.mjs';
 
 import { curriculumReference } from './curriculum.mjs';
@@ -21,6 +21,7 @@ const MAX_ROWS = 45;
 let rows = [], objectUrl, dims, inflight, revision = 0, draftRevision = 0, chainRevision = 0, diagnosis = null, skillMatch = null;
 let currentFile = null, region = null, selecting = false, corner = null, retrySession = null;
 let currentProbe = null, firstSeparator = null, photoCandidate = null, typedWorkflow = false, currentActionContext = null;
+let typedRepairMode = null, typedRepairContext = null, typedRetryTask = null, typedRetrySession = null;
 const clearAttestation = () => { $('anchor-check').checked = false; };
 function regionButtons() {
   const img = $('image');
@@ -50,6 +51,7 @@ function resetResult(message = 'Run the check on your selected, confirmed lines.
   }
   diagnosis = null; currentProbe = null;
   currentActionContext = null;
+  clearTypedRepairFlow();
   skillMatch = null; course();
   $('verdict').replaceChildren(el('p', message));
   $('probe').hidden = true; $('probe-form').hidden = true; $('probe-skip').hidden = true;
@@ -64,6 +66,25 @@ function resetResult(message = 'Run the check on your selected, confirmed lines.
   $('retry').hidden = true;
   $('retry-answer').value = '';
   showDelayed();
+}
+function clearTypedRetry() {
+  typedRetryTask = null; typedRetrySession = null;
+  $('typed-retry').hidden = true;
+  $('typed-retry-question').textContent = '';
+  $('typed-retry-hint').disabled = true;
+  $('typed-retry-hint-text').hidden = true;
+  $('typed-retry-hint-text').textContent = '';
+  $('typed-retry-result').textContent = '';
+  $('typed-retry-evidence').textContent = '';
+  $('typed-retry-answer').value = '';
+}
+function clearTypedRepairFlow() {
+  typedRepairMode = null; typedRepairContext = null;
+  $('typed-repair-form').hidden = true;
+  $('typed-repair-question').textContent = '';
+  $('typed-repair-answer').value = '';
+  $('typed-repair-feedback').textContent = '';
+  clearTypedRetry();
 }
 function resetTypedEntry(clearText = true) {
   typedWorkflow = false;
@@ -390,43 +411,150 @@ $('anchor-check').addEventListener('change', () => resetResult());
 $('typed-work').addEventListener('input', () => {
   if (!$('typed-work').disabled) resetResult('Typed draft changed. Confirm it again before checking.');
 });
+const supportedBalanceKinds = ['add','subtract','multiply','divide'];
+const operationDescription = claim => {
+  const value=String(claim?.constant ?? '').trim();
+  if (claim?.kind==='add') return `add ${value} to both sides`;
+  if (claim?.kind==='subtract') return `subtract ${value} from both sides`;
+  if (claim?.kind==='multiply') return `multiply both sides by ${value}`;
+  if (claim?.kind==='divide') return `divide both sides by ${value}`;
+  if (claim?.kind==='distribution-left') return 'distribute the factor on the left';
+  if (claim?.kind==='distribution-right') return 'distribute the factor on the right';
+  return 'use one step at a time';
+};
+function currentTypedActionIsLive(context=currentActionContext) {
+  return !!context && typedWorkflow && context.revision===chainRevision &&
+    rows[context.beforeIndex]===context.beforeRow && rows[context.afterIndex]===context.afterRow &&
+    context.beforeRow?.confirmed===true && context.afterRow?.confirmed===true &&
+    context.beforeRow.text===context.before.text && context.afterRow.text===context.after.text;
+}
 $('operation-kind').addEventListener('change', () => {
-  const needsConstant = ['add','subtract','multiply','divide'].includes($('operation-kind').value);
+  clearTypedRepairFlow();
+  const needsConstant = supportedBalanceKinds.includes($('operation-kind').value);
   $('operation-constant-field').hidden = !needsConstant;
   $('operation-constant').disabled = !needsConstant;
   if (!needsConstant) $('operation-constant').value = '';
   $('operation-feedback').textContent = '';
 });
-$('operation-constant').addEventListener('input', () => { $('operation-feedback').textContent = ''; });
+$('operation-constant').addEventListener('input', () => {
+  clearTypedRepairFlow();
+  $('operation-feedback').textContent = '';
+});
 $('operation-claim-form').addEventListener('submit', event => {
   event.preventDefault();
   const kind = $('operation-kind').value;
-  if (!typedWorkflow || !currentActionContext || currentActionContext.revision !== chainRevision || $('operation-claim-panel').hidden)
+  if (!currentTypedActionIsLive() || $('operation-claim-panel').hidden)
     return;
   if (!kind) {
-    $('operation-feedback').textContent = 'Choose an operation or Something else / Not sure.';
+    $('operation-feedback').textContent = 'Choose one move, More than one move, or Not sure.';
     return;
   }
   const claim = {kind,constant:$('operation-constant').value.trim()};
-  const result = checkTwoSidedOperationClaim({
+  const result = classifyTypedStep({
     before:currentActionContext.before,
-    after:currentActionContext.after,
+    observed:currentActionContext.after,
     claim,
   });
-  if (result.status === 'consistent') {
-    $('operation-feedback').textContent = 'Your declared operation matches both sides exactly. This check does not tell me what you were thinking.';
-  } else if (result.status === 'left-mismatch') {
-    const expression = formatOperationExpression(currentActionContext.before.text.split('=')[0],claim);
-    const word = kind === 'multiply' || kind === 'divide' ? 'Check what happened to every term on the left' : 'Check the left side';
-    $('operation-feedback').textContent = `${word} under your declared action: ${expression}. The written left side is ${result.writtenSide}.`;
-  } else if (result.status === 'right-mismatch' && result.comparison?.left === true) {
-    const expression = formatOperationExpression(currentActionContext.before.text.split('=')[1],claim);
-    $('operation-feedback').textContent = `The left side matches your declared action. Check the right side: what is ${expression}? The written right side is ${result.writtenSide}.`;
-  } else if (kind === 'other' || result.status === 'abstain') {
-    $('operation-feedback').textContent = 'I can’t verify that action from these choices. Add one intermediate equation, or abstain.';
+  clearTypedRepairFlow();
+  if (result.status === 'actionable') {
+    typedRepairMode='declared';
+    typedRepairContext={...currentActionContext,claim};
+    if (kind === 'distribution-left' || kind === 'distribution-right') {
+      $('operation-feedback').textContent = `This is one declared expansion on the ${result.focusSide}. It does not diagnose why the written line changed.`;
+      $('typed-repair-question').textContent = `From ${currentActionContext.before.text}, ${operationDescription(claim)}. Enter one corrected intermediate equation; leave the other side as written.`;
+    } else {
+      const matchingSide=result.focusSide==='left'?'right':'left';
+      $('operation-feedback').textContent = `Your written line matches the declared action on the ${matchingSide} side. Check the other side; this is not a diagnosis of your reasoning.`;
+      $('typed-repair-question').textContent = `From ${currentActionContext.before.text}, ${operationDescription(claim)}. Enter one corrected intermediate equation.`;
+    }
+    $('typed-repair-form').hidden=false;
+  } else if (result.status === 'neutral') {
+    typedRepairMode='neutral';
+    typedRepairContext={...currentActionContext};
+    $('operation-feedback').textContent = result.reason === 'both-sides-mismatch'
+      ? 'Neither side matches that single action. This could be a combined step, so I will not choose a side.'
+      : 'I cannot separate one supported move from this step, so I will not infer an action.';
+    $('typed-repair-question').textContent = `If useful, enter one neutral intermediate equation after a single move from ${currentActionContext.before.text}. I can check solution-set preservation, but not attribute the move.`;
+    $('typed-repair-form').hidden=false;
   } else {
-    $('operation-feedback').textContent = 'I can’t compare that action exactly. Use a supported exact constant (multiplication and division need a nonzero value), or add one intermediate equation.';
+    $('operation-feedback').textContent = 'This step is not available for a supported repair. Use one confirmed equation in the current exact affine grammar.';
   }
+});
+function typedRetryStatus(event) {
+  if (!event) return '';
+  return ({
+    supported:'The exact equation and declared move match',
+    'equivalent-other':'The equation preserves the solution set but does not show this move',
+    'neutral-equivalent':'The equation preserves the solution set; the action is still unattributed',
+    'not-equivalent':'The response changes the solution set',
+    blocked:'The equation is outside the supported exact check',
+  })[event.status] || 'No exact result is available';
+}
+function showTypedRetry() {
+  if (!typedRetryTask || !typedRetrySession || !currentTypedActionIsLive(typedRepairContext)) return;
+  $('typed-retry').hidden=false;
+  $('typed-retry-question').textContent = `Fresh equation: ${typedRetryTask.source}. ${typedRetryTask.instruction}`;
+  $('typed-retry-submit').textContent = !typedRetrySession.firstResponse ? 'Check first response'
+    : typedRetrySession.hintExposed ? 'Check aided correction' : 'Check another response';
+  $('typed-retry-hint').disabled = !typedRetrySession.firstResponse || typedRetrySession.hintExposed ||
+    typedRetrySession.events.length >= 120;
+  $('typed-retry-hint-text').hidden = !typedRetrySession.hintExposed;
+  $('typed-retry-hint-text').textContent = typedRetrySession.hintExposed ? typedRetryTask.hint : '';
+  const last=typedRetrySession.lastEvent;
+  $('typed-retry-result').textContent = last?.kind === 'attempt'
+    ? `${typedRetryStatus(last)}. No answer is shown.` : '';
+  const first=typedRetrySession.firstResponse, success=typedRetrySession.firstSuccess;
+  const successTiming=success?.mode === 'no-hint' ? 'before help'
+    : success?.mode === 'after-feedback' ? 'after feedback' : 'after a hint';
+  const hasAttempt=typedRetrySession.events.some(event=>event.kind === 'attempt');
+  $('typed-retry-evidence').textContent = first
+    ? `First evaluable response before help: ${typedRetryStatus(first)}. ` +
+      (success ? `First supported response: ${successTiming}.` : 'No supported response is recorded yet.')
+    : hasAttempt
+      ? 'No evaluable equation has been checked yet. Enter one before opening a hint. This record stays on this page only.'
+      : 'No response recorded. Try once before opening a hint. This record stays on this page only.';
+}
+$('typed-repair-answer').addEventListener('input', () => {
+  $('typed-repair-feedback').textContent='';
+  if (typedRetrySession) clearTypedRetry();
+});
+$('typed-repair-form').addEventListener('submit', event => {
+  event.preventDefault();
+  if (!typedRepairContext || !currentTypedActionIsLive(typedRepairContext) || $('typed-repair-form').hidden) return;
+  const candidate={text:$('typed-repair-answer').value.trim(),confirmed:true};
+  if (!candidate.text) {
+    $('typed-repair-feedback').textContent='Enter one equation line before checking it.';
+    return;
+  }
+  const result=typedRepairMode === 'declared'
+    ? checkTypedRepair({before:typedRepairContext.before,candidate,claim:typedRepairContext.claim})
+    : checkNeutralIntermediate({before:typedRepairContext.before,candidate});
+  if (result.status === 'supported') {
+    $('typed-repair-feedback').textContent='The line preserves the preceding solution set and shows the declared move. A different problem is ready below.';
+    typedRetryTask=freshTaskForClaim(typedRepairContext.claim);
+    typedRetrySession=createTypedRetry(typedRetryTask);
+    $('typed-retry-answer').value='';
+    showTypedRetry();
+  } else if (result.status === 'equivalent-other') {
+    $('typed-repair-feedback').textContent='This equation preserves the solution set, but it does not show the declared one-step move. It is not marked wrong; enter one line that shows that move.';
+  } else if (result.status === 'neutral-equivalent' || result.status === 'equivalent-unattributed') {
+    $('typed-repair-feedback').textContent='This equation preserves the solution set. The action is still ambiguous, so I cannot confirm the reasoning or select a fresh retry.';
+  } else if (result.status === 'not-equivalent') {
+    $('typed-repair-feedback').textContent='This line changes the solution set from the preceding equation. Check one move at a time; no solution is shown.';
+  } else {
+    $('typed-repair-feedback').textContent='I cannot check this line in the supported exact affine grammar. No repair verdict was issued.';
+  }
+});
+$('typed-retry-hint').addEventListener('click', () => {
+  if (!currentTypedActionIsLive(typedRepairContext) || !typedRetrySession || !typedRetrySession.firstResponse || $('typed-retry').hidden) return;
+  typedRetrySession=exposeTypedRetryHint(typedRetrySession);
+  showTypedRetry();
+});
+$('typed-retry-form').addEventListener('submit', event => {
+  event.preventDefault();
+  if (!currentTypedActionIsLive(typedRepairContext) || !typedRetryTask || !typedRetrySession || $('typed-retry').hidden) return;
+  typedRetrySession=recordTypedRetry(typedRetrySession,{text:$('typed-retry-answer').value});
+  showTypedRetry();
 });
 $('confirm-typed').addEventListener('click', () => {
   if ($('typed-work').disabled) return;
@@ -568,9 +696,22 @@ function checkSelectedWork() {
 
   currentActionContext = {
     revision:chainRevision,
+    beforeIndex:before.sourceIndex,
+    afterIndex:after.sourceIndex,
+    beforeRow:rows[before.sourceIndex],
+    afterRow:rows[after.sourceIndex],
     before:{text:before.text,confirmed:before.confirmed},
     after:{text:after.text,confirmed:after.confirmed},
   };
+  if (typedWorkflow) {
+    $('probe').hidden = false;
+    $('probe-question').textContent = 'Choose one move for the first changed step. The checker will not infer what you were thinking.';
+    $('operation-claim-panel').hidden = false;
+    $('probe-form').hidden = true;
+    $('probe-skip').hidden = true;
+    $('retry').hidden = true;
+    return;
+  }
   diagnosis = diagnoseStep(before.text,after.text);
   if (diagnosis.status !== 'ambiguous' || !diagnosis.probe) {
     $('probe').hidden = false;

@@ -42,7 +42,61 @@
   <section class="panel result" aria-labelledby="result-heading">
     <div class="step"><span>03</span><h2 id="result-heading">See what changed</h2></div>
     <div id="verdict" role="status"><p>Confirmed steps will appear here.</p></div>
-    <section id="probe" class="probe" hidden aria-labelledby="probe-heading"><h3 id="probe-heading">One short follow-up</h3><p id="probe-question" aria-live="polite"></p><section id="operation-claim-panel" class="operation-claim" hidden aria-label="Check a declared operation"><form id="operation-claim-form"><label for="operation-kind">What operation did you apply to both sides?</label><div class="actions"><select id="operation-kind"><option value="">Choose an action</option><option value="add">Add</option><option value="subtract">Subtract</option><option value="multiply">Multiply by</option><option value="divide">Divide by</option><option value="other">Something else / Not sure</option></select><div id="operation-constant-field" hidden><label for="operation-constant">Exact constant</label><input id="operation-constant" type="text" maxlength="80" autocomplete="off" placeholder="6 or 1/2"></div><button class="primary" type="submit">Check this action</button></div></form><p id="operation-feedback" role="status" aria-live="polite"></p></section><form id="probe-form"><label for="answer">Your expansion</label><div class="actions"><input id="answer" maxlength="100" autocomplete="off"><button class="primary" type="submit">Check response</button></div></form><button id="probe-skip" type="button">Skip to practice</button><div id="probe-result" role="status"></div></section>
+    <section id="probe" class="probe" hidden aria-labelledby="probe-heading">
+      <h3 id="probe-heading">One short follow-up</h3>
+      <p id="probe-question" aria-live="polite"></p>
+      <section id="operation-claim-panel" class="operation-claim" hidden aria-label="Check a declared operation">
+        <form id="operation-claim-form">
+          <label for="operation-kind">Which single move did you use for this step?</label>
+          <div class="actions">
+            <select id="operation-kind">
+              <option value="">Choose one move</option>
+              <option value="distribution-left">Distribute a factor on the left</option>
+              <option value="distribution-right">Distribute a factor on the right</option>
+              <option value="add">Add to both sides</option>
+              <option value="subtract">Subtract from both sides</option>
+              <option value="multiply">Multiply both sides by</option>
+              <option value="divide">Divide both sides by</option>
+              <option value="other">Something else / Not sure</option>
+              <option value="combined">More than one move</option>
+            </select>
+            <div id="operation-constant-field" hidden>
+              <label for="operation-constant">Exact value or term</label>
+              <input id="operation-constant" type="text" maxlength="80" autocomplete="off" placeholder="6, 1/2, or 2x">
+            </div>
+            <button class="primary" type="submit">Continue with this move</button>
+          </div>
+        </form>
+        <p id="operation-feedback" role="status" aria-live="polite"></p>
+        <form id="typed-repair-form" hidden>
+          <p id="typed-repair-question"></p>
+          <label for="typed-repair-answer">One corrected intermediate equation</label>
+          <div class="actions">
+            <input id="typed-repair-answer" type="text" maxlength="180" autocomplete="off" spellcheck="false">
+            <button class="primary" type="submit">Check this line</button>
+          </div>
+        </form>
+        <p id="typed-repair-feedback" role="status" aria-live="polite"></p>
+        <section id="typed-retry" class="typed-retry" hidden aria-labelledby="typed-retry-heading">
+          <h4 id="typed-retry-heading">Try the same idea in a fresh problem</h4>
+          <p id="typed-retry-question"></p>
+          <form id="typed-retry-form">
+            <label for="typed-retry-answer">One next equation</label>
+            <div class="actions">
+              <input id="typed-retry-answer" type="text" maxlength="180" autocomplete="off" spellcheck="false">
+              <button id="typed-retry-submit" class="primary" type="submit">Check first response</button>
+              <button id="typed-retry-hint" type="button" disabled>Show one hint</button>
+            </div>
+          </form>
+          <p id="typed-retry-hint-text" hidden></p>
+          <p id="typed-retry-result" role="status" aria-live="polite"></p>
+          <p id="typed-retry-evidence" class="fine"></p>
+        </section>
+      </section>
+      <form id="probe-form"><label for="answer">Your expansion</label><div class="actions"><input id="answer" maxlength="100" autocomplete="off"><button class="primary" type="submit">Check response</button></div></form>
+      <button id="probe-skip" type="button">Skip to practice</button>
+      <div id="probe-result" role="status"></div>
+    </section>
   </section>
   <section class="panel result" id="retry" hidden aria-labelledby="retry-heading">
     <div class="step"><span>04</span><h2 id="retry-heading">Try the skill again</h2></div>

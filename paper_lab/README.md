@@ -69,19 +69,17 @@ delayed review or measure learning.
 
 ## Typed Diagnostic Studio R&D
 
-This branch also adds a direct typed “Why did this step break?” path. It uses
-the same exact chain checker as the paper workflow, shows the first changed
-equation beside the exact line before it, and displays a substitution witness
-only after both equations have been checked with exact rational arithmetic.
-The supported distribution collision reuses the authored separator and retry;
-other verified typed changes ask “What operation did you apply here?” and let
-the student choose a two-sided operation with an exact constant. The app
-compares that claim with each side and offers a targeted check only when exact
-arithmetic supports it. “Something else / Not sure,” unsupported claims, and
-unresolved chains ask for an intermediate line or abstain. See
-[the operation-conversation protocol](OPERATION_CONVERSATION.md) and [the R&D
-integration note](DIAGNOSTIC_STUDIO_RND.md) for frozen-case counts, demo steps,
-ownership, and limits.
+This branch also adds a direct typed tutoring loop. It uses the same exact
+chain checker as the paper workflow, shows the first changed equation beside
+the exact line before it, and displays a substitution witness only after both
+equations have been checked with exact rational arithmetic. For typed work the
+student declares one move (or chooses not sure/combined), enters a repair line,
+and gets a fresh transfer problem only after a supported repair. Ambiguous
+cases take a neutral intermediate-line route. The photo/OCR path remains on its
+existing flow. See [the typed tutoring track](TYPED_TUTORING_TRACK.md), [the
+operation-conversation protocol](OPERATION_CONVERSATION.md), and [the R&D
+integration note](DIAGNOSTIC_STUDIO_RND.md) for the boundary, rehearsal, frozen
+case counts, ownership, and limits.
 
 For typed-only local review, serve the repository root with
 `python -m http.server 8766 --bind 127.0.0.1` and open

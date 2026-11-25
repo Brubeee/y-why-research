@@ -43,9 +43,17 @@ test('same changed pair gets a different exact prompt for subtracting versus div
   assert.deepEqual(subtract.comparison,{left:true,right:false});
   assert.equal(formatOperationExpression('14',{kind:'subtract',constant:'6'}),'14−6');
   assert.equal(divide.exact,'changed');
-  assert.equal(divide.status,'left-mismatch');
+  assert.equal(divide.status,'both-mismatch');
   assert.deepEqual(divide.comparison,{left:false,right:false});
   assert.equal(formatOperationExpression('2x+6',{kind:'divide',constant:'2'}),'(2x+6) ÷ 2');
+});
+
+test('add and subtract may use an exact affine term, while scale factors stay numeric',()=>{
+  const before=confirmed('3m+5=2m+11');
+  const repaired=confirmed('m+5=11');
+  assert.equal(checkTwoSidedOperationClaim({before,after:repaired,claim:{kind:'subtract',constant:'2m'}}).status,'consistent');
+  assert.equal(checkTwoSidedOperationClaim({before,after:repaired,claim:{kind:'subtract',constant:'2x'}}).status,'unsupported');
+  assert.equal(checkTwoSidedOperationClaim({before,after:repaired,claim:{kind:'multiply',constant:'m'}}).status,'unsupported');
 });
 
 test('declared operation compares exact sides across equivalent forms and fractions',()=>{
@@ -56,7 +64,8 @@ test('declared operation compares exact sides across equivalent forms and fracti
   const sameRoot=FROZEN_OPERATION_CONVERSATION_CASES.find(x=>x.id==='same-root-claim-is-still-compared-by-side');
   const checked=checkTwoSidedOperationClaim({before:sameRoot.anchor,after:sameRoot.rows[0],claim:sameRoot.claim});
   assert.equal(checked.exact,'equivalent');
-  assert.equal(checked.status,'left-mismatch','same roots do not make a different declared operation fit');
+  assert.equal(checked.status,'both-mismatch','same roots do not identify which side matches when neither does');
+  assert.deepEqual(checked.comparison,{left:false,right:false});
   const fraction=FROZEN_OPERATION_CONVERSATION_CASES.find(x=>x.id==='fraction-format-right-error');
   assert.equal(checkTwoSidedOperationClaim({before:fraction.anchor,after:fraction.rows[0],claim:fraction.claim}).status,'right-mismatch');
 });
@@ -77,8 +86,13 @@ test('frozen claims preserve verifyRows verdicts, gate unsupported work, and abs
     const firstStatus=beforeVerdict.anchor.status==='confirmed'
       ? beforeVerdict.rows[0]?.status : beforeVerdict.anchor.status;
     assert.equal(firstStatus,item.expectedExact,item.id+' frozen exact status');
-    if(item.expectedClaim==='consistent'||item.expectedClaim==='left'||item.expectedClaim==='right')
-      assert.equal(action.status,expectedStatus[item.expectedClaim],item.id+' frozen claim result');
+    if(item.expectedClaim==='consistent'||item.expectedClaim==='left'||item.expectedClaim==='right') {
+      if(action.status==='both-mismatch') {
+        // This safer outcome abstains where an older fixture expected a side
+        // prompt without either side matching the declared action.
+        assert.deepEqual(action.comparison,{left:false,right:false},item.id+' neutral dual-side mismatch');
+      } else assert.equal(action.status,expectedStatus[item.expectedClaim],item.id+' frozen claim result');
+    }
     else if(item.expectedClaim==='abstain')
       assert.ok(['abstain','unsupported','blocked','unassessed'].includes(action.status),item.id+' must abstain');
     else assert.equal(action.status,'skipped',item.id+' keeps its authored retry');
