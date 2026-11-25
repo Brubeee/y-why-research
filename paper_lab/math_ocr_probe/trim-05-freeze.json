@@ -1,0 +1,234 @@
+{
+  "leading-minus--clean-printed": {
+    "photo_sha256": "1c01336daf5dd843dd22e2edf8e59082a7cab6a4200ed87ade8f121f27406332",
+    "truth": [
+      "-3(k+2)=21",
+      "-3k-6=21",
+      "k=-8"
+    ],
+    "gap": 20,
+    "truth_boxes": [
+      [
+        44,
+        62,
+        280,
+        97
+      ],
+      [
+        51,
+        117,
+        257,
+        146
+      ],
+      [
+        54,
+        317,
+        162,
+        346
+      ]
+    ]
+  },
+  "leading-minus--phone-style-render": {
+    "photo_sha256": "d41bc9f9cd297248c0d98b65121c46af95a68706c9d58c327e54c956113f840f",
+    "truth": [
+      "-3(k+2)=21",
+      "-3k-6=21",
+      "k=-8"
+    ],
+    "gap": 20,
+    "truth_boxes": [
+      [
+        48,
+        51,
+        285,
+        94
+      ],
+      [
+        49,
+        114,
+        256,
+        153
+      ],
+      [
+        45,
+        304,
+        156,
+        340
+      ]
+    ]
+  },
+  "stacked-close--clean-printed": {
+    "photo_sha256": "7ff4c472660da5d43d80c40f4b7d7287a9c1b3826d6db489d010fbd6cb416dd3",
+    "truth": [
+      "\\frac{2n}{5}+3=9",
+      "\\frac{2n}{5}=5",
+      "n=15"
+    ],
+    "gap": 13,
+    "truth_boxes": [
+      [
+        185,
+        50,
+        350,
+        106
+      ],
+      [
+        192,
+        119,
+        301,
+        175
+      ],
+      [
+        199,
+        317,
+        300,
+        346
+      ]
+    ]
+  },
+  "stacked-close--phone-style-render": {
+    "photo_sha256": "dc566febb52911ed914683106ff776b696bf228cff6522e36071f8101c98c645",
+    "truth": [
+      "\\frac{2n}{5}+3=9",
+      "\\frac{2n}{5}=5",
+      "n=15"
+    ],
+    "gap": 13,
+    "truth_boxes": [
+      [
+        189,
+        37,
+        357,
+        96
+      ],
+      [
+        191,
+        109,
+        303,
+        168
+      ],
+      [
+        191,
+        307,
+        294,
+        339
+      ]
+    ]
+  },
+  "offset-rows--clean-printed": {
+    "photo_sha256": "1fe20e93e1bbe7eedb59c3d48ecf832c600401f7bd51eea9e4a49827ebcd3802",
+    "truth": [
+      "7q-8=20",
+      "7q=28",
+      "q=5"
+    ],
+    "gap": 10,
+    "truth_boxes": [
+      [
+        272,
+        62,
+        452,
+        99
+      ],
+      [
+        318,
+        109,
+        442,
+        146
+      ],
+      [
+        283,
+        318,
+        360,
+        354
+      ]
+    ]
+  },
+  "offset-rows--phone-style-render": {
+    "photo_sha256": "3c91860f5a04aff31f1205f4cad8d0ccf13b3ac83815b7ae8c0380727eb2f982",
+    "truth": [
+      "7q-8=20",
+      "7q=28",
+      "q=5"
+    ],
+    "gap": 10,
+    "truth_boxes": [
+      [
+        278,
+        50,
+        459,
+        90
+      ],
+      [
+        318,
+        100,
+        444,
+        140
+      ],
+      [
+        276,
+        307,
+        354,
+        343
+      ]
+    ]
+  },
+  "short-last-fraction--clean-printed": {
+    "photo_sha256": "4a8dc554c4dbac85d07a9c7df9cfe7110e5bf93c3cd67a628316ee3ae302e820",
+    "truth": [
+      "\\frac{w}{4}-1=2",
+      "\\frac{w}{4}=3",
+      "w=12"
+    ],
+    "gap": 28,
+    "truth_boxes": [
+      [
+        27,
+        57,
+        179,
+        106
+      ],
+      [
+        34,
+        134,
+        131,
+        183
+      ],
+      [
+        40,
+        317,
+        150,
+        346
+      ]
+    ]
+  },
+  "short-last-fraction--phone-style-render": {
+    "photo_sha256": "96ce5498c87be0742e8dc922e9dac1e3ae27bdf708cb6a9affc737d0c6eef614",
+    "truth": [
+      "\\frac{w}{4}-1=2",
+      "\\frac{w}{4}=3",
+      "w=12"
+    ],
+    "gap": 28,
+    "truth_boxes": [
+      [
+        31,
+        44,
+        187,
+        96
+      ],
+      [
+        33,
+        124,
+        132,
+        178
+      ],
+      [
+        34,
+        308,
+        144,
+        340
+      ]
+    ]
+  }
+}

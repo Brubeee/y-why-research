@@ -207,3 +207,53 @@ rows. The original OCR path is unchanged.
 
 [Raw diagnostic output](width-rule-04-results.json). Frozen manifest
 SHA-256: `753c35f51d5e42e15f93e01ad4466fd4adccda547b8d1b360f82c392e2130cb4`.
+
+## Width-only repair on fresh ruled and smudged pages
+
+These eight new synthetic pages cover shifted and unevenly indented rows,
+gaps of 10–28 px, a leading minus, short final equations, fraction bars,
+sloped printed ruling, a broken dark rule, and light smudges. The source-page
+hashes and exact intended rows are in [the frozen fixture record](trim-05-freeze.json).
+The scan-style stressors, renderer settings and hitherto unscored
+literal chains define the fixture; none is a genuine phone photograph.
+The two detected crop arms share every y bound and row order. For wide
+proposals the trim uses local contrast and column persistence, leaving a
+margin for thin edge symbols. When support is weak it leaves the old crop
+unchanged. Input pixels are unmodified and no transcript is used to choose
+the box. A direct control covers a leading minus next to a short equation.
+
+```sh
+python trim_compare.py freeze frozen_trim_05
+YWHY_MODEL_CACHE="$PWD/model-cache" node page_recognize.mjs frozen_trim_05 > trim-05-local.json
+python trim_compare.py score trim-05-local.json
+python -m unittest horizontal_trim_test page_geometry_test
+```
+
+All three arms use the pinned q4 TexTeller recognizer. The oracle uses
+known math masks only for its boxes, not substituted pixels or transcripts.
+No missing or extra crop is forgiven in the exact full-chain metric.
+Frozen crop manifest SHA-256:
+`cf35ef847ff2e4d4d2b59c1e2609c83eccea66a7545ef42988aff2fdda0a5966`.
+
+| Source | Crop | Complete intended rows | Exact intended rows | Extra crops | Exact chains |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Clean | Known boxes | 12/12 | 8/12 | 0 | 1/4 |
+| Clean | Geometry | 12/12 | 8/12 | 0 | 1/4 |
+| Clean | Geometry + trim | 12/12 | 8/12 | 0 | 1/4 |
+| Ruled/smudged | Known boxes | 12/12 | 11/12 | 0 | 3/4 |
+| Ruled/smudged | Geometry | 12/12 | 0/12 | 17 | 0/4 |
+| Ruled/smudged | Geometry + trim | 12/12 | 4/12 | 17 | 0/4 |
+
+The trim reduced the aperture on 10/12 intended adverse rows while
+preserving the measured ink of all 12. Two apertures stayed 629 px
+and two still exceeded 450 px. Spurious ruling crops remained on all four
+adverse pages. Two cases recovered their second and third rows but not
+their first. Even with a known crop one adverse case read `7q-8=20` as
+`70-8=20`. The clean-view ceiling was also low; page parsing and exact
+character recognition remain separate problems. No default is changed.
+Next isolate rejecting long shallow components in the proposal mask from
+rewriting the original image, and check that any new rule filter preserves
+true short rows, fraction bars and leading minuses on independently frozen
+pages. Do not use the 17 known extra crops as test-time labels.
+
+[Raw crop and transcription results](trim-05-results.json).

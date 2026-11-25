@@ -1,0 +1,2552 @@
+[
+  {
+    "key": "leading-minus--clean-printed",
+    "cohort": "clean-printed",
+    "chain": "leading-minus",
+    "truth": [
+      "-3(k+2)=21",
+      "-3k-6=21",
+      "k=-8"
+    ],
+    "gap": 20,
+    "photo_sha256": "1c01336daf5dd843dd22e2edf8e59082a7cab6a4200ed87ade8f121f27406332",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "leading-minus--clean-printed--oracle-1.png",
+        "box": [
+          44,
+          62,
+          280,
+          97
+        ],
+        "padded": [
+          32,
+          50,
+          292,
+          109
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "40c3da99fb0d7bad4177eebdffae60c51c427040ae322b3c587c91e749846b20",
+        "raw": "\\[-3(k+2)=21\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "leading-minus--clean-printed--oracle-2.png",
+        "box": [
+          51,
+          117,
+          257,
+          146
+        ],
+        "padded": [
+          39,
+          105,
+          269,
+          158
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "5c93740ae5dfd3ff28668547f7c934ad0f8c6cd95ef2956d14bae326472bd3df",
+        "raw": "\\[-3k-6=21\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "leading-minus--clean-printed--oracle-3.png",
+        "box": [
+          54,
+          317,
+          162,
+          346
+        ],
+        "padded": [
+          42,
+          305,
+          174,
+          358
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "381ea67bd384c440c48be81f3221e7832f72877ef4d8e5844f2ff3b1c986547b",
+        "raw": "\\[k=-8\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "leading-minus--clean-printed--geometry-1.png",
+        "box": [
+          44,
+          62,
+          280,
+          97
+        ],
+        "padded": [
+          32,
+          50,
+          292,
+          107
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "7a4720e68cee2492401601250628c716812eedfce1772b348be9424a99f84882",
+        "raw": "\\[-3(k+2)=21\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "leading-minus--clean-printed--geometry-2.png",
+        "box": [
+          51,
+          117,
+          257,
+          146
+        ],
+        "padded": [
+          39,
+          107,
+          269,
+          158
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "419cbadb36bf2fe15b4408ef303ab1d15bd1e1643fc0509ce35d1829fd7bb3f6",
+        "raw": "\\[-3k-6=21\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "leading-minus--clean-printed--geometry-3.png",
+        "box": [
+          54,
+          317,
+          162,
+          346
+        ],
+        "padded": [
+          42,
+          305,
+          174,
+          358
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "381ea67bd384c440c48be81f3221e7832f72877ef4d8e5844f2ff3b1c986547b",
+        "raw": "\\[k=-8\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "leading-minus--clean-printed--trimmed-1.png",
+        "box": [
+          44,
+          62,
+          280,
+          97
+        ],
+        "padded": [
+          32,
+          50,
+          292,
+          107
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "7a4720e68cee2492401601250628c716812eedfce1772b348be9424a99f84882",
+        "raw": "\\[-3(k+2)=21\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "leading-minus--clean-printed--trimmed-2.png",
+        "box": [
+          51,
+          117,
+          257,
+          146
+        ],
+        "padded": [
+          39,
+          107,
+          269,
+          158
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "419cbadb36bf2fe15b4408ef303ab1d15bd1e1643fc0509ce35d1829fd7bb3f6",
+        "raw": "\\[-3k-6=21\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "leading-minus--clean-printed--trimmed-3.png",
+        "box": [
+          54,
+          317,
+          162,
+          346
+        ],
+        "padded": [
+          42,
+          305,
+          174,
+          358
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "381ea67bd384c440c48be81f3221e7832f72877ef4d8e5844f2ff3b1c986547b",
+        "raw": "\\[k=-8\\]"
+      }
+    ]
+  },
+  {
+    "key": "leading-minus--phone-style-render",
+    "cohort": "phone-style-render",
+    "chain": "leading-minus",
+    "truth": [
+      "-3(k+2)=21",
+      "-3k-6=21",
+      "k=-8"
+    ],
+    "gap": 20,
+    "photo_sha256": "d41bc9f9cd297248c0d98b65121c46af95a68706c9d58c327e54c956113f840f",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "leading-minus--phone-style-render--oracle-1.png",
+        "box": [
+          48,
+          51,
+          285,
+          94
+        ],
+        "padded": [
+          36,
+          39,
+          297,
+          106
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "940f8e5a72a111e71ae026b61732e1d2b5d62b79f10aa0afdacd3cbaa00a0d48",
+        "raw": "\\[-3(k+2)=21\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "leading-minus--phone-style-render--oracle-2.png",
+        "box": [
+          49,
+          114,
+          256,
+          153
+        ],
+        "padded": [
+          37,
+          102,
+          268,
+          165
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "42141fb7e9575f9a82af4d7157b61d558c4fbec3991fdd8e485cd28281ef0d37",
+        "raw": "\\[-3k-6=21\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "leading-minus--phone-style-render--oracle-3.png",
+        "box": [
+          45,
+          304,
+          156,
+          340
+        ],
+        "padded": [
+          33,
+          292,
+          168,
+          352
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "7e51b953586cc87721c3cbcdf6700044e3f5ae24c179853e7b42c80e0bfc8c9c",
+        "raw": "\\[k=-8\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "leading-minus--phone-style-render--geometry-1.png",
+        "box": [
+          18,
+          21,
+          623,
+          34
+        ],
+        "padded": [
+          6,
+          9,
+          635,
+          43
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "1a959296286e92e2f678232c1b034d77a5ca7394fc15a9fc0fff873731e97949",
+        "raw": "\\[m_{n-m_{m}}\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "leading-minus--phone-style-render--geometry-2.png",
+        "box": [
+          18,
+          52,
+          623,
+          92
+        ],
+        "padded": [
+          6,
+          43,
+          635,
+          98
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "b030b8426d90ea3b8ff8e56645039ff6c35e8fea32049c9a4209b0d4a134cc12",
+        "raw": "\\[\\bullet\\neg\\neg\\neg\\neg\\exists(k+2)\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg"
+      },
+      {
+        "arm": "geometry",
+        "name": "leading-minus--phone-style-render--geometry-3.png",
+        "box": [
+          18,
+          105,
+          623,
+          160
+        ],
+        "padded": [
+          6,
+          98,
+          635,
+          172
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "62c2181d05dd7da2665a4a0b97016a3a5345e3caec3ccd1d38e12ad61e13e3bd",
+        "raw": "\\[\\overline{m}}=3k-6=22\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "leading-minus--phone-style-render--geometry-4.png",
+        "box": [
+          18,
+          189,
+          623,
+          201
+        ],
+        "padded": [
+          6,
+          177,
+          635,
+          213
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "44a5199098fc6b3ea5b79a4ebc1610b25b0aaafb3887947c34443d51198d9dcc",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "leading-minus--phone-style-render--geometry-5.png",
+        "box": [
+          18,
+          231,
+          623,
+          243
+        ],
+        "padded": [
+          6,
+          219,
+          635,
+          255
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "521dc218b5052efc39aec3aabb03e563d60219aeb02fcc784ca6a3002375921a",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "leading-minus--phone-style-render--geometry-6.png",
+        "box": [
+          18,
+          273,
+          623,
+          285
+        ],
+        "padded": [
+          6,
+          261,
+          635,
+          294
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "afcf5f0210eaf7d57587b632a0f5bb2bc3ac2f5497c74347c934c7cc5cf644bc",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "leading-minus--phone-style-render--geometry-7.png",
+        "box": [
+          18,
+          304,
+          623,
+          339
+        ],
+        "padded": [
+          6,
+          294,
+          635,
+          348
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "2cc123041bc89238539f3eefa3c9a23d75b3445becb9d4e04aee4ffb549a7bf3",
+        "raw": "\\[x=1\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "leading-minus--phone-style-render--geometry-8.png",
+        "box": [
+          18,
+          357,
+          422,
+          365
+        ],
+        "padded": [
+          6,
+          348,
+          434,
+          365
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "4fa0cd2c12057e7f547cc6b79e8d7a1010c7f8edd2a2493164d708c607fdc3e4",
+        "raw": "\\[\\frac{\\lim_{h\\to 4}\\frac{d}{dh}7++\\frac{7}{4}}{\\lim_{h\\to 7}\\frac{d}{dh}7+ \\frac{7}{4}}\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "leading-minus--phone-style-render--trimmed-1.png",
+        "box": [
+          18,
+          21,
+          623,
+          34
+        ],
+        "padded": [
+          6,
+          9,
+          635,
+          43
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "1a959296286e92e2f678232c1b034d77a5ca7394fc15a9fc0fff873731e97949",
+        "raw": "\\[m_{n-m_{m}}\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "leading-minus--phone-style-render--trimmed-2.png",
+        "box": [
+          18,
+          52,
+          623,
+          92
+        ],
+        "padded": [
+          6,
+          43,
+          635,
+          98
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "b030b8426d90ea3b8ff8e56645039ff6c35e8fea32049c9a4209b0d4a134cc12",
+        "raw": "\\[\\bullet\\neg\\neg\\neg\\neg\\exists(k+2)\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg\\neg"
+      },
+      {
+        "arm": "trimmed",
+        "name": "leading-minus--phone-style-render--trimmed-3.png",
+        "box": [
+          34,
+          105,
+          283,
+          160
+        ],
+        "padded": [
+          22,
+          98,
+          295,
+          172
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "d3e5678d25eb843f8a78b03ac37516172cf25148b0ae56c93de43fd01485a2f0",
+        "raw": "\\[-3k-6=21\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "leading-minus--phone-style-render--trimmed-4.png",
+        "box": [
+          18,
+          189,
+          623,
+          201
+        ],
+        "padded": [
+          6,
+          177,
+          635,
+          213
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "44a5199098fc6b3ea5b79a4ebc1610b25b0aaafb3887947c34443d51198d9dcc",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "leading-minus--phone-style-render--trimmed-5.png",
+        "box": [
+          18,
+          231,
+          623,
+          243
+        ],
+        "padded": [
+          6,
+          219,
+          635,
+          255
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "521dc218b5052efc39aec3aabb03e563d60219aeb02fcc784ca6a3002375921a",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "leading-minus--phone-style-render--trimmed-6.png",
+        "box": [
+          18,
+          273,
+          623,
+          285
+        ],
+        "padded": [
+          6,
+          261,
+          635,
+          294
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "afcf5f0210eaf7d57587b632a0f5bb2bc3ac2f5497c74347c934c7cc5cf644bc",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "leading-minus--phone-style-render--trimmed-7.png",
+        "box": [
+          19,
+          304,
+          183,
+          339
+        ],
+        "padded": [
+          7,
+          294,
+          195,
+          348
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "be5f7a00b0b80b3460814b847187d6b48e994cd877ce41374f0da028aa20d6b7",
+        "raw": "\\[k=-8\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "leading-minus--phone-style-render--trimmed-8.png",
+        "box": [
+          18,
+          357,
+          422,
+          365
+        ],
+        "padded": [
+          6,
+          348,
+          434,
+          365
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "4fa0cd2c12057e7f547cc6b79e8d7a1010c7f8edd2a2493164d708c607fdc3e4",
+        "raw": "\\[\\frac{\\lim_{h\\to 4}\\frac{d}{dh}7++\\frac{7}{4}}{\\lim_{h\\to 7}\\frac{d}{dh}7+ \\frac{7}{4}}\\]"
+      }
+    ]
+  },
+  {
+    "key": "stacked-close--clean-printed",
+    "cohort": "clean-printed",
+    "chain": "stacked-close",
+    "truth": [
+      "\\frac{2n}{5}+3=9",
+      "\\frac{2n}{5}=5",
+      "n=15"
+    ],
+    "gap": 13,
+    "photo_sha256": "7ff4c472660da5d43d80c40f4b7d7287a9c1b3826d6db489d010fbd6cb416dd3",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "stacked-close--clean-printed--oracle-1.png",
+        "box": [
+          185,
+          50,
+          350,
+          106
+        ],
+        "padded": [
+          173,
+          38,
+          362,
+          118
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "060571be4a7c94dc5794f798b82e944af7e10a7a446f399619bb983dacd108cd",
+        "raw": "\\[\\frac{2 \\pi}{5}+3=9\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "stacked-close--clean-printed--oracle-2.png",
+        "box": [
+          192,
+          119,
+          301,
+          175
+        ],
+        "padded": [
+          180,
+          107,
+          313,
+          187
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "584ec3a7faec39924ff7d575007585cc79f7293db4f99b570c9ac6cc89203437",
+        "raw": "\\[\\frac{2n}{5}=5\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "stacked-close--clean-printed--oracle-3.png",
+        "box": [
+          199,
+          317,
+          300,
+          346
+        ],
+        "padded": [
+          187,
+          305,
+          312,
+          358
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "accfa97a662c7141348a48c693357eb8f95266353c869dd6fbb6336751de4996",
+        "raw": "\\[n=15\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "stacked-close--clean-printed--geometry-1.png",
+        "box": [
+          185,
+          50,
+          350,
+          106
+        ],
+        "padded": [
+          173,
+          38,
+          362,
+          112
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "d9a6fb6c6193f80524ca411e6e41864e48ae44a9dba1b7bf07e17a25dec3ceaf",
+        "raw": "\\[\\frac{2 \\pi}{5}+3=9\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "stacked-close--clean-printed--geometry-2.png",
+        "box": [
+          192,
+          119,
+          301,
+          175
+        ],
+        "padded": [
+          180,
+          112,
+          313,
+          187
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "9c52defa37d49c62e1285790b29c35313710b4d47e5f7eeb4f967339b4b0418a",
+        "raw": "\\[\\frac{2n}{5}=5\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "stacked-close--clean-printed--geometry-3.png",
+        "box": [
+          199,
+          317,
+          300,
+          346
+        ],
+        "padded": [
+          187,
+          305,
+          312,
+          358
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "accfa97a662c7141348a48c693357eb8f95266353c869dd6fbb6336751de4996",
+        "raw": "\\[n=15\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "stacked-close--clean-printed--trimmed-1.png",
+        "box": [
+          185,
+          50,
+          350,
+          106
+        ],
+        "padded": [
+          173,
+          38,
+          362,
+          112
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "d9a6fb6c6193f80524ca411e6e41864e48ae44a9dba1b7bf07e17a25dec3ceaf",
+        "raw": "\\[\\frac{2 \\pi}{5}+3=9\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "stacked-close--clean-printed--trimmed-2.png",
+        "box": [
+          192,
+          119,
+          301,
+          175
+        ],
+        "padded": [
+          180,
+          112,
+          313,
+          187
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "9c52defa37d49c62e1285790b29c35313710b4d47e5f7eeb4f967339b4b0418a",
+        "raw": "\\[\\frac{2n}{5}=5\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "stacked-close--clean-printed--trimmed-3.png",
+        "box": [
+          199,
+          317,
+          300,
+          346
+        ],
+        "padded": [
+          187,
+          305,
+          312,
+          358
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "accfa97a662c7141348a48c693357eb8f95266353c869dd6fbb6336751de4996",
+        "raw": "\\[n=15\\]"
+      }
+    ]
+  },
+  {
+    "key": "stacked-close--phone-style-render",
+    "cohort": "phone-style-render",
+    "chain": "stacked-close",
+    "truth": [
+      "\\frac{2n}{5}+3=9",
+      "\\frac{2n}{5}=5",
+      "n=15"
+    ],
+    "gap": 13,
+    "photo_sha256": "dc566febb52911ed914683106ff776b696bf228cff6522e36071f8101c98c645",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "stacked-close--phone-style-render--oracle-1.png",
+        "box": [
+          189,
+          37,
+          357,
+          96
+        ],
+        "padded": [
+          177,
+          25,
+          369,
+          108
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "48aef6f0995629263af218cd73cedd4b85319ff22bff7fbb1ef655ddc6eec495",
+        "raw": "\\[\\frac{2n}{5}+3=9\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "stacked-close--phone-style-render--oracle-2.png",
+        "box": [
+          191,
+          109,
+          303,
+          168
+        ],
+        "padded": [
+          179,
+          97,
+          315,
+          180
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "b35c5b5961afcdcae12c41990bd2577025db97dc73be5cdbd7b5f37ab71da7fc",
+        "raw": "\\[\\frac{2n}{5}=5\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "stacked-close--phone-style-render--oracle-3.png",
+        "box": [
+          191,
+          307,
+          294,
+          339
+        ],
+        "padded": [
+          179,
+          295,
+          306,
+          351
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "437e768529c2030c88673e456101e9df6444a6fa1d8d827a131c3f53d21a4c10",
+        "raw": "\\[n=15\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "stacked-close--phone-style-render--geometry-1.png",
+        "box": [
+          18,
+          25,
+          623,
+          96
+        ],
+        "padded": [
+          6,
+          13,
+          635,
+          102
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "138c015ad05f831623d31ce8e82fabca373b7dbcd6725299aa3cff3ef968b01e",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "stacked-close--phone-style-render--geometry-2.png",
+        "box": [
+          18,
+          109,
+          623,
+          168
+        ],
+        "padded": [
+          6,
+          102,
+          635,
+          180
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "ab74885c81603f91b4a7872bebd80e618d6ca24621b25278965548444e07330a",
+        "raw": "\\[\\frac{O}_{ \\mu}^{2} =0\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "stacked-close--phone-style-render--geometry-3.png",
+        "box": [
+          18,
+          193,
+          623,
+          205
+        ],
+        "padded": [
+          6,
+          181,
+          635,
+          217
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "102e7569c91945c6cbeab6918bf3ebbbd9e33b7ea5c79868c4e3fed96cfe2f8d",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "stacked-close--phone-style-render--geometry-4.png",
+        "box": [
+          18,
+          235,
+          623,
+          248
+        ],
+        "padded": [
+          6,
+          223,
+          635,
+          260
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "d3cf8b22321c3aed8fef44f6117253d6e39f84e7acfbd5d20d47f8927848971f",
+        "raw": "\\[m_{n}\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "stacked-close--phone-style-render--geometry-5.png",
+        "box": [
+          18,
+          277,
+          623,
+          289
+        ],
+        "padded": [
+          6,
+          265,
+          635,
+          298
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "7d31414e69681b34f40263da59cb9d3de47c69793d2222e6473c8b08c48541e5",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "stacked-close--phone-style-render--geometry-6.png",
+        "box": [
+          18,
+          308,
+          623,
+          339
+        ],
+        "padded": [
+          6,
+          298,
+          635,
+          350
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "6f2db2b26e8b858fe2400778545d5735db76440294224f6c0078af0ee1aa8941",
+        "raw": "\\[m=m_{m} \\frac{1}{m}\\frac{1}{m}\\frac{1}{m} \\frac{1}{m}m^{m^{m}m^{m}m^{m}m^{m}m^{m}m^{m}m^{m}m^{m}m^{m^{m}m^{m}m^{m}m^{m}m^{m}m^{m}m^{m}m^{m}m^{m}m^{m} \\frac{m} \\frac{1}m^{m} \\frac{1}"
+      },
+      {
+        "arm": "geometry",
+        "name": "stacked-close--phone-style-render--geometry-7.png",
+        "box": [
+          18,
+          361,
+          220,
+          365
+        ],
+        "padded": [
+          6,
+          350,
+          232,
+          365
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "6bd7c535566a075bb40abbf0ca9d0f607ba4ca46bb4016a76c565230b5693a2d",
+        "raw": "\\[\\quad\\Box\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "stacked-close--phone-style-render--trimmed-1.png",
+        "box": [
+          169,
+          25,
+          607,
+          96
+        ],
+        "padded": [
+          157,
+          13,
+          619,
+          102
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "600ea37694410f767d9e2b54d7a6d9445d0d1adb17c2e6faed502897b3347159",
+        "raw": "\\[\\frac{E}_{i}}= \\frac{2\\cdot\\frac{2\\pi}{5}= \\frac{2\\pi}{5}= \\frac{2\\pi}{5}= \\frac} \\frac{2\\frac{2\\pi}{5}= \\frac2\\frac{2}= \\frac \\frac\\frac\\frac= \\frac= \\frac} \\frac\\frac\\frac\\frac\\frac\\frac\\frac\\frac\\frac\\frac\\frac\\frac= \\frac\\frac\\frac\\frac\\frac\\frac\\frac\\frac\\frac\\frac\\frac\\frac"
+      },
+      {
+        "arm": "trimmed",
+        "name": "stacked-close--phone-style-render--trimmed-2.png",
+        "box": [
+          170,
+          109,
+          328,
+          168
+        ],
+        "padded": [
+          158,
+          102,
+          340,
+          180
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "a7bf7597f7dfc988fdc257be07256c06d83c1a389360391b4533697c0cd818ba",
+        "raw": "\\[\\frac{2n}{5}=5\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "stacked-close--phone-style-render--trimmed-3.png",
+        "box": [
+          18,
+          193,
+          623,
+          205
+        ],
+        "padded": [
+          6,
+          181,
+          635,
+          217
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "102e7569c91945c6cbeab6918bf3ebbbd9e33b7ea5c79868c4e3fed96cfe2f8d",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "stacked-close--phone-style-render--trimmed-4.png",
+        "box": [
+          18,
+          235,
+          623,
+          248
+        ],
+        "padded": [
+          6,
+          223,
+          635,
+          260
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "d3cf8b22321c3aed8fef44f6117253d6e39f84e7acfbd5d20d47f8927848971f",
+        "raw": "\\[m_{n}\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "stacked-close--phone-style-render--trimmed-5.png",
+        "box": [
+          18,
+          277,
+          623,
+          289
+        ],
+        "padded": [
+          6,
+          265,
+          635,
+          298
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "7d31414e69681b34f40263da59cb9d3de47c69793d2222e6473c8b08c48541e5",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "stacked-close--phone-style-render--trimmed-6.png",
+        "box": [
+          165,
+          308,
+          321,
+          339
+        ],
+        "padded": [
+          153,
+          298,
+          333,
+          350
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "79672fd28c1719c23d67934cf2e9cb894025466e1a2d1ddd0c54f0ca3707b8a3",
+        "raw": "\\[n=15\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "stacked-close--phone-style-render--trimmed-7.png",
+        "box": [
+          18,
+          361,
+          220,
+          365
+        ],
+        "padded": [
+          6,
+          350,
+          232,
+          365
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "6bd7c535566a075bb40abbf0ca9d0f607ba4ca46bb4016a76c565230b5693a2d",
+        "raw": "\\[\\quad\\Box\\]"
+      }
+    ]
+  },
+  {
+    "key": "offset-rows--clean-printed",
+    "cohort": "clean-printed",
+    "chain": "offset-rows",
+    "truth": [
+      "7q-8=20",
+      "7q=28",
+      "q=5"
+    ],
+    "gap": 10,
+    "photo_sha256": "1fe20e93e1bbe7eedb59c3d48ecf832c600401f7bd51eea9e4a49827ebcd3802",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "offset-rows--clean-printed--oracle-1.png",
+        "box": [
+          272,
+          62,
+          452,
+          99
+        ],
+        "padded": [
+          260,
+          50,
+          464,
+          111
+        ],
+        "ink": [
+          1,
+          0.06037,
+          0
+        ],
+        "crop_sha256": "50b467a09dba4a355f98aac45d4025dac260a17ca241532d148f9dd89de866a2",
+        "raw": "\\[70-8=20\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "offset-rows--clean-printed--oracle-2.png",
+        "box": [
+          318,
+          109,
+          442,
+          146
+        ],
+        "padded": [
+          306,
+          97,
+          454,
+          158
+        ],
+        "ink": [
+          0.01476,
+          1,
+          0
+        ],
+        "crop_sha256": "b1a6c634a1920e5c111ea44676d3e076cfae1aa10e32457384c693bde1a43bd0",
+        "raw": "\\[70=28\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "offset-rows--clean-printed--oracle-3.png",
+        "box": [
+          283,
+          318,
+          360,
+          354
+        ],
+        "padded": [
+          271,
+          306,
+          372,
+          365
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "d113ba1cc2362624db28b8d7376003c6d200787c4ca8b641743b5f7c166ead07",
+        "raw": "\\[q=5\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "offset-rows--clean-printed--geometry-1.png",
+        "box": [
+          272,
+          62,
+          452,
+          99
+        ],
+        "padded": [
+          260,
+          50,
+          464,
+          104
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "57a1c5d3c5baa13e3913891b5a562f0b3cefed9b84421941147afbe94698b9b3",
+        "raw": "\\[70-8=20\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "offset-rows--clean-printed--geometry-2.png",
+        "box": [
+          318,
+          109,
+          442,
+          146
+        ],
+        "padded": [
+          306,
+          104,
+          454,
+          158
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "f51f1b3ecb8f741a8e12077a7bf201b493c71b2db73b6d58ab7bbac27315e5b2",
+        "raw": "\\[70=28\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "offset-rows--clean-printed--geometry-3.png",
+        "box": [
+          284,
+          318,
+          360,
+          354
+        ],
+        "padded": [
+          272,
+          306,
+          372,
+          365
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "787e6847de40a7505b856905d725d676722ea1e4b78eb3543eaf26c5145274f1",
+        "raw": "\\[q=5\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "offset-rows--clean-printed--trimmed-1.png",
+        "box": [
+          272,
+          62,
+          452,
+          99
+        ],
+        "padded": [
+          260,
+          50,
+          464,
+          104
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "57a1c5d3c5baa13e3913891b5a562f0b3cefed9b84421941147afbe94698b9b3",
+        "raw": "\\[70-8=20\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "offset-rows--clean-printed--trimmed-2.png",
+        "box": [
+          318,
+          109,
+          442,
+          146
+        ],
+        "padded": [
+          306,
+          104,
+          454,
+          158
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "f51f1b3ecb8f741a8e12077a7bf201b493c71b2db73b6d58ab7bbac27315e5b2",
+        "raw": "\\[70=28\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "offset-rows--clean-printed--trimmed-3.png",
+        "box": [
+          284,
+          318,
+          360,
+          354
+        ],
+        "padded": [
+          272,
+          306,
+          372,
+          365
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "787e6847de40a7505b856905d725d676722ea1e4b78eb3543eaf26c5145274f1",
+        "raw": "\\[q=5\\]"
+      }
+    ]
+  },
+  {
+    "key": "offset-rows--phone-style-render",
+    "cohort": "phone-style-render",
+    "chain": "offset-rows",
+    "truth": [
+      "7q-8=20",
+      "7q=28",
+      "q=5"
+    ],
+    "gap": 10,
+    "photo_sha256": "3c91860f5a04aff31f1205f4cad8d0ccf13b3ac83815b7ae8c0380727eb2f982",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "offset-rows--phone-style-render--oracle-1.png",
+        "box": [
+          278,
+          50,
+          459,
+          90
+        ],
+        "padded": [
+          266,
+          38,
+          471,
+          102
+        ],
+        "ink": [
+          1,
+          0.016651,
+          0
+        ],
+        "crop_sha256": "796a602303f26db63a902670e19cb4f10e68e04bca11465885822b88c5123a07",
+        "raw": "\\[70-8=20\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "offset-rows--phone-style-render--oracle-2.png",
+        "box": [
+          318,
+          100,
+          444,
+          140
+        ],
+        "padded": [
+          306,
+          88,
+          456,
+          152
+        ],
+        "ink": [
+          0.004225,
+          1,
+          0
+        ],
+        "crop_sha256": "4f4e50b66d272536da3d03f669b5515460804284137d74caf34620c9e041a987",
+        "raw": "\\[7q=28\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "offset-rows--phone-style-render--oracle-3.png",
+        "box": [
+          276,
+          307,
+          354,
+          343
+        ],
+        "padded": [
+          264,
+          295,
+          366,
+          355
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "6d52d5bf0217bef4175db9bcea02e4640b16b8d38327f192de325317b7a9dcf2",
+        "raw": "\\[q=5\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "offset-rows--phone-style-render--geometry-1.png",
+        "box": [
+          18,
+          29,
+          623,
+          41
+        ],
+        "padded": [
+          6,
+          17,
+          635,
+          46
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "da66689a263df9957ddf5fcead9d554d57d359e22c97a461e6ed8cb08224faaf",
+        "raw": "\\[m_{n}-m_{1}= \\frac{1}{2}m_{n-1}\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "offset-rows--phone-style-render--geometry-2.png",
+        "box": [
+          18,
+          51,
+          623,
+          89
+        ],
+        "padded": [
+          6,
+          46,
+          635,
+          94
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "659df2e70ce3b0ed6a52cc477e03bdbacc882940dd493f37dcae0306f448e289",
+        "raw": "\\[\\cdotcdotcdotcdotcdotcdot..................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................."
+      },
+      {
+        "arm": "geometry",
+        "name": "offset-rows--phone-style-render--geometry-3.png",
+        "box": [
+          18,
+          100,
+          623,
+          139
+        ],
+        "padded": [
+          6,
+          94,
+          635,
+          147
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "0aa30451a49969bde0451947f9826e408f8a70f3531ca9fd832d1c75c5091746",
+        "raw": "\\[\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot"
+      },
+      {
+        "arm": "geometry",
+        "name": "offset-rows--phone-style-render--geometry-4.png",
+        "box": [
+          18,
+          155,
+          623,
+          167
+        ],
+        "padded": [
+          6,
+          147,
+          635,
+          179
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "bbaf5daf98ac37bb0d110f47adae44396f772bc464133e707c4540899e232c30",
+        "raw": "\\[m_{n-1}m_{n-2}\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "offset-rows--phone-style-render--geometry-5.png",
+        "box": [
+          18,
+          197,
+          623,
+          209
+        ],
+        "padded": [
+          6,
+          185,
+          635,
+          221
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "f6ccd6a984044d69b5fbe41e286ecc1ba523e86a9d669c5068bf35e2d85655ff",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "offset-rows--phone-style-render--geometry-6.png",
+        "box": [
+          18,
+          239,
+          623,
+          251
+        ],
+        "padded": [
+          6,
+          227,
+          635,
+          263
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "ba87434ec2e7ab19b3baa003b53d8eadf8b8d5523bd9a9ff2343960d3f70c179",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "offset-rows--phone-style-render--geometry-7.png",
+        "box": [
+          18,
+          281,
+          623,
+          293
+        ],
+        "padded": [
+          6,
+          269,
+          635,
+          300
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "7130ed67f0991c5a69a89bac9aecd6665e25598077f951de0919b5bb37ff900e",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "offset-rows--phone-style-render--geometry-8.png",
+        "box": [
+          18,
+          308,
+          623,
+          343
+        ],
+        "padded": [
+          6,
+          300,
+          635,
+          355
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "b333fa2bf4769b097b1e07e786d442dcc142466d7a88b912d798912a6a76ad03",
+        "raw": "\\[= \\frac{e}+ \\frac{b}^{n}-b^{n-1}}{b^{n-2}}\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "offset-rows--phone-style-render--trimmed-1.png",
+        "box": [
+          18,
+          29,
+          623,
+          41
+        ],
+        "padded": [
+          6,
+          17,
+          635,
+          46
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "da66689a263df9957ddf5fcead9d554d57d359e22c97a461e6ed8cb08224faaf",
+        "raw": "\\[m_{n}-m_{1}= \\frac{1}{2}m_{n-1}\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "offset-rows--phone-style-render--trimmed-2.png",
+        "box": [
+          36,
+          51,
+          486,
+          89
+        ],
+        "padded": [
+          24,
+          46,
+          498,
+          94
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "87cf42276e85c08bb8ac5c3da065b97fe8dcf593d7c69938c8c9e854f676aae4",
+        "raw": "\\[........................................................................................................................,......,......,.........,......,......,......,......,......,......,......,......,......,......,......,......,........................,........................,............,....................................................................................,........................"
+      },
+      {
+        "arm": "trimmed",
+        "name": "offset-rows--phone-style-render--trimmed-3.png",
+        "box": [
+          292,
+          100,
+          470,
+          139
+        ],
+        "padded": [
+          280,
+          94,
+          482,
+          147
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "cfe25197e95d93b1c271f471dc395610f4381d5727f1eec68207cf97be2c0d2f",
+        "raw": "\\[70=28\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "offset-rows--phone-style-render--trimmed-4.png",
+        "box": [
+          18,
+          155,
+          623,
+          167
+        ],
+        "padded": [
+          6,
+          147,
+          635,
+          179
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "bbaf5daf98ac37bb0d110f47adae44396f772bc464133e707c4540899e232c30",
+        "raw": "\\[m_{n-1}m_{n-2}\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "offset-rows--phone-style-render--trimmed-5.png",
+        "box": [
+          18,
+          197,
+          623,
+          209
+        ],
+        "padded": [
+          6,
+          185,
+          635,
+          221
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "f6ccd6a984044d69b5fbe41e286ecc1ba523e86a9d669c5068bf35e2d85655ff",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "offset-rows--phone-style-render--trimmed-6.png",
+        "box": [
+          18,
+          239,
+          623,
+          251
+        ],
+        "padded": [
+          6,
+          227,
+          635,
+          263
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "ba87434ec2e7ab19b3baa003b53d8eadf8b8d5523bd9a9ff2343960d3f70c179",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "offset-rows--phone-style-render--trimmed-7.png",
+        "box": [
+          18,
+          281,
+          623,
+          293
+        ],
+        "padded": [
+          6,
+          269,
+          635,
+          300
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "7130ed67f0991c5a69a89bac9aecd6665e25598077f951de0919b5bb37ff900e",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "offset-rows--phone-style-render--trimmed-8.png",
+        "box": [
+          249,
+          308,
+          381,
+          343
+        ],
+        "padded": [
+          237,
+          300,
+          393,
+          355
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "5328ed6596fe1124f70e9df712177e8ec1e450cf4c08bb1fed30eb4e5baee2ed",
+        "raw": "\\[a=5\\]"
+      }
+    ]
+  },
+  {
+    "key": "short-last-fraction--clean-printed",
+    "cohort": "clean-printed",
+    "chain": "short-last-fraction",
+    "truth": [
+      "\\frac{w}{4}-1=2",
+      "\\frac{w}{4}=3",
+      "w=12"
+    ],
+    "gap": 28,
+    "photo_sha256": "4a8dc554c4dbac85d07a9c7df9cfe7110e5bf93c3cd67a628316ee3ae302e820",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "short-last-fraction--clean-printed--oracle-1.png",
+        "box": [
+          27,
+          57,
+          179,
+          106
+        ],
+        "padded": [
+          15,
+          45,
+          191,
+          118
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "04f6fb2e5088063d352d0082ef0efb5dab5c55f24d750f1836255555d546b51e",
+        "raw": "\\[\\frac{w}{4}-1=2\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "short-last-fraction--clean-printed--oracle-2.png",
+        "box": [
+          34,
+          134,
+          131,
+          183
+        ],
+        "padded": [
+          22,
+          122,
+          143,
+          195
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "3dde0e926855deb94d0c6c24fe4205cb6af45cc1198f6464c3cfe126b4f1e2bc",
+        "raw": "\\[\\frac{w}}{4}=3\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "short-last-fraction--clean-printed--oracle-3.png",
+        "box": [
+          40,
+          317,
+          150,
+          346
+        ],
+        "padded": [
+          28,
+          305,
+          162,
+          358
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "d85b48a35f2f97ac786791e59a56771d7e9dfcd485b5c75a48faaba18c9af57d",
+        "raw": "\\[w=12\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "short-last-fraction--clean-printed--geometry-1.png",
+        "box": [
+          27,
+          57,
+          179,
+          106
+        ],
+        "padded": [
+          15,
+          45,
+          191,
+          118
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "04f6fb2e5088063d352d0082ef0efb5dab5c55f24d750f1836255555d546b51e",
+        "raw": "\\[\\frac{w}{4}-1=2\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "short-last-fraction--clean-printed--geometry-2.png",
+        "box": [
+          34,
+          134,
+          131,
+          183
+        ],
+        "padded": [
+          22,
+          122,
+          143,
+          195
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "3dde0e926855deb94d0c6c24fe4205cb6af45cc1198f6464c3cfe126b4f1e2bc",
+        "raw": "\\[\\frac{w}}{4}=3\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "short-last-fraction--clean-printed--geometry-3.png",
+        "box": [
+          40,
+          317,
+          150,
+          346
+        ],
+        "padded": [
+          28,
+          305,
+          162,
+          358
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "d85b48a35f2f97ac786791e59a56771d7e9dfcd485b5c75a48faaba18c9af57d",
+        "raw": "\\[w=12\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "short-last-fraction--clean-printed--trimmed-1.png",
+        "box": [
+          27,
+          57,
+          179,
+          106
+        ],
+        "padded": [
+          15,
+          45,
+          191,
+          118
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "04f6fb2e5088063d352d0082ef0efb5dab5c55f24d750f1836255555d546b51e",
+        "raw": "\\[\\frac{w}{4}-1=2\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "short-last-fraction--clean-printed--trimmed-2.png",
+        "box": [
+          34,
+          134,
+          131,
+          183
+        ],
+        "padded": [
+          22,
+          122,
+          143,
+          195
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "3dde0e926855deb94d0c6c24fe4205cb6af45cc1198f6464c3cfe126b4f1e2bc",
+        "raw": "\\[\\frac{w}}{4}=3\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "short-last-fraction--clean-printed--trimmed-3.png",
+        "box": [
+          40,
+          317,
+          150,
+          346
+        ],
+        "padded": [
+          28,
+          305,
+          162,
+          358
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "d85b48a35f2f97ac786791e59a56771d7e9dfcd485b5c75a48faaba18c9af57d",
+        "raw": "\\[w=12\\]"
+      }
+    ]
+  },
+  {
+    "key": "short-last-fraction--phone-style-render",
+    "cohort": "phone-style-render",
+    "chain": "short-last-fraction",
+    "truth": [
+      "\\frac{w}{4}-1=2",
+      "\\frac{w}{4}=3",
+      "w=12"
+    ],
+    "gap": 28,
+    "photo_sha256": "96ce5498c87be0742e8dc922e9dac1e3ae27bdf708cb6a9affc737d0c6eef614",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "short-last-fraction--phone-style-render--oracle-1.png",
+        "box": [
+          31,
+          44,
+          187,
+          96
+        ],
+        "padded": [
+          19,
+          32,
+          199,
+          108
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "214899d51ae56bea66b3bb934b7d517cbe25d36f067f1e3941ed633c6c00c4c0",
+        "raw": "\\[\\frac{w}{4}-1=2\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "short-last-fraction--phone-style-render--oracle-2.png",
+        "box": [
+          33,
+          124,
+          132,
+          178
+        ],
+        "padded": [
+          21,
+          112,
+          144,
+          190
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "f70b391ac5bb4dc34292169e510a9e6201efd0598c5b2c72780a43ab46ad14a0",
+        "raw": "\\[\\frac{w}{4}=3\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "short-last-fraction--phone-style-render--oracle-3.png",
+        "box": [
+          34,
+          308,
+          144,
+          340
+        ],
+        "padded": [
+          22,
+          296,
+          156,
+          352
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "8a4214c3ef7be410e4db9498244e08c81cfa3e0840de8ade0c7c0ecc4cb2f330",
+        "raw": "\\[w=12\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "short-last-fraction--phone-style-render--geometry-1.png",
+        "box": [
+          18,
+          33,
+          623,
+          96
+        ],
+        "padded": [
+          6,
+          21,
+          635,
+          106
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "b4e5a6852cfa8b4dc81e8a664e0bd584503055da320d4b81b85728e976c14420",
+        "raw": "\\[\\overline{N}_{1} \\underline{N}_{2} \\underline{N}_{3} \\underline{N}_{4} \\underline{N}_{5} \\underline{N}_{6} \\underline{N}_{7} \\underline{N}_{7} \\underline{N}_{8} \\underline{N}_{8} \\underline{N} \\underline{N}_{9}} \\underline{N} \\underline{N}_{9} \\underline{N} \\underline} \\underline{N} \\underline{N} \\underline{N} \\underline{N}_{2} \\underline{N"
+      },
+      {
+        "arm": "geometry",
+        "name": "short-last-fraction--phone-style-render--geometry-2.png",
+        "box": [
+          18,
+          117,
+          623,
+          177
+        ],
+        "padded": [
+          6,
+          106,
+          635,
+          189
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "7c768c13dac75bc5863a43ad6d6f3a36f22a6d880f8417ee0fcf12c72c153de2",
+        "raw": "\\[\\frac{N}_{N_{N}} \\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "short-last-fraction--phone-style-render--geometry-3.png",
+        "box": [
+          19,
+          201,
+          623,
+          213
+        ],
+        "padded": [
+          7,
+          189,
+          635,
+          225
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "3aa97496f27d9d67df6aea20a781af3ea229b65191ef9b80b124cb1289fd5681",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "short-last-fraction--phone-style-render--geometry-4.png",
+        "box": [
+          18,
+          243,
+          619,
+          255
+        ],
+        "padded": [
+          6,
+          231,
+          631,
+          267
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "bf4b0d9bfff251858a16cf5179db03e271cbbb473a23b6cb59108b51a6b76d16",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "short-last-fraction--phone-style-render--geometry-5.png",
+        "box": [
+          23,
+          285,
+          619,
+          297
+        ],
+        "padded": [
+          11,
+          273,
+          631,
+          303
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "8fe58bcef95a074dd96618dec6bdbafb737c120d1e02e7327ccd91958df1d02d",
+        "raw": "\\[m_{n} \\overline{n} \\overline{m}\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "short-last-fraction--phone-style-render--geometry-6.png",
+        "box": [
+          19,
+          309,
+          623,
+          339
+        ],
+        "padded": [
+          7,
+          303,
+          635,
+          351
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "e31422a8ce26c08a26ae0f26263c1aead94956b09d854cc0f3fb267d7f02f251",
+        "raw": "\\[.......W_{m_{m_{m_{m_{m_{m_{m}}}} \\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\"
+      },
+      {
+        "arm": "trimmed",
+        "name": "short-last-fraction--phone-style-render--trimmed-1.png",
+        "box": [
+          18,
+          33,
+          623,
+          96
+        ],
+        "padded": [
+          6,
+          21,
+          635,
+          106
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "b4e5a6852cfa8b4dc81e8a664e0bd584503055da320d4b81b85728e976c14420",
+        "raw": "\\[\\overline{N}_{1} \\underline{N}_{2} \\underline{N}_{3} \\underline{N}_{4} \\underline{N}_{5} \\underline{N}_{6} \\underline{N}_{7} \\underline{N}_{7} \\underline{N}_{8} \\underline{N}_{8} \\underline{N} \\underline{N}_{9}} \\underline{N} \\underline{N}_{9} \\underline{N} \\underline} \\underline{N} \\underline{N} \\underline{N} \\underline{N}_{2} \\underline{N"
+      },
+      {
+        "arm": "trimmed",
+        "name": "short-last-fraction--phone-style-render--trimmed-2.png",
+        "box": [
+          18,
+          117,
+          160,
+          177
+        ],
+        "padded": [
+          6,
+          106,
+          172,
+          189
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "f885d432891f44dce3d12f609d3a57f388148c674e0ce94f0a21867216615890",
+        "raw": "\\[\\frac{W}{4}=3\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "short-last-fraction--phone-style-render--trimmed-3.png",
+        "box": [
+          19,
+          201,
+          623,
+          213
+        ],
+        "padded": [
+          7,
+          189,
+          635,
+          225
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "3aa97496f27d9d67df6aea20a781af3ea229b65191ef9b80b124cb1289fd5681",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "short-last-fraction--phone-style-render--trimmed-4.png",
+        "box": [
+          18,
+          243,
+          619,
+          255
+        ],
+        "padded": [
+          6,
+          231,
+          631,
+          267
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "bf4b0d9bfff251858a16cf5179db03e271cbbb473a23b6cb59108b51a6b76d16",
+        "raw": "\\[\\div\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "short-last-fraction--phone-style-render--trimmed-5.png",
+        "box": [
+          23,
+          285,
+          619,
+          297
+        ],
+        "padded": [
+          11,
+          273,
+          631,
+          303
+        ],
+        "ink": [
+          0,
+          0,
+          0
+        ],
+        "crop_sha256": "8fe58bcef95a074dd96618dec6bdbafb737c120d1e02e7327ccd91958df1d02d",
+        "raw": "\\[m_{n} \\overline{n} \\overline{m}\\]"
+      },
+      {
+        "arm": "trimmed",
+        "name": "short-last-fraction--phone-style-render--trimmed-6.png",
+        "box": [
+          19,
+          309,
+          171,
+          339
+        ],
+        "padded": [
+          7,
+          303,
+          183,
+          351
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "08529b4932e85fd8817ad7c5aa48b11ab525d172a6e689a9b0aa18bce2cb5f73",
+        "raw": "\\[W=12\\]"
+      }
+    ]
+  }
+]
