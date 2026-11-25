@@ -40,7 +40,7 @@ function tokenize(text) {
 }
 const numeric = t => !!t && /^[\d.]/.test(t);
 const letter = t => !!t && /^[A-Za-z]$/.test(t);
-function parse(text, equation) {
+function parse(text, equation, includeSides = false) {
   const t = tokenize(text);
   let pos = 0;
   let variable = null;
@@ -108,17 +108,81 @@ function parse(text, equation) {
   const right = sum(0);
   if (pos !== t.length) throw new Error('Use one equality; chains, inequalities and trailing notation are unsupported.');
   const x = plus(left, scale(right, neg(ONE)));
-  const solution = x.a.n
-    ? { kind: 'unique', value: str(div(neg(x.b), x.a)) }
+  const root = x.a.n ? div(neg(x.b), x.a) : null;
+  const solution = root
+    ? { kind: 'unique', value: str(root) }
     : { kind: x.b.n ? 'none' : 'all', value: null };
-  return { variable, solution };
+  return includeSides
+    ? { variable, solution, root, left: { a: left.a, b: left.b }, right: { a: right.a, b: right.b } }
+    : { variable, solution };
 }
-function result(text, equation) {
-  try { return { ok: true, ...parse(text, equation) }; }
+function result(text, equation, includeSides = false) {
+  try { return { ok: true, ...parse(text, equation, includeSides) }; }
   catch (e) { return { ok: false, reason: e.message }; }
 }
 export const parseEquation = text => result(text, true);
 export const parseExpression = text => result(text, false);
+const equationSides = form => ({
+  left: add(mul(form.left.a, form.value), form.left.b),
+  right: add(mul(form.right.a, form.value), form.right.b),
+});
+const sameRational = (a, b) => a.n === b.n && a.d === b.d;
+const sameSolution = (a, b) => a.kind === b.kind && (a.kind !== 'unique' || a.value === b.value);
+const substitution = (form, value) => {
+  const sides = equationSides({ ...form, value });
+  return {
+    left: str(sides.left),
+    right: str(sides.right),
+    satisfies: sameRational(sides.left, sides.right),
+  };
+};
+
+/** Return a rational witness only after exact evaluation of both original equations.
+ * The changed line's root is preferred so a normal wrong step does not reveal
+ * the preceding equation's answer. Ambiguous unique-to-identity/contradiction
+ * transitions abstain instead of exposing that preceding root by construction.
+ */
+export function findEquationWitness(beforeText, afterText) {
+  const before = result(beforeText, true, true), after = result(afterText, true, true);
+  if (!before.ok || !after.ok) return { status: 'unsupported', reason: before.reason || after.reason };
+  if (before.variable && after.variable && before.variable !== after.variable)
+    return { status: 'unsupported', reason: 'A different variable cannot be compared to the preceding equation.' };
+  if (sameSolution(before.solution, after.solution))
+    return { status: 'equivalent', reason: 'The equations have the same solution set.' };
+
+  try {
+    let value;
+    if (after.solution.kind === 'unique') {
+      value = after.root;
+      // An identity before this line accepts the changed line's root too; move
+      // one exact unit away so the substitution actually separates the pair.
+      if (before.solution.kind === 'all') value = add(value, ONE);
+    } else if (after.solution.kind === 'all') {
+      if (before.solution.kind === 'unique')
+        return { status: 'abstain', reason: 'A predictable witness could disclose the preceding equation\'s answer.' };
+      value = ZERO;
+    } else if (before.solution.kind === 'unique') {
+      return { status: 'abstain', reason: 'Showing the only value that satisfies the preceding equation would reveal its answer.' };
+    } else {
+      // Identity versus contradiction: zero is exact and has no unique answer to reveal.
+      value = ZERO;
+    }
+
+    const beforeCheck = substitution({ ...before, value }, value);
+    const afterCheck = substitution({ ...after, value }, value);
+    if (beforeCheck.satisfies === afterCheck.satisfies)
+      return { status: 'abstain', reason: 'No verified separating value was found.' };
+    return {
+      status: 'witness',
+      variable: before.variable || after.variable || 'x',
+      value: str(value),
+      before: beforeCheck,
+      after: afterCheck,
+    };
+  } catch {
+    return { status: 'abstain', reason: 'Exact witness arithmetic exceeded the supported size.' };
+  }
+}
 const solutionText = (s, v) => s.kind === 'unique' ? `${v} = ${s.value}` :
   s.kind === 'all' ? 'all real values (identity)' : 'no solutions (contradiction)';
 export function verifyRows({ anchor, rows } = {}) {

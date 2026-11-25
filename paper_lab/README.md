@@ -66,3 +66,19 @@ delayed review or measure learning.
   Changing both sides can be mathematically valid. The optional check
   only answers whether the written step fits expanding the left bracket
   without rewriting the right side. It does not infer how you solved it.
+
+## Typed Diagnostic Studio R&D
+
+This branch also adds a direct typed “Why did this step break?” path. It uses
+the same exact chain checker as the paper workflow, shows the first changed
+equation beside the exact line before it, and displays a substitution witness
+only after both equations have been checked with exact rational arithmetic.
+The supported distribution collision reuses the authored separator and retry;
+other verified changes get the neutral question “What operation did you apply
+here?” See [the R&D and integration note](DIAGNOSTIC_STUDIO_RND.md) for demo
+steps, frozen-fixture counts, ownership decisions, and limits.
+
+For typed-only local review, serve the repository root with
+`python -m http.server 8766 --bind 127.0.0.1` and open
+`http://127.0.0.1:8766/paper_lab/`. This does not provide the `/api/ocr`
+endpoint; the typed flow needs no OCR server.

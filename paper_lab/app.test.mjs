@@ -94,6 +94,83 @@ test('OCR draft cannot mark; confirmation exposes first changed step, a separati
   get('clear').dispatch('click');
 });
 
+test('typed chain confirms, shows the exact changed pair and witness, and clears feedback on edit',async t=>{
+  t.after(()=>get('clear').dispatch('click'));
+  await import('./app.mjs?typed-diagnostic-studio');
+  get('clear').dispatch('click');
+  get('typed-work').value='−(x−4)=12\n−x−4=12';
+  get('typed-work').dispatch('input');
+  get('confirm-typed').dispatch('click');
+  assert.equal(get('typed-work').disabled,true);
+  assert.match(get('verdict').words(),/Line 2 · First verified change/);
+  assert.match(get('verdict').words(),/First changed step/);
+  assert.match(get('verdict').words(),/Line 1 · exact line before/);
+  assert.match(get('verdict').words(),/Line 2 · first verified change/);
+  assert.match(get('verdict').words(),/x = -16/);
+  assert.match(get('verdict').words(),/20 ≠ 12/);
+  assert.match(get('verdict').words(),/12 = 12/);
+  assert.equal(get('probe').hidden,false);
+  assert.match(get('probe-question').textContent,/−3\(y−2\)=12/);
+
+  const changed=get('rows').children[1];
+  changed.children[1].value='−x+4=12';
+  changed.children[1].dispatch('input');
+  assert.equal(get('probe').hidden,true);
+  assert.doesNotMatch(get('verdict').words(),/One exact value/);
+  assert.equal(changed.children[2].children[0].checked,false);
+  changed.children[2].children[0].checked=true;
+  changed.children[2].children[0].dispatch('change');
+  get('verify').dispatch('click');
+  assert.doesNotMatch(get('verdict').words(),/First changed step|One exact value/);
+  assert.equal(get('probe').hidden,true);
+});
+
+test('weak-evidence typed change asks only the neutral operation question',async t=>{
+  t.after(()=>get('clear').dispatch('click'));
+  await import('./app.mjs?typed-clarification');
+  get('clear').dispatch('click');
+  get('typed-work').value='2(x+3)=14\n2x+3=7';
+  get('typed-work').dispatch('input');
+  get('confirm-typed').dispatch('click');
+  const verdict=get('verdict').words();
+  assert.match(verdict,/Line 1 · exact line before/);
+  assert.match(verdict,/2\(x\+3\)=14/);
+  assert.match(verdict,/Line 2 · first verified change/);
+  assert.match(verdict,/2x\+3=7/);
+  assert.match(verdict,/One exact value to check/);
+  assert.match(verdict,/10 ≠ 14/);
+  assert.match(verdict,/7 = 7/);
+  assert.equal(get('probe').hidden,false);
+  assert.equal(get('probe-question').textContent,'What operation did you apply here?');
+  assert.equal(get('probe-form').hidden,true);
+  assert.equal(get('probe-skip').hidden,true);
+  assert.equal(get('retry').hidden,true);
+});
+
+test('typed unsupported chains and unresolved prefixes never open witness or follow-up',async t=>{
+  t.after(()=>get('clear').dispatch('click'));
+  await import('./app.mjs?typed-gates');
+  get('clear').dispatch('click');
+  get('typed-work').value='2x=8\nx^2=16\nx=7';
+  get('typed-work').dispatch('input');
+  get('confirm-typed').dispatch('click');
+  assert.match(get('verdict').words(),/Cannot check this line/);
+  assert.match(get('verdict').words(),/Not checked/);
+  assert.doesNotMatch(get('verdict').words(),/One exact value|First changed step/);
+  assert.equal(get('probe').hidden,true);
+
+  get('clear').dispatch('click');
+  get('typed-work').value='−(x−4)=12\n−x−4=12';
+  get('typed-work').dispatch('input');
+  get('confirm-typed').dispatch('click');
+  const confirmation=get('rows').children[1].children[2].children[0];
+  confirmation.checked=false;confirmation.dispatch('change');
+  get('verify').dispatch('click');
+  assert.match(get('verdict').words(),/Confirm this transcription/);
+  assert.doesNotMatch(get('verdict').words(),/One exact value|First changed step/);
+  assert.equal(get('probe').hidden,true);
+});
+
 test('partial crop keeps the source visible, maps boxes, withholds a whole-question verdict, and clears consent on reread', async () => {
   get('photo').files=[new Blob(['synthetic-page'],{type:'image/png'})];
   await get('photo').dispatch('change');
@@ -526,7 +603,7 @@ test('hidden practice events cannot coach; neutral retries do not consume; an un
   get('verify').dispatch('click');
   assert.equal(result.words(),first);
 });
-test('skip unlocks practice only and the hint and skip survive exact recheck and same-page edits',async()=>{
+test('skip and retry are cleared by edits, and stale separator feedback stays closed',async()=>{
   const rows=await startSeparator('separator-skip');
   const result=get('probe-result');
   get('probe-skip').dispatch('click');
@@ -546,10 +623,10 @@ test('skip unlocks practice only and the hint and skip survive exact recheck and
   const confirm=rows[1].children[2].children[0];confirm.checked=true;confirm.dispatch('change');
   get('verify').dispatch('click');
   assert.equal(get('probe-form').hidden,true);
-  assert.equal(get('retry-hint-text').hidden,false);
-  assert.match(result.words(),/Separator skipped/);
-  get('retry-answer').value='14-8z';get('retry-form').dispatch('submit');
-  assert.match(get('retry-evidence').textContent,/followed a hint/);
+  assert.equal(get('retry').hidden,true);
+  assert.equal(get('retry-hint-text').hidden,true);
+  assert.match(result.words(),/no evidence was recorded for this source/i);
+  assert.doesNotMatch(result.words(),/Separator skipped|Earlier first response/);
 });
 test('first modeled evidence is immutable and never attached to a newly verified pair after editing',async()=>{
   const rows=await startSeparator('separator-modeled');

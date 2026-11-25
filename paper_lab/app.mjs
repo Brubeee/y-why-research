@@ -1,4 +1,4 @@
-import { verifyRows, parseExpression } from './verify.mjs';
+import { findEquationWitness, verifyRows, parseExpression } from './verify.mjs';
 import { checkOperationClaim } from './operation_claim.mjs';
 import { diagnoseStep, interpretProbe } from './diagnostic.mjs';
 
@@ -18,9 +18,9 @@ const el = (tag, text, cls) => {
 const delayedReview = createDelayedReview({store:() => window.localStorage});
 const MAX_BYTES = 6 * 1024 ** 2;
 const MAX_ROWS = 45;
-let rows = [], objectUrl, dims, inflight, revision = 0, draftRevision = 0, diagnosis = null, skillMatch = null;
+let rows = [], objectUrl, dims, inflight, revision = 0, draftRevision = 0, chainRevision = 0, diagnosis = null, skillMatch = null;
 let currentFile = null, region = null, selecting = false, corner = null, retrySession = null;
-let currentProbe = null, firstSeparator = null, photoCandidate = null;
+let currentProbe = null, firstSeparator = null, photoCandidate = null, typedWorkflow = false;
 const clearAttestation = () => { $('anchor-check').checked = false; };
 function regionButtons() {
   const img = $('image');
@@ -37,8 +37,17 @@ function clearRegion() {
 }
 
 function status(text) { $('scan-status').textContent = text; }
-function resetResult(message = 'Run the check on your selected, confirmed lines.') {
+function resetResult(message = 'Run the check on your selected, confirmed lines.', advanceChain = true) {
   draftRevision++;
+  if (advanceChain) {
+    chainRevision++;
+    if (firstSeparator) firstSeparator = { closed:true };
+    retrySession = null;
+    $('retry-hint-text').hidden = true;
+    $('retry-hint-text').textContent = '';
+    $('retry-result').textContent = '';
+    $('retry-evidence').textContent = '';
+  }
   diagnosis = null; currentProbe = null;
   skillMatch = null; course();
   $('verdict').replaceChildren(el('p', message));
@@ -48,6 +57,13 @@ function resetResult(message = 'Run the check on your selected, confirmed lines.
   $('retry').hidden = true;
   $('retry-answer').value = '';
   showDelayed();
+}
+function resetTypedEntry(clearText = true) {
+  typedWorkflow = false;
+  $('typed-work').disabled = false;
+  $('confirm-typed').hidden = false;
+  $('edit-typed').hidden = true;
+  if (clearText) $('typed-work').value = '';
 }
 function overlay(id, box) {
   $(id).hidden = true;
@@ -169,10 +185,12 @@ function clearPhoto() {
   $('image').removeAttribute('src'); $('photo-view').hidden = true; $('crop').hidden = true; $('photo').value = '';
 }
 $('clear').addEventListener('click', () => {
+  resetTypedEntry();
   clearPhoto(); rows = []; add(); add(); renderRows(); resetResult();
   status('No photo loaded. OCR drafts are never treated as verified maths.');
 });
 $('example').addEventListener('click', () => {
+  resetTypedEntry();
   clearPhoto(); rows = [];
   for (const t of ['−(x−4)=12', '−x−4=12', 'x=−16']) add(t);
   renderRows(); resetResult();
@@ -243,6 +261,7 @@ async function readDraft(target = null) {
     if (!applicable()) return;
     // Commit the replacement only after all fallible encoding/validation.
     dims = {...nextSize};
+    resetTypedEntry();
     rows = nextRows;
     if (!requested) clearRegion();
     updateCrop(null);
@@ -305,6 +324,7 @@ $('photo').addEventListener('change', async () => {
     currentFile = file; objectUrl = url; dims = {...size};
     $('image').src = objectUrl; $('photo-view').hidden = false;
     $('region-tools').hidden = false; $('anchor-control').hidden = false;
+    resetTypedEntry();
     rows = prepared;
     if (!rows.length) { add(); add(); }
     resetResult(); renderRows(); regionButtons();
@@ -360,8 +380,47 @@ $('image').addEventListener('click', e => {
 $('read-region').addEventListener('click', () => { if (!$('read-region').disabled && region) return readDraft(region); });
 $('read-full').addEventListener('click', () => readDraft());
 $('anchor-check').addEventListener('change', () => resetResult());
-$('verify').addEventListener('click', () => {
-  resetResult();
+$('typed-work').addEventListener('input', () => {
+  if (!$('typed-work').disabled) resetResult('Typed draft changed. Confirm it again before checking.');
+});
+$('confirm-typed').addEventListener('click', () => {
+  if ($('typed-work').disabled) return;
+  const source = $('typed-work').value.trim();
+  const lines = source ? source.split(/\r?\n/).map(line => line.trim()) : [];
+  if (lines.length < 2 || lines.length > 12 || lines.some(line => !line)) {
+    resetResult('Enter 2–12 nonempty equations, one per line, starting with the original equation.');
+    return;
+  }
+  if (lines.some(line => line.length > 180)) {
+    resetResult('Keep each typed equation to 180 characters or fewer.');
+    return;
+  }
+  clearPhoto();
+  rows = lines.map(text => ({ text, selected:true, confirmed:true }));
+  typedWorkflow = true;
+  $('typed-work').disabled = true;
+  $('confirm-typed').hidden = true;
+  $('edit-typed').hidden = false;
+  renderRows();
+  status('Typed chain confirmed. Checking only the exact lines you entered.');
+  resetResult('Typed chain confirmed. Checking only the exact lines you entered.');
+  checkSelectedWork();
+});
+$('edit-typed').addEventListener('click', () => {
+  if (!typedWorkflow) return;
+  const source = rows.map(row => row.text).join('\n');
+  resetResult('Typed draft changed. Confirm it again before checking.');
+  typedWorkflow = false;
+  rows = []; add(); add(); renderRows();
+  $('typed-work').value = source;
+  $('typed-work').disabled = false;
+  $('confirm-typed').hidden = false;
+  $('edit-typed').hidden = true;
+  status('Editing the typed draft. Confirm it again before checking.');
+});
+$('verify').addEventListener('click', checkSelectedWork);
+function checkSelectedWork() {
+  resetResult(undefined,false);
   const picked = rows.map((r,i)=>({...r,sourceIndex:i})).filter(r => r.selected);
   if (picked.length < 2 || picked.length > 12) { resetResult('Select between 2 and 12 lines for one question, starting with its original equation.'); return; }
   for (let i=1; i<picked.length; i++) {
@@ -425,46 +484,80 @@ $('verify').addEventListener('click', () => {
       out.append(detail);
     }
   }
-  if (!result.rows.some(r => r.status === 'changed')) return;
   const i = result.rows.findIndex(r => r.status === 'changed');
-  diagnosis = diagnoseStep(picked[i].text,picked[i+1].text);
+  if (i < 0) return;
+  const before = picked[i], after = picked[i+1];
+  const transition = el('section','','first-change');
+  transition.append(el('h3','First changed step'));
+  const pair = el('div','','transition-pair');
+  const beforeCard = el('div','','equation-card');
+  beforeCard.append(el('small','Line ' + (before.sourceIndex+1) + ' · exact line before'),el('p',before.text));
+  const afterCard = el('div','','equation-card changed');
+  afterCard.append(el('small','Line ' + (after.sourceIndex+1) + ' · first verified change'),el('p',after.text));
+  pair.append(beforeCard,afterCard);
+  transition.append(pair);
+  out.append(transition);
+
+  const witness = findEquationWitness(before.text,after.text);
+  if (witness.status === 'witness' && witness.before.satisfies !== witness.after.satisfies) {
+    const showSubstitution = (text,check) => text.replaceAll(witness.variable,'(' + witness.value + ')') +
+      ' → ' + check.left + (check.satisfies ? ' = ' : ' ≠ ') + check.right;
+    const proof = el('section','','witness');
+    proof.append(el('h3','One exact value to check'),el('p',witness.variable + ' = ' + witness.value));
+    proof.append(el('p','Before: ' + showSubstitution(before.text,witness.before)));
+    proof.append(el('p','Changed line: ' + showSubstitution(after.text,witness.after)));
+    out.append(proof);
+  } else if (witness.status === 'abstain') {
+    out.append(el('p','No substitution value shown. ' + witness.reason,'fine'));
+  } else {
+    out.append(el('p','No separately verified substitution value is available for these lines.','fine'));
+  }
+
+  diagnosis = diagnoseStep(before.text,after.text);
   if (diagnosis.status !== 'ambiguous' || !diagnosis.probe) {
-    out.append(el('p','The maths changed. This prototype does not have enough evidence to say why.'));
+    $('probe').hidden = false;
+    $('probe-question').textContent = 'What operation did you apply here?';
     return;
   }
   skillMatch = 'distribution'; course();
   $('probe').hidden = false;
-  $('probe-question').textContent = firstSeparator ? 'Separator closed for this page.' : diagnosis.reason + ' Expand and simplify: ' + diagnosis.probe.input.split('=')[0].replaceAll('-','−') + '.';
+  $('probe-question').textContent = diagnosis.reason + ' Try a fresh equation and simplify both sides: ' + diagnosis.probe.input.replaceAll('-','−') + '.';
   // Only a currently verified source pair can display the historical response.
   // These ephemeral references are never serialized.
-  currentProbe = [picked[i],picked[i+1]].map(r => ({row:rows[r.sourceIndex],text:r.text}));
+  currentProbe = {
+    revision:chainRevision,
+    lines:[before,after].map(r => ({row:rows[r.sourceIndex],text:r.text})),
+  };
   showSeparator();
-});
+}
 function showSeparator() {
   const open = !firstSeparator;
   $('probe-form').hidden = !open; $('probe-skip').hidden = !open;
   if (open) return;
   $('probe-question').textContent = 'Separator closed for this page.';
   const prior=firstSeparator;
-  const same=prior.source.every(({row,text},i)=>row===currentProbe[i].row && text===currentProbe[i].text);
+  const sameRevision = prior.revision === currentProbe.revision && currentProbe.revision === chainRevision;
+  const sameSource = Array.isArray(prior.source) && prior.source.every(({row,text},i)=>row===currentProbe.lines[i].row && text===currentProbe.lines[i].text);
+  const same = sameRevision && sameSource;
   const out=$('probe-result');
-  if (prior.skipped) out.replaceChildren(el('p','Separator skipped. Practice only; no diagnostic evidence was recorded.'));
-  else if (!same) out.replaceChildren(el('p','Related feedback or practice is already available on this page. This separator is closed; no evidence was recorded for this source.'));
+  if (!same) out.replaceChildren(el('p','Related feedback or practice is already available on this page. This separator is closed; no evidence was recorded for this source.'));
+  else if (prior.skipped) out.replaceChildren(el('p','Separator skipped. Practice only; no diagnostic evidence was recorded.'));
   else {
     const msg=prior.response;
     out.replaceChildren(el('p','Earlier first response: ' + msg.reason));
     if (msg.status==='unresolved') out.append(el('p','No diagnostic evidence was recorded. Further work is practice only.'));
     else out.append(el('p',msg.followUp || ''),el('p','Exact expansion: ' + prior.exact + '.'));
   }
+  if (!same) return;
   retrySession ??= createRetry({diagnostic:diagnosis});
   if (retrySession) showRetry();
 }
 function awaitingSeparator() {
-  return !!currentProbe && !!diagnosis?.probe && !firstSeparator && !$('probe').hidden && !$('probe-form').hidden;
+  return !!currentProbe && currentProbe.revision === chainRevision && !!diagnosis?.probe && !firstSeparator && !$('probe').hidden && !$('probe-form').hidden;
 }
 $('probe-skip').addEventListener('click', () => {
   if (!awaitingSeparator() || $('probe-skip').hidden) return;
-  firstSeparator={skipped:true,source:currentProbe};
+  firstSeparator={skipped:true,source:currentProbe.lines,revision:currentProbe.revision};
   $('answer').value='';
   showSeparator();
 });
@@ -483,7 +576,7 @@ $('probe-form').addEventListener('submit', e => {
   const coefficient = parsed.coefficient === '1' ? '' : parsed.coefficient === '-1' ? '-' : parsed.coefficient;
   const canonical = coefficient + parsed.variable + (parsed.constant.startsWith('-') ? '' : '+') + parsed.constant + '=' + rhs;
   const response = interpretProbe(diagnosis, canonical);
-  firstSeparator={source:currentProbe,response,exact:diagnosis.probe.correct.split('=')[0].replaceAll('-','−')};
+  firstSeparator={source:currentProbe.lines,revision:currentProbe.revision,response,exact:diagnosis.probe.correct.split('=')[0].replaceAll('-','−')};
   $('answer').value='';
   showSeparator();
 });
@@ -505,12 +598,12 @@ function showRetry() {
   showDelayed();
 }
 $('retry-hint').addEventListener('click', () => {
-  if (!currentProbe || !firstSeparator || !diagnosis?.probe || !retrySession || $('retry').hidden) return;
+  if (!currentProbe || currentProbe.revision !== chainRevision || !firstSeparator || !diagnosis?.probe || !retrySession || $('retry').hidden) return;
   retrySession = exposeRetryHint(retrySession);showRetry();
 });
 $('retry-form').addEventListener('submit', e => {
   e.preventDefault();
-  if (!currentProbe || !firstSeparator || !diagnosis?.probe || !retrySession || $('retry').hidden) return;
+  if (!currentProbe || currentProbe.revision !== chainRevision || !firstSeparator || !diagnosis?.probe || !retrySession || $('retry').hidden) return;
   retrySession = recordRetry(retrySession,{text:$('retry-answer').value});showRetry();
 });
 
