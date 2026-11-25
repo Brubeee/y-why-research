@@ -83,6 +83,7 @@ test('OCR draft cannot mark; confirmation exposes first changed step, a separati
   assert.match(get('verdict').words(),/Line 3 · Not checked/);
   assert.match(get('probe-question').textContent,/−3\(y−2\)/);
   assert.equal(get('probe').hidden,false);
+  assert.equal(get('operation-claim-panel').hidden,true,'the declared-operation form is limited to the typed path');
   get('answer').value='-3y-6'; get('probe-form').dispatch('submit');
   assert.match(get('probe-result').words(),/not a confirmed misconception/);
   assert.match(get('probe-result').words(),/Exact expansion: −3y\+6/);
@@ -113,6 +114,7 @@ test('typed chain confirms, shows the exact changed pair and witness, and clears
   assert.equal(get('probe').hidden,false);
   assert.match(get('probe-question').textContent,/−3\(y−2\)=12/);
   assert.doesNotMatch(get('probe-question').textContent,/x\s*=\s*-8\b/);
+  assert.equal(get('operation-claim-panel').hidden,true,'the authored negative-distribution retry keeps its existing path');
 
   const changed=get('rows').children[1];
   changed.children[1].value='−x+4=12';
@@ -145,8 +147,56 @@ test('weak-evidence typed change asks only the neutral operation question',async
   assert.equal(get('probe').hidden,false);
   assert.equal(get('probe-question').textContent,'What operation did you apply here?');
   assert.equal(get('probe-form').hidden,true);
+  assert.equal(get('operation-claim-panel').hidden,false);
+  assert.equal(get('operation-feedback').textContent,'');
   assert.equal(get('probe-skip').hidden,true);
   assert.equal(get('retry').hidden,true);
+});
+
+test('same changed typed pair routes subtract and divide claims to exact side checks',async t=>{
+  t.after(()=>get('clear').dispatch('click'));
+  await import('./app.mjs?typed-declared-operation');
+  get('clear').dispatch('click');
+  get('typed-work').value='2x+6=14\n2x=9';
+  get('typed-work').dispatch('input');
+  get('confirm-typed').dispatch('click');
+  assert.equal(get('operation-claim-panel').hidden,false);
+
+  get('operation-kind').value='subtract';get('operation-kind').dispatch('change');
+  get('operation-constant').value='6';get('operation-constant').dispatch('input');
+  get('operation-claim-form').dispatch('submit');
+  let feedback=get('operation-feedback').textContent;
+  assert.match(feedback,/left side matches/i);
+  assert.match(feedback,/right side: what is 14−6\?/);
+  assert.match(feedback,/written right side is 9/);
+  assert.doesNotMatch(feedback,/x\s*=\s*4\b/);
+  assert.match(get('verdict').words(),/One exact value to check/,'the original verified witness remains visible');
+
+  get('operation-kind').value='divide';get('operation-kind').dispatch('change');
+  assert.equal(get('operation-feedback').textContent,'','changing the declared action clears prior feedback');
+  get('operation-constant').value='2';get('operation-constant').dispatch('input');
+  get('operation-claim-form').dispatch('submit');
+  feedback=get('operation-feedback').textContent;
+  assert.match(feedback,/every term on the left/i);
+  assert.match(feedback,/\(2x\+6\) ÷ 2/);
+  assert.match(feedback,/written left side is 2x/);
+  assert.doesNotMatch(feedback,/x\s*=\s*4\b/);
+
+  get('operation-kind').value='other';get('operation-kind').dispatch('change');
+  assert.equal(get('operation-feedback').textContent,'');
+  get('operation-claim-form').dispatch('submit');
+  assert.match(get('operation-feedback').textContent,/add one intermediate equation/i);
+
+  const source=get('typed-work').value;
+  get('edit-typed').dispatch('click');
+  assert.equal(get('operation-claim-panel').hidden,true);
+  assert.equal(get('operation-feedback').textContent,'');
+  get('confirm-typed').dispatch('click');
+  assert.equal(get('typed-work').value,source);
+  assert.equal(get('operation-claim-panel').hidden,false);
+  assert.equal(get('operation-feedback').textContent,'','reconfirmation cannot restore old claim feedback');
+  assert.equal(get('operation-kind').value,'');
+  assert.equal(get('operation-constant').value,'');
 });
 
 test('typed unsupported chains and unresolved prefixes never open witness or follow-up',async t=>{
@@ -160,6 +210,7 @@ test('typed unsupported chains and unresolved prefixes never open witness or fol
   assert.match(get('verdict').words(),/Not checked/);
   assert.doesNotMatch(get('verdict').words(),/One exact value|First changed step/);
   assert.equal(get('probe').hidden,true);
+  assert.equal(get('operation-claim-panel').hidden,true);
 
   get('clear').dispatch('click');
   get('typed-work').value='−(x−4)=12\n−x−4=12';
@@ -171,6 +222,7 @@ test('typed unsupported chains and unresolved prefixes never open witness or fol
   assert.match(get('verdict').words(),/Confirm this transcription/);
   assert.doesNotMatch(get('verdict').words(),/One exact value|First changed step/);
   assert.equal(get('probe').hidden,true);
+  assert.equal(get('operation-claim-panel').hidden,true);
 });
 
 test('partial crop keeps the source visible, maps boxes, withholds a whole-question verdict, and clears consent on reread', async () => {

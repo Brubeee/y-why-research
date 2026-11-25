@@ -74,9 +74,14 @@ the same exact chain checker as the paper workflow, shows the first changed
 equation beside the exact line before it, and displays a substitution witness
 only after both equations have been checked with exact rational arithmetic.
 The supported distribution collision reuses the authored separator and retry;
-other verified changes get the neutral question “What operation did you apply
-here?” See [the R&D and integration note](DIAGNOSTIC_STUDIO_RND.md) for demo
-steps, frozen-fixture counts, ownership decisions, and limits.
+other verified typed changes ask “What operation did you apply here?” and let
+the student choose a two-sided operation with an exact constant. The app
+compares that claim with each side and offers a targeted check only when exact
+arithmetic supports it. “Something else / Not sure,” unsupported claims, and
+unresolved chains ask for an intermediate line or abstain. See
+[the operation-conversation protocol](OPERATION_CONVERSATION.md) and [the R&D
+integration note](DIAGNOSTIC_STUDIO_RND.md) for frozen-case counts, demo steps,
+ownership, and limits.
 
 For typed-only local review, serve the repository root with
 `python -m http.server 8766 --bind 127.0.0.1` and open

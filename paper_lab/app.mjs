@@ -1,5 +1,5 @@
 import { findEquationWitness, verifyRows, parseExpression } from './verify.mjs';
-import { checkOperationClaim } from './operation_claim.mjs';
+import { checkOperationClaim, checkTwoSidedOperationClaim, formatOperationExpression } from './operation_claim.mjs';
 import { diagnoseStep, interpretProbe } from './diagnostic.mjs';
 
 import { curriculumReference } from './curriculum.mjs';
@@ -20,7 +20,7 @@ const MAX_BYTES = 6 * 1024 ** 2;
 const MAX_ROWS = 45;
 let rows = [], objectUrl, dims, inflight, revision = 0, draftRevision = 0, chainRevision = 0, diagnosis = null, skillMatch = null;
 let currentFile = null, region = null, selecting = false, corner = null, retrySession = null;
-let currentProbe = null, firstSeparator = null, photoCandidate = null, typedWorkflow = false;
+let currentProbe = null, firstSeparator = null, photoCandidate = null, typedWorkflow = false, currentActionContext = null;
 const clearAttestation = () => { $('anchor-check').checked = false; };
 function regionButtons() {
   const img = $('image');
@@ -49,9 +49,16 @@ function resetResult(message = 'Run the check on your selected, confirmed lines.
     $('retry-evidence').textContent = '';
   }
   diagnosis = null; currentProbe = null;
+  currentActionContext = null;
   skillMatch = null; course();
   $('verdict').replaceChildren(el('p', message));
   $('probe').hidden = true; $('probe-form').hidden = true; $('probe-skip').hidden = true;
+  $('operation-claim-panel').hidden = true;
+  $('operation-feedback').textContent = '';
+  $('operation-kind').value = '';
+  $('operation-constant').value = '';
+  $('operation-constant').disabled = true;
+  $('operation-constant-field').hidden = true;
   $('answer').value = '';
   $('probe-result').replaceChildren();
   $('retry').hidden = true;
@@ -383,6 +390,44 @@ $('anchor-check').addEventListener('change', () => resetResult());
 $('typed-work').addEventListener('input', () => {
   if (!$('typed-work').disabled) resetResult('Typed draft changed. Confirm it again before checking.');
 });
+$('operation-kind').addEventListener('change', () => {
+  const needsConstant = ['add','subtract','multiply','divide'].includes($('operation-kind').value);
+  $('operation-constant-field').hidden = !needsConstant;
+  $('operation-constant').disabled = !needsConstant;
+  if (!needsConstant) $('operation-constant').value = '';
+  $('operation-feedback').textContent = '';
+});
+$('operation-constant').addEventListener('input', () => { $('operation-feedback').textContent = ''; });
+$('operation-claim-form').addEventListener('submit', event => {
+  event.preventDefault();
+  const kind = $('operation-kind').value;
+  if (!typedWorkflow || !currentActionContext || currentActionContext.revision !== chainRevision || $('operation-claim-panel').hidden)
+    return;
+  if (!kind) {
+    $('operation-feedback').textContent = 'Choose an operation or Something else / Not sure.';
+    return;
+  }
+  const claim = {kind,constant:$('operation-constant').value.trim()};
+  const result = checkTwoSidedOperationClaim({
+    before:currentActionContext.before,
+    after:currentActionContext.after,
+    claim,
+  });
+  if (result.status === 'consistent') {
+    $('operation-feedback').textContent = 'Your declared operation matches both sides exactly. This check does not tell me what you were thinking.';
+  } else if (result.status === 'left-mismatch') {
+    const expression = formatOperationExpression(currentActionContext.before.text.split('=')[0],claim);
+    const word = kind === 'multiply' || kind === 'divide' ? 'Check what happened to every term on the left' : 'Check the left side';
+    $('operation-feedback').textContent = `${word} under your declared action: ${expression}. The written left side is ${result.writtenSide}.`;
+  } else if (result.status === 'right-mismatch' && result.comparison?.left === true) {
+    const expression = formatOperationExpression(currentActionContext.before.text.split('=')[1],claim);
+    $('operation-feedback').textContent = `The left side matches your declared action. Check the right side: what is ${expression}? The written right side is ${result.writtenSide}.`;
+  } else if (kind === 'other' || result.status === 'abstain') {
+    $('operation-feedback').textContent = 'I can’t verify that action from these choices. Add one intermediate equation, or abstain.';
+  } else {
+    $('operation-feedback').textContent = 'I can’t compare that action exactly. Use a supported exact constant (multiplication and division need a nonzero value), or add one intermediate equation.';
+  }
+});
 $('confirm-typed').addEventListener('click', () => {
   if ($('typed-work').disabled) return;
   const source = $('typed-work').value.trim();
@@ -521,10 +566,16 @@ function checkSelectedWork() {
     out.append(el('p','No separately verified substitution value is available for these lines.','fine'));
   }
 
+  currentActionContext = {
+    revision:chainRevision,
+    before:{text:before.text,confirmed:before.confirmed},
+    after:{text:after.text,confirmed:after.confirmed},
+  };
   diagnosis = diagnoseStep(before.text,after.text);
   if (diagnosis.status !== 'ambiguous' || !diagnosis.probe) {
     $('probe').hidden = false;
     $('probe-question').textContent = 'What operation did you apply here?';
+    if (typedWorkflow) $('operation-claim-panel').hidden = false;
     return;
   }
   skillMatch = 'distribution'; course();
