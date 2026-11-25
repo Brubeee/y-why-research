@@ -109,8 +109,10 @@ test('typed chain confirms, shows the exact changed pair and witness, and clears
   assert.match(get('verdict').words(),/x = -16/);
   assert.match(get('verdict').words(),/20 ≠ 12/);
   assert.match(get('verdict').words(),/12 = 12/);
+  assert.doesNotMatch(get('verdict').words(),/x\s*=\s*-8\b/);
   assert.equal(get('probe').hidden,false);
   assert.match(get('probe-question').textContent,/−3\(y−2\)=12/);
+  assert.doesNotMatch(get('probe-question').textContent,/x\s*=\s*-8\b/);
 
   const changed=get('rows').children[1];
   changed.children[1].value='−x+4=12';
@@ -649,6 +651,29 @@ test('first modeled evidence is immutable and never attached to a newly verified
   assert.equal(get('probe-form').hidden,true);
   assert.match(result.words(),/no evidence was recorded for this source/i);
   assert.doesNotMatch(result.words(),/Exact expansion|matches one simulated rule/);
+});
+
+test('editing and reconfirming identical text cannot restore a prior probe response or retry',async()=>{
+  const rows=await startSeparator('separator-identical-reconfirm');
+  sendProbe('-3y-6');
+  const first=get('probe-result').words();
+  assert.match(first,/not a confirmed misconception/);
+  assert.equal(get('retry').hidden,false);
+  get('retry-hint').dispatch('click');
+  assert.equal(get('retry-hint-text').hidden,false);
+
+  const field=rows[1].children[1];
+  field.value='-x-3=12';field.dispatch('input');
+  field.value='-x-4=12';field.dispatch('input');
+  const confirm=rows[1].children[2].children[0];confirm.checked=true;confirm.dispatch('change');
+  get('verify').dispatch('click');
+
+  assert.equal(get('probe-form').hidden,true);
+  assert.match(get('probe-result').words(),/no evidence was recorded for this source/i);
+  assert.doesNotMatch(get('probe-result').words(),/Earlier first response|Exact expansion|matches one simulated rule/);
+  assert.equal(get('retry').hidden,true);
+  assert.equal(get('retry-hint-text').hidden,true);
+  assert.equal(get('retry-evidence').textContent,'');
 });
 
 test('a cancelled picker or rejected MIME, empty, or oversize selection preserves confirmed photo work',async t=>{

@@ -25,6 +25,8 @@ No learned next-question selector was tried or wired into the app. The offline h
 
 These counts describe only whether the hand-authored expected action matched the deterministic output on these fixtures. They are not an independent evaluation, learner data, or evidence of educational effectiveness. Run `node paper_lab/diagnostic_studio_bench.mjs` to reproduce the count.
 
+The exact witness tests cover negative and fractional unique-to-unique changes, identity-to-unique, contradiction-to-unique, identity↔contradiction in both directions, and deliberate abstentions for unique-to-identity and unique-to-contradiction. App tests also verify that the original root is not printed in the witness or fresh probe, that an unresolved prefix blocks downstream feedback, and that editing then reconfirming identical text does not restore the earlier probe response or retry state.
+
 ## Demo
 
 For the typed path only, serve the repository root with `python -m http.server 8766 --bind 127.0.0.1` and open `http://127.0.0.1:8766/paper_lab/`.

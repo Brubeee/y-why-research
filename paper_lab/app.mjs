@@ -457,12 +457,20 @@ function checkSelectedWork() {
   const result = verifyRows({anchor,rows:steps});
   const labels = {equivalent:'Same solution set',changed:'First verified change',unsupported:'Cannot check this line',unconfirmed:'Needs transcription confirmation','not-considered':'Not checked'};
   if (result.anchor.status === 'confirmed' && result.anchor.solution?.kind === 'unique') { skillMatch = 'linear'; course(); }
-  const out = $('verdict'); out.replaceChildren(el('p','Original equation: ' + anchor.text + '. ' + result.anchor.message));
+  const anchorMessage = !typedWorkflow || result.anchor.status !== 'confirmed' ? result.anchor.message
+    : result.anchor.solution.kind === 'unique' ? 'Confirmed starting equation; its exact solution is not shown.'
+    : result.anchor.solution.kind === 'all' ? 'The starting equation is an identity (all real values).'
+    : 'The starting equation is a contradiction (no solutions).';
+  const out = $('verdict'); out.replaceChildren(el('p','Original equation: ' + anchor.text + '. ' + anchorMessage));
   if (currentFile) out.append(el('p','Selected steps only. This is not a pass or grade for the whole question.','fine'));
   const skippedLines = rows.map((row,i)=>row.crossedOut && i>anchor.sourceIndex && i<picked.at(-1).sourceIndex ? i+1 : null).filter(Boolean);
   if (skippedLines.length) out.append(el('p', 'Marked crossed out; not checked: line ' + skippedLines.join(', ') + '.', 'fine'));
   result.rows.forEach((r,i) => {
-    const p = el('p', 'Line ' + (steps[i].sourceIndex+1) + ' · ' + (labels[r.status] || r.status) + ' · ' + steps[i].text + ' — ' + r.message, 'step-result ' + r.status);
+    const message = !typedWorkflow ? r.message
+      : r.status === 'changed' ? 'This row changes the solution set; no solution is shown.'
+      : r.status === 'equivalent' ? 'This row preserves the solution set. That does not verify the reasoning between lines.'
+      : r.message;
+    const p = el('p', 'Line ' + (steps[i].sourceIndex+1) + ' · ' + (labels[r.status] || r.status) + ' · ' + steps[i].text + ' — ' + message, 'step-result ' + r.status);
     out.append(p);
   });
   // Only an entirely confirmed, equivalent selection receives the optional
