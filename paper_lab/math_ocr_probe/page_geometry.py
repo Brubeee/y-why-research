@@ -1,4 +1,5 @@
 """Research-only raster line proposal. It has no OCR/text dependency."""
+from rule_mask import striped_proposals
 import numpy as np
 from scipy import ndimage as ndi
 
@@ -8,12 +9,14 @@ def spans(flags):
     return list(zip(changes[::2],changes[1::2],strict=True))
 
 
-def proposals(photo):
+def proposals(photo, *, suppress_ruling=False):
     gray=np.asarray(photo.convert('L'),dtype=np.float32)
     unit=max(1, min(gray.shape)/365)
     # Local contrast permits a slowly changing background without whitening the input.
     background=ndi.maximum_filter(gray,size=2*int(13*unit)+1)
     mask=background-gray>45
+    if suppress_ruling:
+        mask=striped_proposals(mask, unit)
     labels,n=ndi.label(mask,structure=np.ones((3,3),dtype=int))
     # Strip explicitly long, nearly flat rules and isolated specks, not individual short minuses.
     for j,s in enumerate(ndi.find_objects(labels),1):

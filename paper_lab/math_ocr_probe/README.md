@@ -257,3 +257,53 @@ true short rows, fraction bars and leading minuses on independently frozen
 pages. Do not use the 17 known extra crops as test-time labels.
 
 [Raw crop and transcription results](trim-05-results.json).
+
+## Rule removal for proposals only
+
+This compares the previously tested width-only crop with a detector that
+also searches the binary proposal mask for shallow ridges near horizontal,
+using column occupancy in a narrow sloped band. A rule must span at least
+69% of page width with evidence in at least 48% of columns. A height
+support test protects the core of intersecting glyphs. No pixels are
+erased from the images sent to OCR; the rule search only changes the
+crop rectangles. This is a small controlled engineering experiment,
+not a default for paper capture.
+
+Four newly frozen chains have deliberately wrong steps, close spacing,
+and short final rows. They are paired clean and synthetically ruled:
+asymmetric sloped rules, a broken rule, smudges and low-contrast math
+appear only in the second view. The known-box arm receives the same
+untouched pixels as both automated arms. It supplies a geometry
+reference, not a transcription reference or clean replacement image.
+The freeze record contains source hashes and scored row strings before
+the recognizer runs.
+
+```sh
+python rule_compare.py freeze frozen_rule_06
+YWHY_MODEL_CACHE="$PWD/model-cache" node page_recognize.mjs frozen_rule_06 > rule-06-local.json
+python rule_compare.py score rule-06-local.json
+python -m unittest rule_mask_test horizontal_trim_test page_geometry_test
+```
+
+[Source-page freeze](rule-06-freeze.json). Crop manifest SHA-256:
+`56a3ebff73fcdfb3524170d73a1be9ef81184879ce5e1b04bd6263f2b7460c7b`.
+
+| Source | Crop | Complete intended rows | Exact intended rows | Extra crops | Exact chains |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Clean | All three arms | 12/12 | 10/12 | 0 | 2/4 |
+| Ruled/smudged | Known boxes | 12/12 | 6/12 | 0 | 1/4 |
+| Ruled/smudged | Width-only | 12/12 | 1/12 | 18 | 0/4 |
+| Ruled/smudged | Proposal rule filter | 12/12 | 1/12 | 3 | 0/4 |
+
+The filter removed 15 false boxes without moving an intended row below
+the predeclared 97% ink threshold. This is an improvement in geometry,
+not in literal OCR. Three pages still contain an extra box, and some
+remaining intended crops are wider than 500 px. No candidate arm
+transcribed a whole ruled page correctly. Even known boxes recover only
+one complete ruled chain and six rows. The line ends can still capture
+long residual ink and the recognizer can still misread a source line
+when geometry is right. No application behavior is changed. Assess
+the recognizer on anonymous handwritten formulas separately from
+continuous-page detection; these paired renders do not measure handwriting.
+
+[Raw crop and transcription output](rule-06-results.json).
