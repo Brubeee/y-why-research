@@ -1,0 +1,5 @@
+.npm/
+model-cache/
+node_modules/
+frozen_oracle_01b/
+comparison*.json

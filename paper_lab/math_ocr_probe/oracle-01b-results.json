@@ -1,0 +1,758 @@
+[
+  {
+    "key": "brackets-error-clean-printed-1",
+    "chain": "brackets-error",
+    "cohort": "clean-printed",
+    "index": 1,
+    "truth": "5(2p−7)=15",
+    "image_sha": "835997d6ab7bc637b984a41fc6098ec3e01d124429831df6716b4fffdd4fe858",
+    "input_wh": [
+      448,
+      73
+    ],
+    "raw": {
+      "tesseract": "5 (2p-7)=15\n",
+      "stock": "\\[5(2p-7)=25\\]",
+      "aspect_pad": "\\[5 \\left( 2p-7 \\right)=15\\]"
+    },
+    "timesMs": {
+      "stock": 2039,
+      "aspect_pad": 1821
+    }
+  },
+  {
+    "key": "brackets-error-clean-printed-2",
+    "chain": "brackets-error",
+    "cohort": "clean-printed",
+    "index": 2,
+    "truth": "10p−7=15",
+    "image_sha": "00dc00e04549a8e0cd697ead7d31d7f101f3200e017f0a1d6ffb517523337d49",
+    "input_wh": [
+      448,
+      90
+    ],
+    "raw": {
+      "tesseract": "10p-7=15\n",
+      "stock": "\\[100-7=15\\]",
+      "aspect_pad": "\\[10p-7=15\\]"
+    },
+    "timesMs": {
+      "stock": 1635,
+      "aspect_pad": 1612
+    }
+  },
+  {
+    "key": "brackets-error-clean-printed-3",
+    "chain": "brackets-error",
+    "cohort": "clean-printed",
+    "index": 3,
+    "truth": "10p=22",
+    "image_sha": "98698ead6aa15974e54774b6469447c4ee1ca27245818cfed61c46da9e1e3256",
+    "input_wh": [
+      448,
+      122
+    ],
+    "raw": {
+      "tesseract": "10p=22\n",
+      "stock": "\\[10p=22\\]",
+      "aspect_pad": "\\[\\texttt{10p}\\texttt{p}\\texttt{=}22\\]"
+    },
+    "timesMs": {
+      "stock": 1687,
+      "aspect_pad": 1797
+    }
+  },
+  {
+    "key": "brackets-error-phone-style-render-1",
+    "chain": "brackets-error",
+    "cohort": "phone-style-render",
+    "index": 1,
+    "truth": "5(2p−7)=15",
+    "image_sha": "23519d41749cc38bc8a5fcd294a13907aa6139391fb180ab596300ff98946b29",
+    "input_wh": [
+      448,
+      81
+    ],
+    "raw": {
+      "tesseract": "",
+      "stock": "\\[5(2p-7)=15\\]",
+      "aspect_pad": "\\[5 \\left( 2p-7 \\right)=15\\]"
+    },
+    "timesMs": {
+      "stock": 1497,
+      "aspect_pad": 1798
+    }
+  },
+  {
+    "key": "brackets-error-phone-style-render-2",
+    "chain": "brackets-error",
+    "cohort": "phone-style-render",
+    "index": 2,
+    "truth": "10p−7=15",
+    "image_sha": "b78b1f31da4b10a0c30b49750506fba235815f2940719f9cddb3e6d2d2112527",
+    "input_wh": [
+      448,
+      85
+    ],
+    "raw": {
+      "tesseract": "",
+      "stock": "\\[10p-7=15\\]",
+      "aspect_pad": "\\[10p-7=15\\]"
+    },
+    "timesMs": {
+      "stock": 2043,
+      "aspect_pad": 2071
+    }
+  },
+  {
+    "key": "brackets-error-phone-style-render-3",
+    "chain": "brackets-error",
+    "cohort": "phone-style-render",
+    "index": 3,
+    "truth": "10p=22",
+    "image_sha": "8f4edd9561ccb217b3e5f174a1cd23227d05c60e81d243425a7fce67254a8655",
+    "input_wh": [
+      448,
+      120
+    ],
+    "raw": {
+      "tesseract": "10p=22\n",
+      "stock": "\\[10p=22\\]",
+      "aspect_pad": "\\[\\[textit{text{p=20} =20}\\]"
+    },
+    "timesMs": {
+      "stock": 1692,
+      "aspect_pad": 2724
+    }
+  },
+  {
+    "key": "brackets-valid-clean-printed-1",
+    "chain": "brackets-valid",
+    "cohort": "clean-printed",
+    "index": 1,
+    "truth": "3(4r+5)=39",
+    "image_sha": "e56705c7d5d2cec1e28423392df3df756488256219d32d1a89494b9e87ad64f0",
+    "input_wh": [
+      448,
+      66
+    ],
+    "raw": {
+      "tesseract": "3(4r+5)=39\n",
+      "stock": "\\[3(4r+5)=39\\]",
+      "aspect_pad": "\\[3 \\left( 4r+5 \\right)=39\\]"
+    },
+    "timesMs": {
+      "stock": 1928,
+      "aspect_pad": 2397
+    }
+  },
+  {
+    "key": "brackets-valid-clean-printed-2",
+    "chain": "brackets-valid",
+    "cohort": "clean-printed",
+    "index": 2,
+    "truth": "12r+15=39",
+    "image_sha": "226736af2c7794e4295abe4e924b3b599de5c20f016186006c09071642c6b9ca",
+    "input_wh": [
+      448,
+      61
+    ],
+    "raw": {
+      "tesseract": "12r+15=39\n",
+      "stock": "\\[12r+15=39\\]",
+      "aspect_pad": "\\[12r+15=39\\]"
+    },
+    "timesMs": {
+      "stock": 2001,
+      "aspect_pad": 1803
+    }
+  },
+  {
+    "key": "brackets-valid-clean-printed-3",
+    "chain": "brackets-valid",
+    "cohort": "clean-printed",
+    "index": 3,
+    "truth": "r=2",
+    "image_sha": "50129f183ee22f2d1cbeef317ffab00896e5bae9f580871260a87ecbb5a55ab8",
+    "input_wh": [
+      448,
+      206
+    ],
+    "raw": {
+      "tesseract": "r=2\n",
+      "stock": "\\[r=2\\]",
+      "aspect_pad": "\\[r=2\\]"
+    },
+    "timesMs": {
+      "stock": 1457,
+      "aspect_pad": 1615
+    }
+  },
+  {
+    "key": "brackets-valid-phone-style-render-1",
+    "chain": "brackets-valid",
+    "cohort": "phone-style-render",
+    "index": 1,
+    "truth": "3(4r+5)=39",
+    "image_sha": "2d329bfc6c84f33fa75d53330e7b6fb8a0add79b305ce0877452166589e83906",
+    "input_wh": [
+      448,
+      84
+    ],
+    "raw": {
+      "tesseract": "3(4r+5)=39\n",
+      "stock": "\\[3(4r+5)=39\\]",
+      "aspect_pad": "\\[3 \\left( 4r+5 \\right)=39\\]"
+    },
+    "timesMs": {
+      "stock": 2287,
+      "aspect_pad": 2089
+    }
+  },
+  {
+    "key": "brackets-valid-phone-style-render-2",
+    "chain": "brackets-valid",
+    "cohort": "phone-style-render",
+    "index": 2,
+    "truth": "12r+15=39",
+    "image_sha": "f638b60e59434cd26b0db254e7cc95208bbce99550a4f027146b5e41dc2d9f8a",
+    "input_wh": [
+      448,
+      78
+    ],
+    "raw": {
+      "tesseract": "12r+15=39\n",
+      "stock": "\\[12r+15=39\\]",
+      "aspect_pad": "\\[12r+15=39\\]"
+    },
+    "timesMs": {
+      "stock": 2197,
+      "aspect_pad": 2094
+    }
+  },
+  {
+    "key": "brackets-valid-phone-style-render-3",
+    "chain": "brackets-valid",
+    "cohort": "phone-style-render",
+    "index": 3,
+    "truth": "r=2",
+    "image_sha": "df779b69f42dae2d12a8413fa3fda43ec9b0abf1852b8d6a96414520ae7f4f8a",
+    "input_wh": [
+      448,
+      179
+    ],
+    "raw": {
+      "tesseract": "r=2\n",
+      "stock": "\\[r=2\\]",
+      "aspect_pad": "\\[r=2\\]"
+    },
+    "timesMs": {
+      "stock": 1925,
+      "aspect_pad": 1719
+    }
+  },
+  {
+    "key": "negative-error-clean-printed-1",
+    "chain": "negative-error",
+    "cohort": "clean-printed",
+    "index": 1,
+    "truth": "−2n+9=17",
+    "image_sha": "eb11ca23839d1cd2b1a484d516e6c47cd3b99cb425af7df187189316c40a8ba9",
+    "input_wh": [
+      448,
+      68
+    ],
+    "raw": {
+      "tesseract": "-2n+9=17\n",
+      "stock": "\\[-2n+9=27\\]",
+      "aspect_pad": "\\[-2n+9=17\\]"
+    },
+    "timesMs": {
+      "stock": 1601,
+      "aspect_pad": 1796
+    }
+  },
+  {
+    "key": "negative-error-clean-printed-2",
+    "chain": "negative-error",
+    "cohort": "clean-printed",
+    "index": 2,
+    "truth": "−2n=8",
+    "image_sha": "dad6a1737024d8d67f9744b968706532c48619ac1482f2edf959cdcda418b9c3",
+    "input_wh": [
+      448,
+      110
+    ],
+    "raw": {
+      "tesseract": "-2n=8\n",
+      "stock": "\\[-2n=8\\]",
+      "aspect_pad": "\\[-2n=8\\]"
+    },
+    "timesMs": {
+      "stock": 1601,
+      "aspect_pad": 1499
+    }
+  },
+  {
+    "key": "negative-error-clean-printed-3",
+    "chain": "negative-error",
+    "cohort": "clean-printed",
+    "index": 3,
+    "truth": "n=4",
+    "image_sha": "fd443b515792d174a7a30a284b965e90ae7e8b414c2529dd6140c7ea4e0fe58b",
+    "input_wh": [
+      448,
+      192
+    ],
+    "raw": {
+      "tesseract": "n=4\n",
+      "stock": "\\[n=4\\]",
+      "aspect_pad": "\\[n=4\\]"
+    },
+    "timesMs": {
+      "stock": 1516,
+      "aspect_pad": 1474
+    }
+  },
+  {
+    "key": "negative-error-phone-style-render-1",
+    "chain": "negative-error",
+    "cohort": "phone-style-render",
+    "index": 1,
+    "truth": "−2n+9=17",
+    "image_sha": "4f8a59f171c45a8cc907093311450d14e9d74a43127929ab23043eb0104d3311",
+    "input_wh": [
+      448,
+      81
+    ],
+    "raw": {
+      "tesseract": "—2n+9=17\n",
+      "stock": "\\[-2n+9=17\\]",
+      "aspect_pad": "\\[-2n+9=17\\]"
+    },
+    "timesMs": {
+      "stock": 1714,
+      "aspect_pad": 1725
+    }
+  },
+  {
+    "key": "negative-error-phone-style-render-2",
+    "chain": "negative-error",
+    "cohort": "phone-style-render",
+    "index": 2,
+    "truth": "−2n=8",
+    "image_sha": "df31e0febc89fdabd5a004450ba058e4389ea01338d097fa1b5791ceaca84a13",
+    "input_wh": [
+      448,
+      112
+    ],
+    "raw": {
+      "tesseract": "-—2n=8\n",
+      "stock": "\\[-2n=8\\]",
+      "aspect_pad": "\\[-2n=8\\]"
+    },
+    "timesMs": {
+      "stock": 1894,
+      "aspect_pad": 1815
+    }
+  },
+  {
+    "key": "negative-error-phone-style-render-3",
+    "chain": "negative-error",
+    "cohort": "phone-style-render",
+    "index": 3,
+    "truth": "n=4",
+    "image_sha": "778cbcc7fff9354b05f515a529422d89967bcca2fe000b74d5452eb7ebc27de9",
+    "input_wh": [
+      448,
+      175
+    ],
+    "raw": {
+      "tesseract": "n=4\n",
+      "stock": "\\[n=4\\]",
+      "aspect_pad": "\\[ nmbox ntexttexttext n=4\\]"
+    },
+    "timesMs": {
+      "stock": 1484,
+      "aspect_pad": 1397
+    }
+  },
+  {
+    "key": "inline-fraction-clean-printed-1",
+    "chain": "inline-fraction",
+    "cohort": "clean-printed",
+    "index": 1,
+    "truth": "s/8+3/4=11/8",
+    "image_sha": "0dadcb92d8f574c2a3332151d0a285b3c339d3cf3689ead0d34ab06a8c7fdda2",
+    "input_wh": [
+      448,
+      51
+    ],
+    "raw": {
+      "tesseract": "s/8+3/4=11/8\n",
+      "stock": "\\[5/8+3/4=22/8\\]",
+      "aspect_pad": "\\[mathrm{s//8}} \\mathrm{s}\\mathrm{s}\\mathrm{s}\\mathrm{s}\\mathrm{s}\\mathrm{s}\\mathrm{s} \\mathrm{s} \\mathrm{s} \\mathrm{s} \\mathrm{s} \\mathrm{s} \\mathrm{s} \\mathrm{s} \\mathrm{s} \\mathrm{s} \\mathrm{s} \\mathrm{s} \\mathrm{s} \\mathrm{s} \\mathrm{s} \\mathrm{s} \\mathrm{s} \\mathrm{s} \\mathrm{s} \\mathrm"
+    },
+    "timesMs": {
+      "stock": 2324,
+      "aspect_pad": 9036
+    }
+  },
+  {
+    "key": "inline-fraction-clean-printed-2",
+    "chain": "inline-fraction",
+    "cohort": "clean-printed",
+    "index": 2,
+    "truth": "s/8=5/8",
+    "image_sha": "6be3c355843fc63afdc53b08be4bdf174b8c61c55821fae29efdc517e39f2cde",
+    "input_wh": [
+      448,
+      89
+    ],
+    "raw": {
+      "tesseract": "s/8=5/8\n",
+      "stock": "\\[5/8=5/8\\]",
+      "aspect_pad": "\\[s/8=5/8\\]"
+    },
+    "timesMs": {
+      "stock": 1590,
+      "aspect_pad": 2109
+    }
+  },
+  {
+    "key": "inline-fraction-clean-printed-3",
+    "chain": "inline-fraction",
+    "cohort": "clean-printed",
+    "index": 3,
+    "truth": "s=5",
+    "image_sha": "ac21370d5d6a124ac5e2046ae17e5af1dbc4063d95da3a715cc50ec5d0f46d71",
+    "input_wh": [
+      448,
+      195
+    ],
+    "raw": {
+      "tesseract": "s=5\n",
+      "stock": "\\[\\boxed{\\text{s=5}}\\]",
+      "aspect_pad": "\\[s=5\\]"
+    },
+    "timesMs": {
+      "stock": 1833,
+      "aspect_pad": 2038
+    }
+  },
+  {
+    "key": "inline-fraction-phone-style-render-1",
+    "chain": "inline-fraction",
+    "cohort": "phone-style-render",
+    "index": 1,
+    "truth": "s/8+3/4=11/8",
+    "image_sha": "481f443cae334c1f9e2086cdfce007f255704b8d6debf813702e17d27e3fbf02",
+    "input_wh": [
+      448,
+      72
+    ],
+    "raw": {
+      "tesseract": "8/8 +3/4=11/8\n",
+      "stock": "\\[5/8+3/4=11/8\\]",
+      "aspect_pad": "\\[Rightarrow s=3/s\\]"
+    },
+    "timesMs": {
+      "stock": 2304,
+      "aspect_pad": 1592
+    }
+  },
+  {
+    "key": "inline-fraction-phone-style-render-2",
+    "chain": "inline-fraction",
+    "cohort": "phone-style-render",
+    "index": 2,
+    "truth": "s/8=5/8",
+    "image_sha": "4df9288747a717e89772bc7c2b6e2a689f2d061ed1582b62de5b6cc8aef21778",
+    "input_wh": [
+      448,
+      107
+    ],
+    "raw": {
+      "tesseract": "8/8 =5/8\n",
+      "stock": "\\[s/8=5/8\\]",
+      "aspect_pad": "\\[textittext{text{S}$}} \\Rightarrow!s \\Rightarrow!s \\Rightarrow!s \\Rightarrow!s \\Rightarrow!s=5 \\beta\\]"
+    },
+    "timesMs": {
+      "stock": 2004,
+      "aspect_pad": 2933
+    }
+  },
+  {
+    "key": "inline-fraction-phone-style-render-3",
+    "chain": "inline-fraction",
+    "cohort": "phone-style-render",
+    "index": 3,
+    "truth": "s=5",
+    "image_sha": "9d95ff4ca027c7d83f70350e239eeb153dced97e82f7407d2a22bc59b1e404f4",
+    "input_wh": [
+      448,
+      177
+    ],
+    "raw": {
+      "tesseract": "s=5\n",
+      "stock": "\\[s=5\\]",
+      "aspect_pad": "\\[overline!s!=5\\]"
+    },
+    "timesMs": {
+      "stock": 1532,
+      "aspect_pad": 1819
+    }
+  },
+  {
+    "key": "cross-terms-clean-printed-1",
+    "chain": "cross-terms",
+    "cohort": "clean-printed",
+    "index": 1,
+    "truth": "7k−6=3k+18",
+    "image_sha": "ba85232f448c062a866e1ec9d9d797df9f8919e060cee99e3b5d26a2dbd629c3",
+    "input_wh": [
+      448,
+      57
+    ],
+    "raw": {
+      "tesseract": "7k-6=3k+18\n",
+      "stock": "\\[7k-6=3k+28\\]",
+      "aspect_pad": "\\[7k-6=3k+18\\]"
+    },
+    "timesMs": {
+      "stock": 2144,
+      "aspect_pad": 2229
+    }
+  },
+  {
+    "key": "cross-terms-clean-printed-2",
+    "chain": "cross-terms",
+    "cohort": "clean-printed",
+    "index": 2,
+    "truth": "4k=24",
+    "image_sha": "f1101e049de78e0594a77f00fd5e7027ba40ef91158a39345eaa4a37f1a6528e",
+    "input_wh": [
+      448,
+      114
+    ],
+    "raw": {
+      "tesseract": "4k=24\n",
+      "stock": "\\[4k=24\\]",
+      "aspect_pad": "\\[ 4k=24\\]"
+    },
+    "timesMs": {
+      "stock": 2190,
+      "aspect_pad": 1469
+    }
+  },
+  {
+    "key": "cross-terms-clean-printed-3",
+    "chain": "cross-terms",
+    "cohort": "clean-printed",
+    "index": 3,
+    "truth": "k=6",
+    "image_sha": "fcbf53802a5227c0c23b267c6977a5ab9013263399faee2efa900a9c8c356d0d",
+    "input_wh": [
+      448,
+      203
+    ],
+    "raw": {
+      "tesseract": "k=6\n",
+      "stock": "\\[k=6\\]",
+      "aspect_pad": "\\[k=6\\]"
+    },
+    "timesMs": {
+      "stock": 2342,
+      "aspect_pad": 2144
+    }
+  },
+  {
+    "key": "cross-terms-phone-style-render-1",
+    "chain": "cross-terms",
+    "cohort": "phone-style-render",
+    "index": 1,
+    "truth": "7k−6=3k+18",
+    "image_sha": "1ee1766e0bec3b651efdada5d987df7bfd2b5e83fb2ea8486ac55cf1d518fcc3",
+    "input_wh": [
+      448,
+      74
+    ],
+    "raw": {
+      "tesseract": "7k-6=3k+18\n",
+      "stock": "\\[7k-6=3k+18\\]",
+      "aspect_pad": "\\[7k-6=3k+18\\]"
+    },
+    "timesMs": {
+      "stock": 2295,
+      "aspect_pad": 1919
+    }
+  },
+  {
+    "key": "cross-terms-phone-style-render-2",
+    "chain": "cross-terms",
+    "cohort": "phone-style-render",
+    "index": 2,
+    "truth": "4k=24",
+    "image_sha": "74d8add300f502f4c39e81c4e08c7f6deefb01e69b2d3901df5d70ee3f04e3df",
+    "input_wh": [
+      448,
+      138
+    ],
+    "raw": {
+      "tesseract": "",
+      "stock": "\\[4k=24\\]",
+      "aspect_pad": "\\[angle 4k=24\\]"
+    },
+    "timesMs": {
+      "stock": 2167,
+      "aspect_pad": 2032
+    }
+  },
+  {
+    "key": "cross-terms-phone-style-render-3",
+    "chain": "cross-terms",
+    "cohort": "phone-style-render",
+    "index": 3,
+    "truth": "k=6",
+    "image_sha": "cc5ed41d7b79017b67ea844913c3785ae36c3c7a2caa294ed2079cd7d754ee51",
+    "input_wh": [
+      448,
+      211
+    ],
+    "raw": {
+      "tesseract": "k=6\n",
+      "stock": "\\[k=6\\]",
+      "aspect_pad": "\\[textitrhotextit(alpha!)=6\\]lim!\\]lim!=k=k=k=k=k=k=k=k=k=k=k=k=k=k=k,k,k,k,k,k(k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,"
+    },
+    "timesMs": {
+      "stock": 1340,
+      "aspect_pad": 5763
+    }
+  },
+  {
+    "key": "fraction-error-clean-printed-1",
+    "chain": "fraction-error",
+    "cohort": "clean-printed",
+    "index": 1,
+    "truth": "2w/7−1/3=11/21",
+    "image_sha": "15920c0559d61704242b159037206311809a1e94ea7f52dfa99ffba88445c4e4",
+    "input_wh": [
+      448,
+      43
+    ],
+    "raw": {
+      "tesseract": "2w/7-1/3=11/21\n",
+      "stock": "\\[2w/7-1/3=11/22\\]",
+      "aspect_pad": "\\[2w/7-1/3=11/21\\]"
+    },
+    "timesMs": {
+      "stock": 2486,
+      "aspect_pad": 1842
+    }
+  },
+  {
+    "key": "fraction-error-clean-printed-2",
+    "chain": "fraction-error",
+    "cohort": "clean-printed",
+    "index": 2,
+    "truth": "2w/7=4/21",
+    "image_sha": "f74d34963abcdcfcfb0affe418eaef641f989714b3317879ae34dc70a1d37a38",
+    "input_wh": [
+      448,
+      68
+    ],
+    "raw": {
+      "tesseract": "2w/7=4/21\n",
+      "stock": "\\[2w/7=4/21\\]",
+      "aspect_pad": "\\[!2w/2w=4/2=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4=4==4=4=4"
+    },
+    "timesMs": {
+      "stock": 2267,
+      "aspect_pad": 7395
+    }
+  },
+  {
+    "key": "fraction-error-clean-printed-3",
+    "chain": "fraction-error",
+    "cohort": "clean-printed",
+    "index": 3,
+    "truth": "w=2/3",
+    "image_sha": "b4cc749987d866db35edd3044f8443bb19401dc39a8e1632333980cdc430d321",
+    "input_wh": [
+      448,
+      123
+    ],
+    "raw": {
+      "tesseract": "w=2/3\n",
+      "stock": "\\[w=2/3\\]",
+      "aspect_pad": "\\[w=2/3\\]"
+    },
+    "timesMs": {
+      "stock": 1878,
+      "aspect_pad": 1962
+    }
+  },
+  {
+    "key": "fraction-error-phone-style-render-1",
+    "chain": "fraction-error",
+    "cohort": "phone-style-render",
+    "index": 1,
+    "truth": "2w/7−1/3=11/21",
+    "image_sha": "1bc9b1e1aea735fb2988f812f0bce1ceeefa693a30f28530dffba80fc835167c",
+    "input_wh": [
+      448,
+      71
+    ],
+    "raw": {
+      "tesseract": "2w/7-1/3=1 1/21\n",
+      "stock": "\\[2w/7-1/3=11/21\\]",
+      "aspect_pad": "\\[2w/7-1/3=11/21\\]"
+    },
+    "timesMs": {
+      "stock": 2177,
+      "aspect_pad": 2371
+    }
+  },
+  {
+    "key": "fraction-error-phone-style-render-2",
+    "chain": "fraction-error",
+    "cohort": "phone-style-render",
+    "index": 2,
+    "truth": "2w/7=4/21",
+    "image_sha": "51572c1f110e302ef86e500c9c4dca6be6048210357710cb1ebb1270fd141964",
+    "input_wh": [
+      448,
+      93
+    ],
+    "raw": {
+      "tesseract": "2w/7=4/21\n",
+      "stock": "\\[2w/7=4/21\\]",
+      "aspect_pad": "\\[ 2w/7=4/21\\]"
+    },
+    "timesMs": {
+      "stock": 1765,
+      "aspect_pad": 1767
+    }
+  },
+  {
+    "key": "fraction-error-phone-style-render-3",
+    "chain": "fraction-error",
+    "cohort": "phone-style-render",
+    "index": 3,
+    "truth": "w=2/3",
+    "image_sha": "3fd50746a1325e6a444f1ac4050863161071118b378435a0149057058f0543be",
+    "input_wh": [
+      448,
+      121
+    ],
+    "raw": {
+      "tesseract": "w=2/3\n",
+      "stock": "\\[w=2/3\\]",
+      "aspect_pad": "\\[w=2/3\\]"
+    },
+    "timesMs": {
+      "stock": 1642,
+      "aspect_pad": 1327
+    }
+  }
+]
