@@ -6,9 +6,11 @@ from http.server import ThreadingHTTPServer
 import json
 import threading
 from pathlib import Path
+import re
 import shutil
 import struct
 import subprocess
+from urllib.parse import urljoin
 from unittest import TestCase, main as unit_main, mock
 from PIL import Image, ImageDraw, ImageFont
 from ocr_server import MAX_BYTES, PNG, Handler, Rejected, draft_ocr, image_info, static_file
@@ -106,6 +108,59 @@ class OCRTest(TestCase):
                 req('POST','/api/ocr',415,b'not PNG bytes',headers)
                 _,out=req('POST','/api/ocr',200,raw,headers)
                 self.assertEqual(len(json.loads(out)['lines']),4)
+            finally:
+                server.shutdown()
+                thread.join(timeout=5)
+
+    def test_local_page_and_static_module_graph(self):
+        # Load over HTTP, not from the filesystem like the DOM harness.
+        try:
+            server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
+        except PermissionError:
+            self.skipTest('Loopback binding is prohibited in this environment')
+        with server:
+            thread = threading.Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            try:
+                def get(path, status=200, mime=None):
+                    with_response = HTTPConnection('127.0.0.1', server.server_port, timeout=5)
+                    try:
+                        with_response.request('GET', path)
+                        response = with_response.getresponse()
+                        self.assertEqual(response.status, status, path)
+                        if mime:
+                            self.assertEqual(response.headers.get_content_type(), mime, path)
+                        return response.read().decode('utf-8')
+                    finally:
+                        with_response.close()
+
+                start = '/paper_lab/'
+                page = get(start, mime='text/html')
+                script = re.search(r'<script\s+type="module"\s+src="([^"]+)"', page)
+                self.assertIsNotNone(script, 'Paper Lab should load a module entry point')
+                stylesheet = re.search(r'<link\s+rel="stylesheet"\s+href="([^"]+)"', page)
+                self.assertIsNotNone(stylesheet)
+                get(urljoin(start, stylesheet[1]), mime='text/css')
+                stack = [urljoin(start, script[1])]
+                seen = set()
+                # Paper Lab uses single-line static imports/re-exports. This is
+                # an asset-routing test, not a general JS parser or browser test.
+                import_path = re.compile(
+                    r"""^\s*(?:import\s+(?:[^;\n]*?\bfrom\s+)?|export\s+[^;\n]*?\bfrom\s+)['"](\./[^'"]+)['"]""",
+                    re.MULTILINE,
+                )
+                while stack:
+                    path = stack.pop()
+                    if path in seen:
+                        continue
+                    seen.add(path)
+                    source = get(path, mime='text/javascript')
+                    stack.extend(urljoin(path, item) for item in import_path.findall(source))
+
+                for name in ('curriculum.mjs', 'operation_claim.mjs'):
+                    self.assertIn(urljoin(start, name), seen)
+                get('/paper_lab/photo_flow_bench.mjs', status=404)
+                get('/paper_lab/ocr_server.py', status=404)
             finally:
                 server.shutdown()
                 thread.join(timeout=5)
