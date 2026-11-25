@@ -113,3 +113,55 @@ lines. This is not evidence that all real pages or handwriting behave this way.
 Frozen manifest SHA-256:
 `4d96ae89ac1258f31f4c69d94a4911e62253bc16d06f0a11d49668ccd42a651c`.
 [Raw page/crop results](page-02-results.json).
+
+## Geometry-first prototype: close rows and ruled paper
+
+The previous pages all left 61–109 px between neighboring ink boxes. This
+new frozen test uses first-row gaps of 9 px and 32 px. It pairs short
+stacked fractions with distinct adjacent equation rows sharing similarly
+placed minus and equals marks. The simulated-photo view includes tilt,
+background variation, horizontal rules and JPEG blur. No handwriting
+or native phone has been tested. Build with NumPy and SciPy in addition
+to the earlier dependencies:
+
+```sh
+python close_prepare.py frozen_close_03
+YWHY_MODEL_CACHE="$PWD/model-cache" node page_recognize.mjs frozen_close_03 > close-03-local.json
+python page_score.py close-03-local.json
+python -m unittest page_geometry_test
+```
+
+The candidate uses local contrast and projection bands, proposes a stacked
+fraction only when a short horizontal bar has ink support above and below,
+and clips crop padding to adjacent row midpoints. It deliberately does not
+read text to choose boxes and sends the original grayscale crop to the same
+stock TexTeller. The candidate is a bounded research prototype. A long rule
+that touches math can remain in a connected component; rejecting whole
+connected components would also destroy the attached equation. Weights,
+normalization, scorer and literal truths are otherwise unchanged.
+
+| View | Crop source | Geometrically complete pages | Exact ordered solutions |
+| --- | --- | ---: | ---: |
+| Clean | Existing detector | 1/4 | 1/4 |
+| Clean | Geometry first | 4/4 | 3/4 |
+| Clean | Frozen truth boxes + fixed padding | 3/4 | 2/4 |
+| Simulated photo | Existing detector | 0/4 | 0/4 |
+| Simulated photo | Geometry first | 4/4 | 0/4 |
+| Simulated photo | Frozen truth boxes + fixed padding | 4/4 | 3/4 |
+
+The fixed-padding reference is visibly not a best possible crop: on one
+clean 9 px gap it imports 14.2% of the previous line's ink under the existing
+score thresholds, even though that recognizer returned the right string.
+The candidate admits no neighboring **math** ink across these eight
+pages. However on the four ruled images its selected x bounds span about
+590 of 640 px; known row masks do not include paper rules. Its model reads
+0/12 rows exactly on those images, versus 10/12 on the padded truth boxes.
+One denominator 9 was also consistently read as g by the candidate and
+truth-box arms on clean and noisy fraction views. The improvement in
+finding lines is insufficient to set a new default. Next isolate rule and
+width effects without changing the OCR model, score actual handwritten
+or new held-out samples separately, and preserve literal wrong steps.
+
+[Raw crop and transcription results](close-03-results.json).
+Frozen input manifest SHA-256:
+`14b164053b8bac26d4f52703e17466368eb565d04b683cbd2fbab381c526d1ee`.

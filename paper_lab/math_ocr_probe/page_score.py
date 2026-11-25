@@ -40,11 +40,12 @@ def status(page, arm):
 
 def summary(pages):
     out={}
+    arms=('oracle','detector','geometry') if any(c['arm']=='geometry' for p in pages for c in p['crops']) else ('oracle','detector')
     for cohort in ('clean-printed','phone-style-render'):
         sub=[p for p in pages if p['cohort']==cohort]
         assert len(sub)==4 and len({p['chain'] for p in sub})==4
         out[cohort]={}
-        for arm in ('oracle','detector'):
+        for arm in arms:
             results=[status(p,arm) for p in sub]
             hist=Counter(r['geometry'] for s in results for r in s['rows'])
             out[cohort][arm]=dict(page_count=len(sub),row_count=sum(hist.values()),geometry=dict(hist),

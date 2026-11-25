@@ -1,0 +1,1682 @@
+[
+  {
+    "key": "fraction-close--clean-printed",
+    "cohort": "clean-printed",
+    "chain": "fraction-close",
+    "truth": [
+      "\\frac{m}{9}+1=4",
+      "\\frac{m}{9}=5",
+      "m=45"
+    ],
+    "first_gap_px": 9,
+    "photo_sha256": "63d41b2d176449c26196803897973db485f690f471d6b936bf99ac50f90b4e40",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "fraction-close--clean-printed--oracle-1.png",
+        "box": [
+          79,
+          62,
+          235,
+          111
+        ],
+        "padded": [
+          67,
+          50,
+          247,
+          123
+        ],
+        "ink_before_pad": [
+          1,
+          0,
+          0
+        ],
+        "ink": [
+          1,
+          0.068408,
+          0
+        ],
+        "crop_sha256": "5af99f05cbd347384f12cb3abb871fcb57bdc47383470637ee8b46f4d7d0ab21",
+        "raw": "\\[\\frac{m}{g}+1=4\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "fraction-close--clean-printed--oracle-2.png",
+        "box": [
+          79,
+          120,
+          178,
+          169
+        ],
+        "padded": [
+          67,
+          108,
+          190,
+          181
+        ],
+        "ink_before_pad": [
+          0,
+          1,
+          0
+        ],
+        "ink": [
+          0.02307,
+          1,
+          0
+        ],
+        "crop_sha256": "d5fcdd69bd846e5fca8ee6652b7653f0b89cbac03ef95ded57b8b0e7c6a338da",
+        "raw": "\\[\\frac{m}{g}=5\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "fraction-close--clean-printed--oracle-3.png",
+        "box": [
+          80,
+          317,
+          193,
+          346
+        ],
+        "padded": [
+          68,
+          305,
+          205,
+          358
+        ],
+        "ink_before_pad": [
+          0,
+          0,
+          1
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "e864b9e9a662fe22d8ccc7ac1ba2138a91563ca4805343d11d239e2690202fbf",
+        "raw": "\\[m=45\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "fraction-close--clean-printed--geometry-1.png",
+        "box": [
+          79,
+          62,
+          235,
+          111
+        ],
+        "padded": [
+          67,
+          50,
+          247,
+          115
+        ],
+        "ink_before_pad": [
+          1,
+          0,
+          0
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "575c57865dd0a3a8c8c6bba7006b97bcfa6c267ab791d7340eb16ac757f858af",
+        "raw": "\\[\\frac{m}{g}+1=4\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "fraction-close--clean-printed--geometry-2.png",
+        "box": [
+          79,
+          120,
+          178,
+          169
+        ],
+        "padded": [
+          67,
+          115,
+          190,
+          181
+        ],
+        "ink_before_pad": [
+          0,
+          1,
+          0
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "4c273e003395e8a3fbf0a836e25e7891f82a33f4ece5644b893810b5e4fbe2ef",
+        "raw": "\\[\\frac{m}{g}=5\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "fraction-close--clean-printed--geometry-3.png",
+        "box": [
+          80,
+          317,
+          193,
+          346
+        ],
+        "padded": [
+          68,
+          305,
+          205,
+          358
+        ],
+        "ink_before_pad": [
+          0,
+          0,
+          1
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "e864b9e9a662fe22d8ccc7ac1ba2138a91563ca4805343d11d239e2690202fbf",
+        "raw": "\\[m=45\\]"
+      }
+    ]
+  },
+  {
+    "key": "fraction-close--phone-style-render",
+    "cohort": "phone-style-render",
+    "chain": "fraction-close",
+    "truth": [
+      "\\frac{m}{9}+1=4",
+      "\\frac{m}{9}=5",
+      "m=45"
+    ],
+    "first_gap_px": 9,
+    "photo_sha256": "a1530aaddf64ab89a23afe7c4c85259fd589926cc7baa75fdb19e2f7da7275e6",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "fraction-close--phone-style-render--oracle-1.png",
+        "box": [
+          83,
+          48,
+          240,
+          102
+        ],
+        "padded": [
+          71,
+          36,
+          252,
+          114
+        ],
+        "ink_before_pad": [
+          1,
+          0,
+          0
+        ],
+        "ink": [
+          1,
+          0.032258,
+          0
+        ],
+        "crop_sha256": "6159fe435a5d60ec241e2a342b26143c64b437a417c9027b4f3dcac422a130c0",
+        "raw": "\\[\\frac{m}{g}+1=4\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "fraction-close--phone-style-render--oracle-2.png",
+        "box": [
+          78,
+          111,
+          179,
+          165
+        ],
+        "padded": [
+          66,
+          99,
+          191,
+          177
+        ],
+        "ink_before_pad": [
+          0,
+          1,
+          0
+        ],
+        "ink": [
+          0.014827,
+          1,
+          0
+        ],
+        "crop_sha256": "5f431e86edda9a1286d42c268b7269c80615b69a05eb368f50711491f7994d1b",
+        "raw": "\\[\\frac{m}{g}=5\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "fraction-close--phone-style-render--oracle-3.png",
+        "box": [
+          72,
+          308,
+          187,
+          340
+        ],
+        "padded": [
+          60,
+          296,
+          199,
+          352
+        ],
+        "ink_before_pad": [
+          0,
+          0,
+          1
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "48033e8a3a0239c539547b07c34309fe88c203fe2329ce76d5a1904e508fa7be",
+        "raw": "\\[m=45\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "fraction-close--phone-style-render--geometry-1.png",
+        "box": [
+          25,
+          49,
+          616,
+          102
+        ],
+        "padded": [
+          13,
+          37,
+          628,
+          107
+        ],
+        "ink_before_pad": [
+          1,
+          0,
+          0
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "034c2f5879a9f8cd5e37309d608d2a31bc72b7e22505317e992c238bc8fa3c1c",
+        "raw": "\\[\\cdot \\cdot\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "fraction-close--phone-style-render--geometry-2.png",
+        "box": [
+          26,
+          112,
+          616,
+          164
+        ],
+        "padded": [
+          14,
+          107,
+          628,
+          176
+        ],
+        "ink_before_pad": [
+          0,
+          1,
+          0
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "1e832ce141e02bfd375476b1515099a446ffa8f600e0685c8fe2ff2187fadf5e",
+        "raw": "\\[\\frac{M}}{ \\frac{M}{0}=\\frac{1}{0}\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "fraction-close--phone-style-render--geometry-3.png",
+        "box": [
+          26,
+          309,
+          616,
+          340
+        ],
+        "padded": [
+          14,
+          297,
+          628,
+          352
+        ],
+        "ink_before_pad": [
+          0,
+          0,
+          1
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "5a117d30fb28ec72a66024e258aa666f219629b4a0f06e2c2c23abd5821d0e0b",
+        "raw": "\\[\\cdot\\]"
+      }
+    ]
+  },
+  {
+    "key": "fraction-wide--clean-printed",
+    "cohort": "clean-printed",
+    "chain": "fraction-wide",
+    "truth": [
+      "\\frac{y}{7}-2=1",
+      "\\frac{y}{7}=3",
+      "y=21"
+    ],
+    "first_gap_px": 32,
+    "photo_sha256": "26e90258b97ce64f0ada2be53acf5b79ecd11957cd234cf3208acb2b2a2c587c",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "fraction-wide--clean-printed--oracle-1.png",
+        "box": [
+          79,
+          62,
+          222,
+          111
+        ],
+        "padded": [
+          67,
+          50,
+          234,
+          123
+        ],
+        "ink_before_pad": [
+          1,
+          0,
+          0
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "3c11919e7354dea1d10c590f0f1fc4bb0cdd4c95dc84563ca4ecd3e740771614",
+        "raw": "\\[\\frac{y}{7}-2=1\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "fraction-wide--clean-printed--oracle-2.png",
+        "box": [
+          79,
+          143,
+          169,
+          192
+        ],
+        "padded": [
+          67,
+          131,
+          181,
+          204
+        ],
+        "ink_before_pad": [
+          0,
+          1,
+          0
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "fd4d28513abc453d2ec4507d83b26213d13e64d819013a185ef5f169cc180777",
+        "raw": "\\[\\frac{y}{7}=3\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "fraction-wide--clean-printed--oracle-3.png",
+        "box": [
+          78,
+          317,
+          175,
+          354
+        ],
+        "padded": [
+          66,
+          305,
+          187,
+          365
+        ],
+        "ink_before_pad": [
+          0,
+          0,
+          1
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "011464020f2ce4c43a2def6da0795caa432e95c844ce8d36160fe43861980e87",
+        "raw": "\\[y=21\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "fraction-wide--clean-printed--geometry-1.png",
+        "box": [
+          79,
+          62,
+          222,
+          111
+        ],
+        "padded": [
+          67,
+          50,
+          234,
+          123
+        ],
+        "ink_before_pad": [
+          1,
+          0,
+          0
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "3c11919e7354dea1d10c590f0f1fc4bb0cdd4c95dc84563ca4ecd3e740771614",
+        "raw": "\\[\\frac{y}{7}-2=1\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "fraction-wide--clean-printed--geometry-2.png",
+        "box": [
+          79,
+          143,
+          169,
+          192
+        ],
+        "padded": [
+          67,
+          131,
+          181,
+          204
+        ],
+        "ink_before_pad": [
+          0,
+          1,
+          0
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "fd4d28513abc453d2ec4507d83b26213d13e64d819013a185ef5f169cc180777",
+        "raw": "\\[\\frac{y}{7}=3\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "fraction-wide--clean-printed--geometry-3.png",
+        "box": [
+          79,
+          317,
+          175,
+          354
+        ],
+        "padded": [
+          67,
+          305,
+          187,
+          365
+        ],
+        "ink_before_pad": [
+          0,
+          0,
+          1
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "57edd80b88cd2c99f9ad0bc009afdfd07368a6610c8527362d894864a0028d97",
+        "raw": "\\[y=21\\]"
+      }
+    ]
+  },
+  {
+    "key": "fraction-wide--phone-style-render",
+    "cohort": "phone-style-render",
+    "chain": "fraction-wide",
+    "truth": [
+      "\\frac{y}{7}-2=1",
+      "\\frac{y}{7}=3",
+      "y=21"
+    ],
+    "first_gap_px": 32,
+    "photo_sha256": "9c2d4a335312ac8da3acf800af094c3e605a94b3456d7788ca438bd4a4451592",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "fraction-wide--phone-style-render--oracle-1.png",
+        "box": [
+          83,
+          49,
+          227,
+          100
+        ],
+        "padded": [
+          71,
+          37,
+          239,
+          112
+        ],
+        "ink_before_pad": [
+          1,
+          0,
+          0
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "ca42ef9f6784930e81941edcb411dc9ece320fb16b5ffc3e13b5998fc4fc53af",
+        "raw": "\\[\\frac{y}{7}-2=1\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "fraction-wide--phone-style-render--oracle-2.png",
+        "box": [
+          78,
+          132,
+          170,
+          184
+        ],
+        "padded": [
+          66,
+          120,
+          182,
+          196
+        ],
+        "ink_before_pad": [
+          0,
+          1,
+          0
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "f54e14ce40565d79ae6cf80c0cd2bdab66d5b5b8de9159ba9add786bfb4e5c54",
+        "raw": "\\[\\frac{y}{7}=3\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "fraction-wide--phone-style-render--oracle-3.png",
+        "box": [
+          68,
+          308,
+          167,
+          343
+        ],
+        "padded": [
+          56,
+          296,
+          179,
+          355
+        ],
+        "ink_before_pad": [
+          0,
+          0,
+          1
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "8bd08427db8725de37692182373c6f99213157bf49e1737f48045a441f7b84b7",
+        "raw": "\\[y=21\\]"
+      },
+      {
+        "arm": "detector",
+        "name": "fraction-wide--phone-style-render--detector-1.png",
+        "box": [
+          69,
+          308,
+          166,
+          342
+        ],
+        "padded": [
+          57,
+          296,
+          178,
+          354
+        ],
+        "ink_before_pad": [
+          0,
+          0,
+          1
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "f945407ac67ae877af454f74558cf7085594f424ad726fc418ab99f5a26e1a9a",
+        "raw": "\\[y=21\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "fraction-wide--phone-style-render--geometry-1.png",
+        "box": [
+          25,
+          49,
+          616,
+          99
+        ],
+        "padded": [
+          13,
+          37,
+          628,
+          111
+        ],
+        "ink_before_pad": [
+          1,
+          0,
+          0
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "d9b22b9c1451550cbd788ef0c682bd3af4a7535733fb0cbe7a7cfc7fc3a7d148",
+        "raw": "\\[\\cdot\\]cdot\\] \\[\\cdot\\] \\[\\cdot\\] \\[\\cdot\\] \\[\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot"
+      },
+      {
+        "arm": "geometry",
+        "name": "fraction-wide--phone-style-render--geometry-2.png",
+        "box": [
+          26,
+          133,
+          616,
+          183
+        ],
+        "padded": [
+          14,
+          121,
+          628,
+          195
+        ],
+        "ink_before_pad": [
+          0,
+          1,
+          0
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "3cfe27ba0eec86f82c94920f727f76f533d3dacb73b1f84f7e0ab416736fba79",
+        "raw": "\\[k_{1}}=3\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "fraction-wide--phone-style-render--geometry-3.png",
+        "box": [
+          26,
+          308,
+          616,
+          343
+        ],
+        "padded": [
+          14,
+          296,
+          628,
+          355
+        ],
+        "ink_before_pad": [
+          0,
+          0,
+          1
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "9e9cf5c56fd14a0e90abb3a3eb4695a33492d3cbda3a53f7a52f7edc1c2a6c90",
+        "raw": "\\[\\gamma=21\\]"
+      }
+    ]
+  },
+  {
+    "key": "separate-close--clean-printed",
+    "cohort": "clean-printed",
+    "chain": "separate-close",
+    "truth": [
+      "8b-9=23",
+      "8b-9=24",
+      "b=4"
+    ],
+    "first_gap_px": 9,
+    "photo_sha256": "abbd4c9986fb1b82f216306f49d345fd2c899dabb892daf184692fff3a5fd534",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "separate-close--clean-printed--oracle-1.png",
+        "box": [
+          81,
+          67,
+          262,
+          96
+        ],
+        "padded": [
+          69,
+          55,
+          274,
+          108
+        ],
+        "ink_before_pad": [
+          1,
+          0,
+          0
+        ],
+        "ink": [
+          1,
+          0.087622,
+          0
+        ],
+        "crop_sha256": "5ccef0239662d06e75cf92f77fc4d866e5e69816a2bbbab13741af06ccb5cd54",
+        "raw": "\\[8b-9=23\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "separate-close--clean-printed--oracle-2.png",
+        "box": [
+          81,
+          105,
+          263,
+          134
+        ],
+        "padded": [
+          69,
+          93,
+          275,
+          146
+        ],
+        "ink_before_pad": [
+          0,
+          1,
+          0
+        ],
+        "ink": [
+          0.142153,
+          1,
+          0
+        ],
+        "crop_sha256": "8f7bf65453470361cc12fc83922893578da80cb4b2c35365aad951af9ec42ce6",
+        "raw": "\\[8b-9=24\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "separate-close--clean-printed--oracle-3.png",
+        "box": [
+          80,
+          317,
+          158,
+          346
+        ],
+        "padded": [
+          68,
+          305,
+          170,
+          358
+        ],
+        "ink_before_pad": [
+          0,
+          0,
+          1
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "1942d9fc083e2318fe6e4863cff90520d501de4ccdea4a20429da66bb024e25a",
+        "raw": "\\[b=4\\]"
+      },
+      {
+        "arm": "detector",
+        "name": "separate-close--clean-printed--detector-1.png",
+        "box": [
+          82,
+          67,
+          261,
+          96
+        ],
+        "padded": [
+          70,
+          55,
+          273,
+          108
+        ],
+        "ink_before_pad": [
+          0.995074,
+          0,
+          0
+        ],
+        "ink": [
+          1,
+          0.087622,
+          0
+        ],
+        "crop_sha256": "441a00c688cb991225b69811e0ffab5dbf61234e8e04940052597d9f8b1f447c",
+        "raw": "\\[8b-9=23\\]"
+      },
+      {
+        "arm": "detector",
+        "name": "separate-close--clean-printed--detector-2.png",
+        "box": [
+          82,
+          105,
+          262,
+          134
+        ],
+        "padded": [
+          70,
+          93,
+          274,
+          146
+        ],
+        "ink_before_pad": [
+          0,
+          0.995828,
+          0
+        ],
+        "ink": [
+          0.142153,
+          1,
+          0
+        ],
+        "crop_sha256": "187785b97c865a39b11d16e5cd39c375223be2f482a80782a45b40ba43c15c35",
+        "raw": "\\[8b-9=24\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "separate-close--clean-printed--geometry-1.png",
+        "box": [
+          81,
+          67,
+          262,
+          96
+        ],
+        "padded": [
+          69,
+          55,
+          274,
+          100
+        ],
+        "ink_before_pad": [
+          1,
+          0,
+          0
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "d91e5083fcf919419c30d42819df7bad189b5f392754909b82b8f40e8b2d9a55",
+        "raw": "\\[8b-9=23\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "separate-close--clean-printed--geometry-2.png",
+        "box": [
+          81,
+          105,
+          263,
+          134
+        ],
+        "padded": [
+          69,
+          100,
+          275,
+          146
+        ],
+        "ink_before_pad": [
+          0,
+          1,
+          0
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "4fa307d4e7cc950cd6ce7c1bc3c48a7ce57e6c29dd2fd44d3bfd70b05de51e2c",
+        "raw": "\\[8b-9=24\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "separate-close--clean-printed--geometry-3.png",
+        "box": [
+          80,
+          317,
+          158,
+          346
+        ],
+        "padded": [
+          68,
+          305,
+          170,
+          358
+        ],
+        "ink_before_pad": [
+          0,
+          0,
+          1
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "1942d9fc083e2318fe6e4863cff90520d501de4ccdea4a20429da66bb024e25a",
+        "raw": "\\[b=4\\]"
+      }
+    ]
+  },
+  {
+    "key": "separate-close--phone-style-render",
+    "cohort": "phone-style-render",
+    "chain": "separate-close",
+    "truth": [
+      "8b-9=23",
+      "8b-9=24",
+      "b=4"
+    ],
+    "first_gap_px": 9,
+    "photo_sha256": "f088aafedec54bbd6f7104e7b7de85191c87e6503cf9cb1d7dd2ad11dd02b151",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "separate-close--phone-style-render--oracle-1.png",
+        "box": [
+          85,
+          55,
+          268,
+          94
+        ],
+        "padded": [
+          73,
+          43,
+          280,
+          106
+        ],
+        "ink_before_pad": [
+          1,
+          0,
+          0
+        ],
+        "ink": [
+          1,
+          0.023622,
+          0
+        ],
+        "crop_sha256": "99f956a240e8401bab047a5ded1c80dea3511bf2a8203d0c68caeeeacaed97e8",
+        "raw": "\\[8b-9=23\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "separate-close--phone-style-render--oracle-2.png",
+        "box": [
+          79,
+          103,
+          262,
+          141
+        ],
+        "padded": [
+          67,
+          91,
+          274,
+          153
+        ],
+        "ink_before_pad": [
+          0,
+          1,
+          0
+        ],
+        "ink": [
+          0.020543,
+          1,
+          0
+        ],
+        "crop_sha256": "fedd4fa73cfc58cbbe6b96af5d08f32222dcb6513a1b2ff2d1e1dc9c895b4939",
+        "raw": "\\[8b-9=24\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "separate-close--phone-style-render--oracle-3.png",
+        "box": [
+          71,
+          303,
+          150,
+          338
+        ],
+        "padded": [
+          59,
+          291,
+          162,
+          350
+        ],
+        "ink_before_pad": [
+          0,
+          0,
+          1
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "c17380fb9b95ebf1e952d4787dbe83ef47a63ea997829196668cf7eee7268e2a",
+        "raw": "\\[b=4\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "separate-close--phone-style-render--geometry-1.png",
+        "box": [
+          25,
+          56,
+          616,
+          94
+        ],
+        "padded": [
+          13,
+          44,
+          628,
+          99
+        ],
+        "ink_before_pad": [
+          1,
+          0,
+          0
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "3939d23cffee50815b395d207e99d820babc8d91864d6e232a30c8d84241f5c6",
+        "raw": "\\[overlinerhomum}\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "separate-close--phone-style-render--geometry-2.png",
+        "box": [
+          26,
+          104,
+          616,
+          141
+        ],
+        "padded": [
+          14,
+          99,
+          628,
+          153
+        ],
+        "ink_before_pad": [
+          0,
+          1,
+          0
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "a29dd10c75f8a3206789b3fdacd278fb7c38c48fea79d86379038c822351f909",
+        "raw": "\\[overlinemu}80\\cdot80=24.\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "separate-close--phone-style-render--geometry-3.png",
+        "box": [
+          26,
+          304,
+          616,
+          338
+        ],
+        "padded": [
+          14,
+          292,
+          628,
+          350
+        ],
+        "ink_before_pad": [
+          0,
+          0,
+          1
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "4a63d9f33eaebbe9ff08a061db19debb2df9994ff85372aafaa83d62282625f0",
+        "raw": "\\[\\cdot b=1\\]"
+      }
+    ]
+  },
+  {
+    "key": "separate-wide--clean-printed",
+    "cohort": "clean-printed",
+    "chain": "separate-wide",
+    "truth": [
+      "6t-2=16",
+      "6t-2=15",
+      "t=3"
+    ],
+    "first_gap_px": 32,
+    "photo_sha256": "57488ebf97d688b7646eb3aa02cb9afaa92a01c369b7a2992fad1b01fed67328",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "separate-wide--clean-printed--oracle-1.png",
+        "box": [
+          81,
+          67,
+          252,
+          96
+        ],
+        "padded": [
+          69,
+          55,
+          264,
+          108
+        ],
+        "ink_before_pad": [
+          1,
+          0,
+          0
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "f6c6539c952e42d16b5ba63619eb84dd7b450471dc36568f94257495234fd9ea",
+        "raw": "\\[6t-2=16\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "separate-wide--clean-printed--oracle-2.png",
+        "box": [
+          81,
+          128,
+          252,
+          157
+        ],
+        "padded": [
+          69,
+          116,
+          264,
+          169
+        ],
+        "ink_before_pad": [
+          0,
+          1,
+          0
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "672971d2e7660519fa6bfa71d9dc8ab535ec86b6ae7b6ae829ee76051d74d263",
+        "raw": "\\[6t-2=15\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "separate-wide--clean-printed--oracle-3.png",
+        "box": [
+          80,
+          317,
+          148,
+          346
+        ],
+        "padded": [
+          68,
+          305,
+          160,
+          358
+        ],
+        "ink_before_pad": [
+          0,
+          0,
+          1
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "854c433a97000070407d7ebfe699da7901b0c7a34e352cb88500fd045409c1d2",
+        "raw": "\\[t=3\\]"
+      },
+      {
+        "arm": "detector",
+        "name": "separate-wide--clean-printed--detector-1.png",
+        "box": [
+          82,
+          67,
+          252,
+          96
+        ],
+        "padded": [
+          70,
+          55,
+          264,
+          108
+        ],
+        "ink_before_pad": [
+          0.994323,
+          0,
+          0
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "3f5ccad9a76459d0820d40854ca9872dbed37b5fcd95103d48b8afd21e2643b6",
+        "raw": "\\[6t-2=16\\]"
+      },
+      {
+        "arm": "detector",
+        "name": "separate-wide--clean-printed--detector-2.png",
+        "box": [
+          82,
+          128,
+          251,
+          157
+        ],
+        "padded": [
+          70,
+          116,
+          263,
+          169
+        ],
+        "ink_before_pad": [
+          0,
+          0.994073,
+          0
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "58d21e1a02c813472d3a192f5a7b2e503ee9fbf00fa835cb852bf3ed4d8d7881",
+        "raw": "\\[6t-2=15\\]"
+      },
+      {
+        "arm": "detector",
+        "name": "separate-wide--clean-printed--detector-3.png",
+        "box": [
+          80,
+          317,
+          147,
+          346
+        ],
+        "padded": [
+          68,
+          305,
+          159,
+          358
+        ],
+        "ink_before_pad": [
+          0,
+          0,
+          0.993915
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "cc5a4e53e45c39c26eb4375c73c414493d3aa8f239ee29363cfcf76a31cbbc08",
+        "raw": "\\[t=3\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "separate-wide--clean-printed--geometry-1.png",
+        "box": [
+          81,
+          67,
+          252,
+          96
+        ],
+        "padded": [
+          69,
+          55,
+          264,
+          108
+        ],
+        "ink_before_pad": [
+          1,
+          0,
+          0
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "f6c6539c952e42d16b5ba63619eb84dd7b450471dc36568f94257495234fd9ea",
+        "raw": "\\[6t-2=16\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "separate-wide--clean-printed--geometry-2.png",
+        "box": [
+          81,
+          128,
+          252,
+          157
+        ],
+        "padded": [
+          69,
+          116,
+          264,
+          169
+        ],
+        "ink_before_pad": [
+          0,
+          1,
+          0
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "672971d2e7660519fa6bfa71d9dc8ab535ec86b6ae7b6ae829ee76051d74d263",
+        "raw": "\\[6t-2=15\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "separate-wide--clean-printed--geometry-3.png",
+        "box": [
+          80,
+          317,
+          148,
+          346
+        ],
+        "padded": [
+          68,
+          305,
+          160,
+          358
+        ],
+        "ink_before_pad": [
+          0,
+          0,
+          1
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "854c433a97000070407d7ebfe699da7901b0c7a34e352cb88500fd045409c1d2",
+        "raw": "\\[t=3\\]"
+      }
+    ]
+  },
+  {
+    "key": "separate-wide--phone-style-render",
+    "cohort": "phone-style-render",
+    "chain": "separate-wide",
+    "truth": [
+      "6t-2=16",
+      "6t-2=15",
+      "t=3"
+    ],
+    "first_gap_px": 32,
+    "photo_sha256": "ccfff4ad4c6c681b55f67faf6228cfcff3061fb2bf290c30f2692548d7b10392",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "separate-wide--phone-style-render--oracle-1.png",
+        "box": [
+          86,
+          56,
+          260,
+          94
+        ],
+        "padded": [
+          74,
+          44,
+          272,
+          106
+        ],
+        "ink_before_pad": [
+          1,
+          0,
+          0
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "3d0aebd36f54f31751893e3623ccb30c3aed9ee0fc3e5467946057848414eb06",
+        "raw": "\\[6t-2=16\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "separate-wide--phone-style-render--oracle-2.png",
+        "box": [
+          79,
+          126,
+          254,
+          164
+        ],
+        "padded": [
+          67,
+          114,
+          266,
+          176
+        ],
+        "ink_before_pad": [
+          0,
+          1,
+          0
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "81963cbe9b6cdc9b6dbf375f322827d6747c9a9c00f3754d06f8fd51438f2e22",
+        "raw": "\\[6t-2=15\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "separate-wide--phone-style-render--oracle-3.png",
+        "box": [
+          72,
+          306,
+          141,
+          338
+        ],
+        "padded": [
+          60,
+          294,
+          153,
+          350
+        ],
+        "ink_before_pad": [
+          0,
+          0,
+          1
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "5582e1fbbfd55832f39b8697323f42033fda780b93e51a581e76f17dac92eb94",
+        "raw": "\\[t=3\\]"
+      },
+      {
+        "arm": "detector",
+        "name": "separate-wide--phone-style-render--detector-1.png",
+        "box": [
+          86,
+          56,
+          259,
+          93
+        ],
+        "padded": [
+          74,
+          44,
+          271,
+          105
+        ],
+        "ink_before_pad": [
+          1,
+          0,
+          0
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "cfdb3b9ea2366701a78afea057f826f853e361760259c3c50a056ea117798f12",
+        "raw": "\\[6t-2=16\\]"
+      },
+      {
+        "arm": "detector",
+        "name": "separate-wide--phone-style-render--detector-2.png",
+        "box": [
+          81,
+          127,
+          252,
+          163
+        ],
+        "padded": [
+          69,
+          115,
+          264,
+          175
+        ],
+        "ink_before_pad": [
+          0,
+          0.996112,
+          0
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "d444be2f969a1fece988f698648a806c96d2f5e9fba9beb580a52bc9641027af",
+        "raw": "\\[6t-2=15\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "separate-wide--phone-style-render--geometry-1.png",
+        "box": [
+          25,
+          56,
+          616,
+          93
+        ],
+        "padded": [
+          13,
+          44,
+          628,
+          105
+        ],
+        "ink_before_pad": [
+          1,
+          0,
+          0
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "14976a7bb2023fd9e1e6efb6386d714df1d838a599cd0ca6d1ae32d1048a9d5e",
+        "raw": "\\[...S= \\overline{E}= \\overline{E}= \\overline{E}= \\overline{E}=\\overline{E}= \\overline{E}=\\overline{E}=\\overline{E}=\\overline{E}= \\overline{E}= \\overline{E}= \\overline{E}= \\overline{E}= \\overline{E}= \\overline}= \\overline}= \\overline}= \\overline=E}=\\overline{E}=\\overline{E}= \\overline{E}= \\overline{E}= \\overline}= \\overline}= \\overline}= \\overline=E}=\\overline{E}=\\overline{E}= \\overline{E"
+      },
+      {
+        "arm": "geometry",
+        "name": "separate-wide--phone-style-render--geometry-2.png",
+        "box": [
+          26,
+          127,
+          616,
+          164
+        ],
+        "padded": [
+          14,
+          115,
+          628,
+          176
+        ],
+        "ink_before_pad": [
+          0,
+          1,
+          0
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "e0d30af21f90be59c5dd64d017a4bb6c0ea4cd4d1dcb663568c5371907839d44",
+        "raw": "\\[...\\]"
+      },
+      {
+        "arm": "geometry",
+        "name": "separate-wide--phone-style-render--geometry-3.png",
+        "box": [
+          26,
+          307,
+          616,
+          337
+        ],
+        "padded": [
+          14,
+          295,
+          628,
+          349
+        ],
+        "ink_before_pad": [
+          0,
+          0,
+          1
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "a663b404855eac517c48c5ae848619ae51d808653292e22c3f74138db1fec6fc",
+        "raw": "\\[\\overline{AB}\\]"
+      }
+    ]
+  }
+]
