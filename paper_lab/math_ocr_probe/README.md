@@ -63,3 +63,53 @@ additional tokens. Stock TexTeller's remaining rendered-photo error was
 not ready for policy selection solely from this small test. The next decision
 needs independent real handwriting, page-row detection and paired comparisons
 without oracle crops. No server or product default changed.
+
+## Full-page isolation test
+
+Four new three-line chains have paired clean and simulated-photo pages. They
+include vertical fractions (including a deliberately wrong step), negative
+signs, and a final row low on the page. Compare the existing full-page PSM 3
+detector's unmodified line boxes and order against oracle row boxes obtained
+from each render's known ink. Crops are padded by the same 12 pixels, and the
+same stock q4 TexTeller decodes both. The generator freezes image/crop hashes
+and literal truths before model inference. Duplicate crop bytes are recognized
+once; no recognition output supplies a box or label. No handwritten or real
+phone captures are tested here.
+
+```sh
+python page_prepare.py frozen_page_02
+YWHY_MODEL_CACHE="$PWD/model-cache" node page_recognize.mjs frozen_page_02 > page-02-local.json
+python page_score.py page-02-local.json
+```
+
+The cache already needs the pinned model from the first experiment. The
+measurement uses unmodified Tesseract page order; it does not remove noisy
+extra boxes after the fact. A crop linked to 10% or more of a row's frozen
+ink counts as a hit; a complete row needs exactly one hit that retains at
+least 97% of its ink and does not link to another row. A page needs one
+complete crop per row in order, no extras, and all literal strings exact.
+This fixed geometry rule is for scoring only, not a detector. The scorer
+also accepts display/text-size fraction commands as presentation variants,
+but will not normalize sums, signs, or mistakes.
+
+| View | Crop source | Complete rows | Exact readings on complete rows | Exact entire chains |
+| --- | --- | ---: | ---: | ---: |
+| Clean | Oracle | 12/12 | 12/12 | 4/4 |
+| Clean | Existing detector | 5/12 | 5/5 | 1/4 |
+| Simulated photo | Oracle | 12/12 | 11/12 | 3/4 |
+| Simulated photo | Existing detector | 5/12 | 4/5 | 1/4 |
+
+Both versions of both vertical-fraction pages returned zero boxes in the
+existing detector. With the oracle crops all four fraction pages were read
+exactly, including the wrong calculation. On the other matched chain with
+one noisy recognition miss, stock TexTeller changed `7a=-14` to `70=-14`
+even with the correct crop. Thus page-row finding is the larger bottleneck
+on this fixture set, but finding the correct crop does not guarantee
+recognition. No app default changed. The next comparison should use a detector
+that does not require text recognition to propose rows, and new pages to
+check that it groups vertically stacked fractions without merging distinct
+lines. This is not evidence that all real pages or handwriting behave this way.
+
+Frozen manifest SHA-256:
+`4d96ae89ac1258f31f4c69d94a4911e62253bc16d06f0a11d49668ccd42a651c`.
+[Raw page/crop results](page-02-results.json).

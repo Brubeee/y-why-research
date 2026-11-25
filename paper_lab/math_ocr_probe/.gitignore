@@ -3,3 +3,6 @@ model-cache/
 node_modules/
 frozen_oracle_01b/
 comparison*.json
+
+frozen_page_02/
+page-02-local.json

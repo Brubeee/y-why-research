@@ -1,0 +1,898 @@
+[
+  {
+    "key": "bottom-negative-error--clean-printed",
+    "cohort": "clean-printed",
+    "chain": "bottom-negative-error",
+    "truth": [
+      "7a+15=1",
+      "7a=-14",
+      "a=2"
+    ],
+    "photo_sha256": "50e7211d3ad1a97e108d66aa95ddf9782b7054c3db560d214aa54fb6eb2c15e8",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "bottom-negative-error--clean-printed--oracle-1.png",
+        "box": [
+          82,
+          59,
+          257,
+          88
+        ],
+        "padded": [
+          70,
+          47,
+          269,
+          100
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "2979f26cf324d112a4274a408d28148811f4f9246ec58ea9b4fa783898089906",
+        "raw": "\\[7a+15=1\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "bottom-negative-error--clean-printed--oracle-2.png",
+        "box": [
+          82,
+          179,
+          237,
+          208
+        ],
+        "padded": [
+          70,
+          167,
+          249,
+          220
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "4aaee3dce07901a6e2f818c04e835dacb58e118e6aaad0a5df2bb1cc6a6257d6",
+        "raw": "\\[7a=-14\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "bottom-negative-error--clean-printed--oracle-3.png",
+        "box": [
+          80,
+          317,
+          155,
+          346
+        ],
+        "padded": [
+          68,
+          305,
+          167,
+          358
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "355e333ec2e3866d754f77872975710e2adc3091e028f4ff2fa179921406007f",
+        "raw": "\\[a=2\\]"
+      },
+      {
+        "arm": "detector",
+        "name": "bottom-negative-error--clean-printed--detector-1.png",
+        "box": [
+          82,
+          59,
+          257,
+          88
+        ],
+        "padded": [
+          70,
+          47,
+          269,
+          100
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "2979f26cf324d112a4274a408d28148811f4f9246ec58ea9b4fa783898089906",
+        "detector_text": "7a+15=1",
+        "raw": "\\[7a+15=1\\]"
+      },
+      {
+        "arm": "detector",
+        "name": "bottom-negative-error--clean-printed--detector-2.png",
+        "box": [
+          82,
+          179,
+          236,
+          208
+        ],
+        "padded": [
+          70,
+          167,
+          248,
+          220
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "c1584468b7f20abf86a3fd0a12e29c0132c88e67b0f3518096dd5553ae5f2bbb",
+        "detector_text": "7Ja=—-14",
+        "raw": "\\[7a=-14\\]"
+      }
+    ]
+  },
+  {
+    "key": "bottom-negative-error--phone-style-render",
+    "cohort": "phone-style-render",
+    "chain": "bottom-negative-error",
+    "truth": [
+      "7a+15=1",
+      "7a=-14",
+      "a=2"
+    ],
+    "photo_sha256": "3e28d87a1de7498eeee721f6e50c98b5b4abb1e710249501ea8e84de936fb9d9",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "bottom-negative-error--phone-style-render--oracle-1.png",
+        "box": [
+          88,
+          47,
+          262,
+          85
+        ],
+        "padded": [
+          76,
+          35,
+          274,
+          97
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "0251877affac0e966d10640368923f5e95490b46af2ddea0102a1ccd0624d942",
+        "raw": "\\[7a+15=1\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "bottom-negative-error--phone-style-render--oracle-2.png",
+        "box": [
+          83,
+          167,
+          236,
+          205
+        ],
+        "padded": [
+          71,
+          155,
+          248,
+          217
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "d621f8cd24c9130829444651ceb99401e264b8f93290d9f9ca1e633e1ecb96ab",
+        "raw": "\\[70=-14\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "bottom-negative-error--phone-style-render--oracle-3.png",
+        "box": [
+          71,
+          307,
+          149,
+          337
+        ],
+        "padded": [
+          59,
+          295,
+          161,
+          349
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "be227a13c9ac19fb818239ec8300a468aedd91adf09e56bf08f77265e8ae27e9",
+        "raw": "\\[a=2\\]"
+      },
+      {
+        "arm": "detector",
+        "name": "bottom-negative-error--phone-style-render--detector-1.png",
+        "box": [
+          84,
+          168,
+          234,
+          203
+        ],
+        "padded": [
+          72,
+          156,
+          246,
+          215
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "643c6e164e5c07e543097b8ec90cb0d8500d48407204cc9af1d7c49b64b6b0ff",
+        "detector_text": "7a=—14",
+        "raw": "\\[70=-14\\]"
+      },
+      {
+        "arm": "detector",
+        "name": "bottom-negative-error--phone-style-render--detector-2.png",
+        "box": [
+          72,
+          308,
+          148,
+          337
+        ],
+        "padded": [
+          60,
+          296,
+          160,
+          349
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "75ffc10ae3d954854a90b8b5dd1a5c38d6fa23e8f3d8c77c8f5af7e781d46428",
+        "detector_text": "a=2",
+        "raw": "\\[a=2\\]"
+      }
+    ]
+  },
+  {
+    "key": "stacked-variable--clean-printed",
+    "cohort": "clean-printed",
+    "chain": "stacked-variable",
+    "truth": [
+      "\\frac{v}{6}+2=5",
+      "\\frac{v}{6}=3",
+      "v=18"
+    ],
+    "photo_sha256": "81b0388a7b3da8a55b79e1dff77d125f6cdbc92a194e0eab7673dea117e9a5f2",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "stacked-variable--clean-printed--oracle-1.png",
+        "box": [
+          79,
+          54,
+          225,
+          103
+        ],
+        "padded": [
+          67,
+          42,
+          237,
+          115
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "3d0366b7f3a3c7ff4a60961addaba80f719431c1615e242a5ddd5bd82877844b",
+        "raw": "\\[\\frac{v}{6}+2=5\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "stacked-variable--clean-printed--oracle-2.png",
+        "box": [
+          79,
+          174,
+          169,
+          223
+        ],
+        "padded": [
+          67,
+          162,
+          181,
+          235
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "e4fefc616d5a6b1e8a0caf7c4580563312e36d14453e302213911b37c6959512",
+        "raw": "\\[\\frac{v}{6}=3\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "stacked-variable--clean-printed--oracle-3.png",
+        "box": [
+          78,
+          317,
+          178,
+          346
+        ],
+        "padded": [
+          66,
+          305,
+          190,
+          358
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "6cc3d85a74acdfa49bde70d17ae8d381be98b060d4a5374c699552b7f973af60",
+        "raw": "\\[v=18\\]"
+      }
+    ]
+  },
+  {
+    "key": "stacked-variable--phone-style-render",
+    "cohort": "phone-style-render",
+    "chain": "stacked-variable",
+    "truth": [
+      "\\frac{v}{6}+2=5",
+      "\\frac{v}{6}=3",
+      "v=18"
+    ],
+    "photo_sha256": "478d447d92b22a192e1f8a3d47626bea83cdb3cdea6612a2d636bc9f284cb665",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "stacked-variable--phone-style-render--oracle-1.png",
+        "box": [
+          84,
+          41,
+          233,
+          94
+        ],
+        "padded": [
+          72,
+          29,
+          245,
+          106
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "05b35ec972f1b4fe2e737ddc85811e3450b0c47908363a6a49fdece9d1e25319",
+        "raw": "\\[\\frac{v}{6}+2=5\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "stacked-variable--phone-style-render--oracle-2.png",
+        "box": [
+          77,
+          160,
+          170,
+          214
+        ],
+        "padded": [
+          65,
+          148,
+          182,
+          226
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "f4a9b0c0b32199d1c0666ab378072ce036cc27d76b54b3e60757098249901689",
+        "raw": "\\[\\frac{v}{6}=3\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "stacked-variable--phone-style-render--oracle-3.png",
+        "box": [
+          72,
+          307,
+          172,
+          339
+        ],
+        "padded": [
+          60,
+          295,
+          184,
+          351
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "c290e4c932ed1a1351a0510118771407dfc3d49437ee34ffbaa011d943443a83",
+        "raw": "\\[v=18\\]"
+      }
+    ]
+  },
+  {
+    "key": "stacked-wrong-step--clean-printed",
+    "cohort": "clean-printed",
+    "chain": "stacked-wrong-step",
+    "truth": [
+      "\\frac{3h}{5}-2=4",
+      "\\frac{3h}{5}=2",
+      "3h=10"
+    ],
+    "photo_sha256": "6970d6e61b4cd5c20c90b702c16505177675460e3224a83832f1e56f6be6bfaa",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "stacked-wrong-step--clean-printed--oracle-1.png",
+        "box": [
+          79,
+          46,
+          245,
+          103
+        ],
+        "padded": [
+          67,
+          34,
+          257,
+          115
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "d809b21d75172c7fbcb57c6c0bc8df6cc3c5b15417d3522cb7ee949d1d392e18",
+        "raw": "\\[\\frac{3h}{5}-2=4\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "stacked-wrong-step--clean-printed--oracle-2.png",
+        "box": [
+          79,
+          166,
+          187,
+          223
+        ],
+        "padded": [
+          67,
+          154,
+          199,
+          235
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "502c19ee5dcda9d43c1d8071d7525f936591cfefb26cdba0325ca1d5327c0241",
+        "raw": "\\[\\frac{3h}{5}=2\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "stacked-wrong-step--clean-printed--oracle-3.png",
+        "box": [
+          81,
+          317,
+          206,
+          346
+        ],
+        "padded": [
+          69,
+          305,
+          218,
+          358
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "9b932bef46a3dbc432c117d7406ded948b374443aa5cd9be91ad845dc22bb5ec",
+        "raw": "\\[3h=10\\]"
+      }
+    ]
+  },
+  {
+    "key": "stacked-wrong-step--phone-style-render",
+    "cohort": "phone-style-render",
+    "chain": "stacked-wrong-step",
+    "truth": [
+      "\\frac{3h}{5}-2=4",
+      "\\frac{3h}{5}=2",
+      "3h=10"
+    ],
+    "photo_sha256": "c101cf0d930948c41632d11607823ff93b9e7f7e091bcb62c54e126f0b2c9c6c",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "stacked-wrong-step--phone-style-render--oracle-1.png",
+        "box": [
+          84,
+          34,
+          250,
+          93
+        ],
+        "padded": [
+          72,
+          22,
+          262,
+          105
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "f222dd42604dff78f308466e6d85d9037ecac7c711c7ffda79290e472b04ecf0",
+        "raw": "\\[\\frac{3h}{5}-2=4\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "stacked-wrong-step--phone-style-render--oracle-2.png",
+        "box": [
+          77,
+          154,
+          189,
+          213
+        ],
+        "padded": [
+          65,
+          142,
+          201,
+          225
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "a2fe9e8b757c27f85a0e52ca5350b4087ebadf18b116d62a9871590df05a818a",
+        "raw": "\\[\\frac{3h}{5}=2\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "stacked-wrong-step--phone-style-render--oracle-3.png",
+        "box": [
+          70,
+          304,
+          199,
+          341
+        ],
+        "padded": [
+          58,
+          292,
+          211,
+          353
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "e1d42f2de02533a7887cdc5d9330f45e69ef72c237c5a71b65e1e49c05612831",
+        "raw": "\\[3h=10\\]"
+      }
+    ]
+  },
+  {
+    "key": "negative-brackets--clean-printed",
+    "cohort": "clean-printed",
+    "chain": "negative-brackets",
+    "truth": [
+      "-4(2j-3)=20",
+      "-8j+12=20",
+      "j=-1"
+    ],
+    "photo_sha256": "c3f2c52d9db6325cb515493a9953fd09bb045b15d9f02e29fa74dd86c7c82043",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "negative-brackets--clean-printed--oracle-1.png",
+        "box": [
+          83,
+          59,
+          335,
+          96
+        ],
+        "padded": [
+          71,
+          47,
+          347,
+          108
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "030ae4a049fcdd7b2b974f893e22b11bf7e51b0c022e2b9dfa6d60840387d2ea",
+        "raw": "\\[-4(2j-3)=20\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "negative-brackets--clean-printed--oracle-2.png",
+        "box": [
+          83,
+          179,
+          305,
+          216
+        ],
+        "padded": [
+          71,
+          167,
+          317,
+          228
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "9e331f5c09c8310fb2ac7177ad45d8532066553c80c9404baa4244d7abcc15ce",
+        "raw": "\\[-8j+12=20\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "negative-brackets--clean-printed--oracle-3.png",
+        "box": [
+          75,
+          317,
+          173,
+          354
+        ],
+        "padded": [
+          63,
+          305,
+          185,
+          365
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "ba945fd7182afd2b1c2d43e4dbf6bec9ab4e83311a3a8899182d67e2bc5d157a",
+        "raw": "\\[j=-1\\]"
+      },
+      {
+        "arm": "detector",
+        "name": "negative-brackets--clean-printed--detector-1.png",
+        "box": [
+          83,
+          59,
+          335,
+          96
+        ],
+        "padded": [
+          71,
+          47,
+          347,
+          108
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "030ae4a049fcdd7b2b974f893e22b11bf7e51b0c022e2b9dfa6d60840387d2ea",
+        "detector_text": "—4(2j-3)=20",
+        "raw": "\\[-4(2j-3)=20\\]"
+      },
+      {
+        "arm": "detector",
+        "name": "negative-brackets--clean-printed--detector-2.png",
+        "box": [
+          83,
+          179,
+          305,
+          216
+        ],
+        "padded": [
+          71,
+          167,
+          317,
+          228
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "9e331f5c09c8310fb2ac7177ad45d8532066553c80c9404baa4244d7abcc15ce",
+        "detector_text": "~8j+12=20",
+        "raw": "\\[-8j+12=20\\]"
+      },
+      {
+        "arm": "detector",
+        "name": "negative-brackets--clean-printed--detector-3.png",
+        "box": [
+          75,
+          317,
+          173,
+          354
+        ],
+        "padded": [
+          63,
+          305,
+          185,
+          365
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "ba945fd7182afd2b1c2d43e4dbf6bec9ab4e83311a3a8899182d67e2bc5d157a",
+        "detector_text": "j=-1",
+        "raw": "\\[j=-1\\]"
+      }
+    ]
+  },
+  {
+    "key": "negative-brackets--phone-style-render",
+    "cohort": "phone-style-render",
+    "chain": "negative-brackets",
+    "truth": [
+      "-4(2j-3)=20",
+      "-8j+12=20",
+      "j=-1"
+    ],
+    "photo_sha256": "67ac3ce80e62f6f3ad59ada185390e0cd48f427d71b2cc3602a4f3bf9bed3ed0",
+    "crops": [
+      {
+        "arm": "oracle",
+        "name": "negative-brackets--phone-style-render--oracle-1.png",
+        "box": [
+          87,
+          49,
+          342,
+          91
+        ],
+        "padded": [
+          75,
+          37,
+          354,
+          103
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "cc9914120e84c5c4c8e550236b34f11dd5e0a45cf3ba5093a661dc82850e6870",
+        "raw": "\\[-4(2j-3)=20\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "negative-brackets--phone-style-render--oracle-2.png",
+        "box": [
+          81,
+          168,
+          305,
+          208
+        ],
+        "padded": [
+          69,
+          156,
+          317,
+          220
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "678a8fc357f003ac6d9e4f6faf58b7c1b80de47910a598cbb20bae8165eb3c85",
+        "raw": "\\[-8j+12=20\\]"
+      },
+      {
+        "arm": "oracle",
+        "name": "negative-brackets--phone-style-render--oracle-3.png",
+        "box": [
+          62,
+          305,
+          165,
+          343
+        ],
+        "padded": [
+          50,
+          293,
+          177,
+          355
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "19d3672308c2e3998706ee7f511c28b538da1d2a8ab0e125ef98b887a9ef28bf",
+        "raw": "\\[j=-1\\]"
+      },
+      {
+        "arm": "detector",
+        "name": "negative-brackets--phone-style-render--detector-1.png",
+        "box": [
+          89,
+          50,
+          341,
+          90
+        ],
+        "padded": [
+          77,
+          38,
+          353,
+          102
+        ],
+        "ink": [
+          1,
+          0,
+          0
+        ],
+        "crop_sha256": "7813bde483ca3ec763b68f6210017cc26e9c6f07d3ad60ef55e23f627852f6c5",
+        "detector_text": "—4(2j-3)=20",
+        "raw": "\\[-4(2j-3)=20\\]"
+      },
+      {
+        "arm": "detector",
+        "name": "negative-brackets--phone-style-render--detector-2.png",
+        "box": [
+          82,
+          169,
+          305,
+          207
+        ],
+        "padded": [
+          70,
+          157,
+          317,
+          219
+        ],
+        "ink": [
+          0,
+          1,
+          0
+        ],
+        "crop_sha256": "db1567a56f6789a9c47931fa5c6fce6445ee56daacfa5eea2d357c67943096b5",
+        "detector_text": "—8j+12=20",
+        "raw": "\\[-8j+12=20\\]"
+      },
+      {
+        "arm": "detector",
+        "name": "negative-brackets--phone-style-render--detector-3.png",
+        "box": [
+          64,
+          306,
+          164,
+          342
+        ],
+        "padded": [
+          52,
+          294,
+          176,
+          354
+        ],
+        "ink": [
+          0,
+          0,
+          1
+        ],
+        "crop_sha256": "0505b64fd52e2929e7052a0d2ef09406f5b0efaa4ebbf088b797f05a9df9600c",
+        "detector_text": "Nines!",
+        "raw": "\\[j=-1\\]"
+      }
+    ]
+  }
+]
