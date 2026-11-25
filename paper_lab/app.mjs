@@ -75,6 +75,7 @@ function renderRows() {
   const fields = [];
   $('rows').replaceChildren();
   $('add').disabled = rows.length >= MAX_ROWS;
+  $('add').textContent = currentFile ? 'Add a missed line at the end' : 'Add a line';
   for (const [i, row] of rows.entries()) {
     const box = el('div', '', 'row'), select = el('input'), field = el('input'), confirm = el('input');
     select.type = 'checkbox'; select.checked = row.selected;
@@ -144,7 +145,9 @@ function renderRows() {
   }
   return fields;
 }
-function add(text = '', selected = true) { if (rows.length < MAX_ROWS) rows.push({text,selected,confirmed:false}); }
+function add(text = '', selected = true, manual = false) {
+  if (rows.length < MAX_ROWS) rows.push({text,selected,confirmed:false,manual});
+}
 function disposePhotoCandidate(owner) {
   if (owner.preview) owner.preview.removeAttribute('src');
   if (owner.url) URL.revokeObjectURL(owner.url);
@@ -175,7 +178,14 @@ $('example').addEventListener('click', () => {
   renderRows(); resetResult();
   status('A typed, synthetic example. Review and confirm each line before checking.');
 });
-$('add').addEventListener('click', () => { add(); renderRows(); clearAttestation(); resetResult(); $('rows').lastElementChild?.querySelector('input[type=text]').focus(); });
+$('add').addEventListener('click', () => {
+  if (rows.length >= MAX_ROWS) return;
+  add('', true, !!currentFile);
+  updateCrop(null);
+  clearAttestation();
+  resetResult();
+  renderRows().at(-1).focus();
+});
 function prepareRows(data, imageSize, useBoxes) {
   if (data?.status !== 'draft' || !Array.isArray(data.lines))
     throw new Error('The OCR response was not usable.');

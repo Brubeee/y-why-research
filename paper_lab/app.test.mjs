@@ -914,3 +914,56 @@ test('optional written expansion check never equates a changed right side with t
   assert.doesNotMatch(out.words(),/What if I only expanded/);
   get('clear').dispatch('click');
 });
+
+test('a missed final photo line is visibly manual, requires new checks, and survives an older reread', async t => {
+  t.after(()=>{globalThis.fetch=savedFetch;get('clear').dispatch('click');});
+  const detected=[
+    {text:'q/5 + 1/4 = 13/20',box:{x:5,y:12,width:85,height:10}},
+    {text:'q/5 = 2/5',box:{x:5,y:28,width:70,height:10}},
+  ];
+  globalThis.fetch=async()=>response(detected);
+  await loadPhoto('synthetic missing final fractions row');
+  const attest=()=>{get('anchor-check').checked=true;get('anchor-check').dispatch('change');};
+  const confirm=row=>{row.children[2].children[0].checked=true;row.children[2].children[0].dispatch('change');};
+  const verdict=()=>get('verdict').words();
+  const check=()=>get('verify').dispatch('click');
+  const add=get('add');
+  assert.equal(add.textContent,'Add a missed line at the end');
+  for (const row of get('rows').children) {
+    row.children[0].checked=true;row.children[0].dispatch('change');confirm(row);
+  }
+  attest();check();
+  assert.match(verdict(),/Selected steps only.*Line 2 · Same solution set/);
+  get('rows').children[1].children[1].dispatch('focus');
+  assert.equal(get('crop').hidden,false);
+  let release;
+  globalThis.fetch=()=>new Promise(resolve=>{release=resolve;});
+  const pending=get('read-full').dispatch('click');
+  add.dispatch('click');
+  const restored=get('rows').children[2], field=restored.children[1];
+  assert.match(restored.words(),/Typed from photo; no detected highlight/);
+  assert.equal(document.activeElement,field);
+  assert.equal(get('crop').hidden,true);
+  assert.equal(get('anchor-check').checked,false);
+  assert.equal(restored.children[2].children[0].checked,false);
+  assert.doesNotMatch(verdict(),/Same solution set|First verified change/);
+  field.value='q=2';field.dispatch('input');check();
+  assert.match(verdict(),/No verdict was issued/);
+  attest();check();
+  assert.match(verdict(),/Line 3 · Needs transcription confirmation/);
+  confirm(restored);check();
+  assert.match(verdict(),/Selected steps only.*Line 3 · Same solution set/);
+  field.value='q=3';field.dispatch('input');check();
+  assert.match(verdict(),/No verdict was issued/);
+  confirm(restored);attest();check();
+  assert.match(verdict(),/Selected steps only.*Line 3 · First verified change/);
+  release(response(detected));
+  await pending;
+  assert.equal(get('rows').children[2].children[1].value,'q=3');
+  assert.match(verdict(),/Line 3 · First verified change/);
+  assert.match(get('scan-status').textContent,/earlier reread was not applied/);
+  get('clear').dispatch('click');
+  assert.equal(add.textContent,'Add a line');
+  add.dispatch('click');
+  assert.doesNotMatch(get('rows').children[2].words(),/Typed from photo/);
+});

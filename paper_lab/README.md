@@ -52,7 +52,8 @@ delayed review or measure learning.
   it does not detect strike-through, missing rows, or mixed text inside a box.
 
 - If OCR misses an active row, use **Insert line above** on the next visible row
-  to type the missing work where it belongs. This creates no OCR highlight and
+  or **Add a missed line at the end** if there is no next row. Type the line
+  as written, even if the maths looks wrong. This creates no OCR highlight and
   does not assume what was written. Check the full photo again and confirm the
   new transcription before relying on the verdict.
   A handwritten line entered this way does not prove the photo order around a
