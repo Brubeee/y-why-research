@@ -1,0 +1,22 @@
+{
+  "archive_sha256": "cba038def001480a89962b25cb20a60df4c4145e94c86ef9d2af65f192cb82bc",
+  "ocr_runs": 0,
+  "splits": {
+    "valid": {
+      "scanned": 100,
+      "eligible": 0,
+      "not-one-equality": 58,
+      "layout-outside-scope": 42,
+      "checker-unsupported": 0,
+      "no-variable": 0
+    },
+    "test": {
+      "scanned": 100,
+      "eligible": 0,
+      "not-one-equality": 53,
+      "layout-outside-scope": 44,
+      "checker-unsupported": 3,
+      "no-variable": 0
+    }
+  }
+}

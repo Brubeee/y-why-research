@@ -1,0 +1,22 @@
+[
+  {
+    "mechanism": "negative-distribution",
+    "correct": ["−3(x−2)=12", "−3x+6=12", "−3x=6", "x=−2"],
+    "changed": ["−3(x−2)=12", "−3x−6=12", "−3x=18", "x=−6"]
+  },
+  {
+    "mechanism": "variables-on-both-sides",
+    "correct": ["4u+3=2u+11", "2u+3=11", "2u=8", "u=4"],
+    "changed": ["4u+3=2u+11", "2u+3=9", "2u=6", "u=3"]
+  },
+  {
+    "mechanism": "stacked-fraction",
+    "correct": ["\\frac{v−2}{3}=4", "v−2=12", "v=14"],
+    "changed": ["\\frac{v−2}{3}=4", "v−2=4", "v=6"]
+  },
+  {
+    "mechanism": "decimal-and-partial-multiplication",
+    "correct": ["0.5w−1=2", "w−2=4", "w=6"],
+    "changed": ["0.5w−1=2", "w−1=4", "w=5"]
+  }
+]

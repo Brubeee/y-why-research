@@ -369,3 +369,27 @@ not a post hoc reinterpretation of these reference strings.
 [Aggregate results](hw-07-aggregate.json). Local raw output SHA-256
 (stock, then Tesseract): `a86f2369784b66bf4524c713b9efa8fc76b65d1341530b38086501414a58e39b`,
 `66ba420c0e20d9e2f80489f019d5fdbd266148c814fbb13839dd70d7563675fc`.
+
+### HW-08: in-scope reference inventory (no OCR)
+
+Checked all 200 human valid/test records in the **same tiny publisher
+excerpt**, not the full MathWriting dataset. Took `normalizedLabel` and
+applied only the bounded display adapter in `affine_scope.mjs` followed by the
+existing exact checker. The audit requires a single literal equality,
+one supported variable and a supported affine equation. It rejects unknown
+layouts and ambiguous implicit products by a fraction; it does not correct
+characters, rename variables, or solve to force a match. The audit and
+literal OCR scoring are separate.
+
+Zero eligibility in both splits (0/100 valid, 0/100 test). Three test
+references reached the exact parser and were rejected. See
+`hw-08-affine-inventory.json` for the complete rejection counts and checksum.
+No inference was run, the distinct-sample denominator was not padded, and
+no sample-level data was saved to the repo. This rules out this excerpt as
+an in-scope benchmark, not the full corpus. Reproduce with:
+
+`python paper_lab/math_ocr_probe/mathwriting_affine_inventory.py <publisher-excerpt.tgz>`
+
+The next evidence target is the paired paper-photo check in
+[PHONE_AFFINE_PROTOCOL.md](PHONE_AFFINE_PROTOCOL.md). Case labels are authored
+practice prompts; no captures or new OCR scores yet.
