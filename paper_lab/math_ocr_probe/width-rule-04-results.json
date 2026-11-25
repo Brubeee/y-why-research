@@ -1,0 +1,778 @@
+[
+  {
+    "key": "fraction-close--unruled",
+    "chain": "fraction-close",
+    "cohort": "unruled",
+    "truth": [
+      "\\frac{m}{9}+1=4",
+      "\\frac{m}{9}=5",
+      "m=45"
+    ],
+    "photo_sha256": "52ed5e1be861fc46edff8b2776b344a81801166217dc16cb1b3aea70f94e3c38",
+    "crops": [
+      {
+        "arm": "narrow",
+        "name": "fraction-close--unruled--narrow-1.png",
+        "index": 0,
+        "box": [
+          229,
+          37,
+          410,
+          107
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "0d4198a1241662adc1ef16ba002644dc14c15793cd075f05cb7975b341ec05ff",
+        "raw": "\\[\\frac{m}{g}+1=4\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "fraction-close--unruled--wide-1.png",
+        "index": 0,
+        "box": [
+          12,
+          37,
+          627,
+          107
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "da4597cd90da2193f3a7f34059910c3a368e445b4147db972ec2a390501f27f3",
+        "raw": "\\[\\cdot\\].........\\]"
+      },
+      {
+        "arm": "narrow",
+        "name": "fraction-close--unruled--narrow-2.png",
+        "index": 1,
+        "box": [
+          257,
+          107,
+          382,
+          176
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "cb4cad6e8377905d386e29b6e93f8f00bb1d74907f442d8d7e0e30b5421c91f1",
+        "raw": "\\[\\frac{m}{g}=5\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "fraction-close--unruled--wide-2.png",
+        "index": 1,
+        "box": [
+          13,
+          107,
+          627,
+          176
+        ],
+        "glyph_center": 0.499186,
+        "crop_sha256": "2ca5ee65fe6b5bea1796bb2d3d87c3247a15a93ca1a473f3a5363197b6075551",
+        "raw": "\\[\\frac{M}}{ \\underline{O} \\underline{O} \\underline{O} \\underline{O} \\underline{O} \\underline{O} \\underline{O} \\underline{O} \\underline{O} \\underline{O} \\underline{O} \\underline{O} \\underlineunderlineunderlineunderlineunderlineunderlineunderlineunderlineunderlineunderline{O} \\underlineunderlineunderlineunderlineunderline{O} \\underline{O} \\underline{O} \\underline{O} \\underline{O} \\underline{O} \\underline{O} \\underline{O} \\underline{O}"
+      },
+      {
+        "arm": "narrow",
+        "name": "fraction-close--unruled--narrow-3.png",
+        "index": 2,
+        "box": [
+          250,
+          297,
+          389,
+          352
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "bcd8ac2849a4f26219a08d1ce0cf330f8f8eba4d1f119a068d4b8fb4271d9e93",
+        "raw": "\\[m=45\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "fraction-close--unruled--wide-3.png",
+        "index": 2,
+        "box": [
+          13,
+          297,
+          627,
+          352
+        ],
+        "glyph_center": 0.499186,
+        "crop_sha256": "953e40ab8d4e318235626ce5b8016f5d6130ac812095aac9e5ae58a97e208c29",
+        "raw": "\\[overlineoverline{F} \\underlineoverlineoverlineoverlineoverlineoverline{F} \\overline{F}F^{m}F^{m}F^{m}F^{m}F^{m}F^{m}F^{m}F^{m}F^{m}F^{m}F^{m}F^{m}F^{m}F^{m}F^{m}F^{m}F}F^{m}F^{m}F^{m}F^{m}F^{m^{m}F^{m}F^{m}F}F^{m}F^{m}F"
+      }
+    ]
+  },
+  {
+    "key": "fraction-close--ruled",
+    "chain": "fraction-close",
+    "cohort": "ruled",
+    "truth": [
+      "\\frac{m}{9}+1=4",
+      "\\frac{m}{9}=5",
+      "m=45"
+    ],
+    "photo_sha256": "1a3007e5ffd30ee2eeced3a39c1a1185640f809bd24d6b5bd50fca0f440b3f73",
+    "crops": [
+      {
+        "arm": "narrow",
+        "name": "fraction-close--ruled--narrow-1.png",
+        "index": 0,
+        "box": [
+          229,
+          37,
+          410,
+          107
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "220a6bba642b838acec0cf9381ed726053424903f53c35af67a88d916ffe6476",
+        "raw": "\\[\\frac{m}{g}+1=4\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "fraction-close--ruled--wide-1.png",
+        "index": 0,
+        "box": [
+          12,
+          37,
+          627,
+          107
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "edeedd21008d1ee3e54d0c1bb742176ce99643aa2863bccf4ba96f4dc56dc5d5",
+        "raw": "\\[\\cdot\\]"
+      },
+      {
+        "arm": "narrow",
+        "name": "fraction-close--ruled--narrow-2.png",
+        "index": 1,
+        "box": [
+          257,
+          107,
+          382,
+          176
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "eadca7f804acc3af7af727ac4217480a0926cd7aef1a95faf68e2078646af9f3",
+        "raw": "\\[\\frac{m}{g}=5\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "fraction-close--ruled--wide-2.png",
+        "index": 1,
+        "box": [
+          13,
+          107,
+          627,
+          176
+        ],
+        "glyph_center": 0.499186,
+        "crop_sha256": "818da74087a26431830a55968b8d1b0e4dc698ede037d7350a486b2b527ddfa7",
+        "raw": "\\[\\frac{M}}{ \\frac{M}}{ \\frac{M}{ \\frac{M}{ \\frac{M}{\\bullet}{ \\bullet}{ \\bullet}{ \\bullet}}}.\\]"
+      },
+      {
+        "arm": "narrow",
+        "name": "fraction-close--ruled--narrow-3.png",
+        "index": 2,
+        "box": [
+          250,
+          297,
+          389,
+          352
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "7a6f9d0a80721e1d59fff9f76882b1fa85a614ea808f7bb1732c82c4e1aa5fff",
+        "raw": "\\[m=45\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "fraction-close--ruled--wide-3.png",
+        "index": 2,
+        "box": [
+          13,
+          297,
+          627,
+          352
+        ],
+        "glyph_center": 0.499186,
+        "crop_sha256": "7ccaddfce42c9e257081e38494f585550ba5da42e79fb00a8a57b22f59736c3e",
+        "raw": "\\[\\cdot\\cdot\\cdot\\cdot\\]"
+      }
+    ]
+  },
+  {
+    "key": "fraction-wide--unruled",
+    "chain": "fraction-wide",
+    "cohort": "unruled",
+    "truth": [
+      "\\frac{y}{7}-2=1",
+      "\\frac{y}{7}=3",
+      "y=21"
+    ],
+    "photo_sha256": "5d66d9e3ec3f65b4cf807e23c892df985d03e624a4b9273369fdc1803dd4c9ce",
+    "crops": [
+      {
+        "arm": "narrow",
+        "name": "fraction-wide--unruled--narrow-1.png",
+        "index": 0,
+        "box": [
+          236,
+          37,
+          404,
+          111
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "77df3baa16f8c9738638cafa352a0649343fbdd38ce950ff318a278cdcf1c421",
+        "raw": "\\[\\frac{y}{7}-2=1\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "fraction-wide--unruled--wide-1.png",
+        "index": 0,
+        "box": [
+          12,
+          37,
+          627,
+          111
+        ],
+        "glyph_center": 0.500813,
+        "crop_sha256": "6132bdddd00b32ab3440354aaa2f21b9431524482f4d22ff56f4ccc274d7ef72",
+        "raw": "\\[\\frac{L}_{m}^{ \\bullet}\\rightarrow\\underline{C}_{m}\\]"
+      },
+      {
+        "arm": "narrow",
+        "name": "fraction-wide--unruled--narrow-2.png",
+        "index": 1,
+        "box": [
+          262,
+          121,
+          378,
+          195
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "f67228c9d5441c9ea220a38f4e9192349b2766f18947cafd39194e1b920c3d13",
+        "raw": "\\[\\frac{y}{7}=3\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "fraction-wide--unruled--wide-2.png",
+        "index": 1,
+        "box": [
+          13,
+          121,
+          627,
+          195
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "66ca3525cc61eb1174e796d8599b9727f99dd3045c78f81e83f49e86089d7c17",
+        "raw": "\\[text{rm{rm{ \\ref{H}}}}_{ \\text{M}=3\\text{}\\]"
+      },
+      {
+        "arm": "narrow",
+        "name": "fraction-wide--unruled--narrow-3.png",
+        "index": 2,
+        "box": [
+          258,
+          296,
+          381,
+          355
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "528aec3e4336da713ae00d9aa5499f4ad89fa4f2fc1443fe990a4f273ef25ef8",
+        "raw": "\\[y=21\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "fraction-wide--unruled--wide-3.png",
+        "index": 2,
+        "box": [
+          13,
+          296,
+          627,
+          355
+        ],
+        "glyph_center": 0.499186,
+        "crop_sha256": "b765e0329e2d1c19ff8b8cf08e5429c41c16efffd699cadeb6ff04bcea6194fd",
+        "raw": "\\[\\nu=21\\]"
+      }
+    ]
+  },
+  {
+    "key": "fraction-wide--ruled",
+    "chain": "fraction-wide",
+    "cohort": "ruled",
+    "truth": [
+      "\\frac{y}{7}-2=1",
+      "\\frac{y}{7}=3",
+      "y=21"
+    ],
+    "photo_sha256": "9283b385b39ce5cc894b52eb33be90b60235deb42af89d3ead03125ed2beb228",
+    "crops": [
+      {
+        "arm": "narrow",
+        "name": "fraction-wide--ruled--narrow-1.png",
+        "index": 0,
+        "box": [
+          236,
+          37,
+          404,
+          111
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "6312e624c86f6962ff2311b4af665272c3c700c23ffa53c98eb03fd5b449d127",
+        "raw": "\\[\\frac{y}{7}-2=1\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "fraction-wide--ruled--wide-1.png",
+        "index": 0,
+        "box": [
+          12,
+          37,
+          627,
+          111
+        ],
+        "glyph_center": 0.500813,
+        "crop_sha256": "264684f552f20e9ee3c2ecb9d97a94e2b049022fe6f3b8f79b19b2e8a2b723b5",
+        "raw": "\\[\\frac{L}_{1,2, \\cdots,2,4,6,7,8,9,10,21,22,23,24,26,26,26,27,28,34,34,34,34,34,35,37,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,38,41,41,41,41,41,41,41,41,41,41,42,42,"
+      },
+      {
+        "arm": "narrow",
+        "name": "fraction-wide--ruled--narrow-2.png",
+        "index": 1,
+        "box": [
+          262,
+          121,
+          378,
+          195
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "a5cf005c9f6c2e37dc3c56fb671004a088ec7018b953b20dc513edef00260eaa",
+        "raw": "\\[\\frac{y}{7}=3\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "fraction-wide--ruled--wide-2.png",
+        "index": 1,
+        "box": [
+          13,
+          121,
+          627,
+          195
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "f8b7b1241aa076ab5b24a7fed3300fc54d7dfefc9994c301699522bed1bb60a9",
+        "raw": "\\[frac{H}_{i}}{ \\frac{R}_{i}}{ \\frac{R}_{i}}{ \\frac{R}_{i}}{ \\frac \\frac \\frac \\frac \\frac \\frac \\frac \\frac \\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot\\cdot"
+      },
+      {
+        "arm": "narrow",
+        "name": "fraction-wide--ruled--narrow-3.png",
+        "index": 2,
+        "box": [
+          258,
+          296,
+          381,
+          355
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "ee3fab339fe6ab76a3eb7394dda835ef4bbaaa3846b955ff2ba1042051957326",
+        "raw": "\\[y=21\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "fraction-wide--ruled--wide-3.png",
+        "index": 2,
+        "box": [
+          13,
+          296,
+          627,
+          355
+        ],
+        "glyph_center": 0.499186,
+        "crop_sha256": "2830edfb038d25696fbbc9e58d880a124224ece77dc1b8e3103520b8d72e62e2",
+        "raw": "\\[y=21\\]"
+      }
+    ]
+  },
+  {
+    "key": "separate-close--unruled",
+    "chain": "separate-close",
+    "cohort": "unruled",
+    "truth": [
+      "8b-9=23",
+      "8b-9=24",
+      "b=4"
+    ],
+    "photo_sha256": "b74453c762cfe7b1a11938509a698f49e9c587a28baea29e2801e93716dc5066",
+    "crops": [
+      {
+        "arm": "narrow",
+        "name": "separate-close--unruled--narrow-1.png",
+        "index": 0,
+        "box": [
+          216,
+          44,
+          423,
+          99
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "d72476a518fbc721bfa12a4f814fac3ef250e7a804df93ca9a1de14c3a99db90",
+        "raw": "\\[8b-9=23\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "separate-close--unruled--wide-1.png",
+        "index": 0,
+        "box": [
+          12,
+          44,
+          627,
+          99
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "c94b5191e4ce3700e14dd10a3d1485efce80c081c7b04aafc914da60672b7ed0",
+        "raw": "\\[overlineoverline{S} \\mathbf{80}\\mathbf{\\neg9\\mathbf{26}=\\mathbf{26}\\]"
+      },
+      {
+        "arm": "narrow",
+        "name": "separate-close--unruled--narrow-2.png",
+        "index": 1,
+        "box": [
+          216,
+          99,
+          423,
+          153
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "e3df0bcfa5e56f77b7d2390babcd3828e9ca4c4a749ba2e7178f29b4bfca6965",
+        "raw": "\\[8b-9=24\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "separate-close--unruled--wide-2.png",
+        "index": 1,
+        "box": [
+          13,
+          99,
+          627,
+          153
+        ],
+        "glyph_center": 0.499186,
+        "crop_sha256": "9984f474c09c2986bacb12fb025bdde7f1b6fd94e7eb0940a4e146c79146ca92",
+        "raw": "\\[underline{S} \\underline{S} \\underline{D} \\underline{D} \\underline{D} \\underline{D} \\underline{D} \\underline{D} \\underline} \\underline} \\underline} \\underline{D} \\underline} \\underline} \\underline \\underline} \\underline \\underline} \\underline} \\underline} \\underline} \\underline} \\underline} \\underline \\underline \\underline} \\underline \\underline} \\underline} \\underline} \\underline} \\underline} \\underline} \\underline} \\underline} \\underline \\Omega\\Omega\\Omega\\Omega"
+      },
+      {
+        "arm": "narrow",
+        "name": "separate-close--unruled--narrow-3.png",
+        "index": 2,
+        "box": [
+          268,
+          292,
+          371,
+          350
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "94bbf279aa3d8b0d5268672e446353cacf5b52f109cb47a98fb57817987adc66",
+        "raw": "\\[b=4\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "separate-close--unruled--wide-3.png",
+        "index": 2,
+        "box": [
+          13,
+          292,
+          627,
+          350
+        ],
+        "glyph_center": 0.499186,
+        "crop_sha256": "3a1f3c719e9943216368cca7befb32503b97451ee6807da2b0abacdd22d697ab",
+        "raw": "\\[b=4\\]"
+      }
+    ]
+  },
+  {
+    "key": "separate-close--ruled",
+    "chain": "separate-close",
+    "cohort": "ruled",
+    "truth": [
+      "8b-9=23",
+      "8b-9=24",
+      "b=4"
+    ],
+    "photo_sha256": "684a816d4e6783f8087954dbf53cc58a6749ddef69a8e91f5ad5ecc76f9feef7",
+    "crops": [
+      {
+        "arm": "narrow",
+        "name": "separate-close--ruled--narrow-1.png",
+        "index": 0,
+        "box": [
+          216,
+          44,
+          423,
+          99
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "023f6bfafc5f0f289db7893bd7f5a9d51be67a74544917918041e29c24e495ad",
+        "raw": "\\[8b-9=23\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "separate-close--ruled--wide-1.png",
+        "index": 0,
+        "box": [
+          12,
+          44,
+          627,
+          99
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "21cac401e91c6bd95ac1fb9d7620daba79af95e6af36847584f7fe5ffa5798d4",
+        "raw": "\\[overlineoverline{S} \\mathbf{80}=9=23\\mathbf{m}\\]"
+      },
+      {
+        "arm": "narrow",
+        "name": "separate-close--ruled--narrow-2.png",
+        "index": 1,
+        "box": [
+          216,
+          99,
+          423,
+          153
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "6a7a9225788f0a340f375f6948a568265b1063aec28d423c3b7ddd5d33134702",
+        "raw": "\\[8b-9=24\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "separate-close--ruled--wide-2.png",
+        "index": 1,
+        "box": [
+          13,
+          99,
+          627,
+          153
+        ],
+        "glyph_center": 0.499186,
+        "crop_sha256": "7d7722723b6e0be541fbdfa9c0ce7bae6afedac27d04afc107fbf566ffecd199",
+        "raw": "\\[ \\cdot\\cdot\\cdot\\cdot80\\cdot80=2.8\\]"
+      },
+      {
+        "arm": "narrow",
+        "name": "separate-close--ruled--narrow-3.png",
+        "index": 2,
+        "box": [
+          268,
+          292,
+          371,
+          350
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "13b70c19929b5f20e7f04f871b2610ff71c1685240947bc88ae744614b1c54f7",
+        "raw": "\\[b=4\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "separate-close--ruled--wide-3.png",
+        "index": 2,
+        "box": [
+          13,
+          292,
+          627,
+          350
+        ],
+        "glyph_center": 0.499186,
+        "crop_sha256": "07494d4cfff5378f9b88068dda44d287d9ab49670472afc31a92161005108e43",
+        "raw": "\\[...=1\\]"
+      }
+    ]
+  },
+  {
+    "key": "separate-wide--unruled",
+    "chain": "separate-wide",
+    "cohort": "unruled",
+    "truth": [
+      "6t-2=16",
+      "6t-2=15",
+      "t=3"
+    ],
+    "photo_sha256": "841bf8dbfb5c67fd43a790e7826fac1f14cae4debfe5883775d9ad20662239fc",
+    "crops": [
+      {
+        "arm": "narrow",
+        "name": "separate-wide--unruled--narrow-1.png",
+        "index": 0,
+        "box": [
+          221,
+          44,
+          419,
+          105
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "a2acaeb43f94ce860f7f5c4f63be6ba59c22bde7cfd65c09650bbcd19c56b5c5",
+        "raw": "\\[6t-2=16\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "separate-wide--unruled--wide-1.png",
+        "index": 0,
+        "box": [
+          12,
+          44,
+          627,
+          105
+        ],
+        "glyph_center": 0.500813,
+        "crop_sha256": "5fd07989b412306397d4e5a61d86643221f5eb74a3e01ec30454b905ca6f22f6",
+        "raw": "\\[...\\]"
+      },
+      {
+        "arm": "narrow",
+        "name": "separate-wide--unruled--narrow-2.png",
+        "index": 1,
+        "box": [
+          220,
+          115,
+          419,
+          176
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "c1af1a8dc6c4b2ff7e6f3e8aaa7235442c1af63488220ebda8d3e8a5f4d30e49",
+        "raw": "\\[6t-2=15\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "separate-wide--unruled--wide-2.png",
+        "index": 1,
+        "box": [
+          13,
+          115,
+          627,
+          176
+        ],
+        "glyph_center": 0.499186,
+        "crop_sha256": "6a919db6d20b01a4033340ec96ad899d4164cdfdcdf9b7a1bb02284a2f47e804",
+        "raw": "\\[...}\\]"
+      },
+      {
+        "arm": "narrow",
+        "name": "separate-wide--unruled--narrow-3.png",
+        "index": 2,
+        "box": [
+          273,
+          295,
+          366,
+          349
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "f5a0e7d9983b4bbf456b87ee9a38e1e9f559e69fe0876eb30ee6ded384d70dba",
+        "raw": "\\[t=3\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "separate-wide--unruled--wide-3.png",
+        "index": 2,
+        "box": [
+          13,
+          295,
+          627,
+          349
+        ],
+        "glyph_center": 0.499186,
+        "crop_sha256": "7e6407ba33793a21d10f0b8cd7bd9a9ac388e933b100216b772fa06c451a7a75",
+        "raw": "\\[A= \\frac{1}{2}B\\]"
+      }
+    ]
+  },
+  {
+    "key": "separate-wide--ruled",
+    "chain": "separate-wide",
+    "cohort": "ruled",
+    "truth": [
+      "6t-2=16",
+      "6t-2=15",
+      "t=3"
+    ],
+    "photo_sha256": "01021b82310ddca42779c503031dddb8db915ac6f61d7f087c41ed08534c1f21",
+    "crops": [
+      {
+        "arm": "narrow",
+        "name": "separate-wide--ruled--narrow-1.png",
+        "index": 0,
+        "box": [
+          221,
+          44,
+          419,
+          105
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "fa19e27aa15f9473b171e71a9a5fe2b76839e9c3d2096534d634740ceb30bdc1",
+        "raw": "\\[6t-2=16\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "separate-wide--ruled--wide-1.png",
+        "index": 0,
+        "box": [
+          12,
+          44,
+          627,
+          105
+        ],
+        "glyph_center": 0.500813,
+        "crop_sha256": "572a3a2d793bc53b68912af730b7d19e851392e08e8dfbfd0355d8e558316abb",
+        "raw": "\\[...\\]"
+      },
+      {
+        "arm": "narrow",
+        "name": "separate-wide--ruled--narrow-2.png",
+        "index": 1,
+        "box": [
+          220,
+          115,
+          419,
+          176
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "6f42c42b86053e08ace8c7bde6096a270b6df754d0a1662fbc59c73ef9e9ef3e",
+        "raw": "\\[6t-2=15\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "separate-wide--ruled--wide-2.png",
+        "index": 1,
+        "box": [
+          13,
+          115,
+          627,
+          176
+        ],
+        "glyph_center": 0.499186,
+        "crop_sha256": "63ca9cc27099f43c979c2d573186763d8cde6bfcfe13764a907a153528534b05",
+        "raw": "\\[...}b=b\\]"
+      },
+      {
+        "arm": "narrow",
+        "name": "separate-wide--ruled--narrow-3.png",
+        "index": 2,
+        "box": [
+          273,
+          295,
+          366,
+          349
+        ],
+        "glyph_center": 0.5,
+        "crop_sha256": "de4bf9cbf1b38e0cb43e3f10555ae6652cf477c2fa2c9fdc12350b17c0ee6140",
+        "raw": "\\[t=3\\]"
+      },
+      {
+        "arm": "wide",
+        "name": "separate-wide--ruled--wide-3.png",
+        "index": 2,
+        "box": [
+          13,
+          295,
+          627,
+          349
+        ],
+        "glyph_center": 0.499186,
+        "crop_sha256": "32ff2db7fca844ff11a7283b592624325900bd9a6f43fcde5c2ef03d8fec6fb6",
+        "raw": "\\[\\div\\]"
+      }
+    ]
+  }
+]

@@ -165,3 +165,45 @@ or new held-out samples separately, and preserve literal wrong steps.
 [Raw crop and transcription results](close-03-results.json).
 Frozen input manifest SHA-256:
 `14b164053b8bac26d4f52703e17466368eb565d04b683cbd2fbab381c526d1ee`.
+
+## Width × notebook ruling diagnostic
+
+The previous ruled failures confounded the wide crop with ruling ink. This
+diagnostic re-renders the same four noisy underlying chains twice with
+identical math masks, background, blur and JPEG settings, toggling only
+the synthetic rules before overlaying the marks. Each row is repositioned
+once so its center is shared across both apertures (maximum 0.082 percentage
+points from the center). Both widths use exactly the same candidate y
+bounds and preserve all other math rows outside the crop. Narrow and wide
+widths match those observed in the previous study. This investigation
+explains possible failure mechanisms; it is not an evaluation of a new
+detector or independent handwriting.
+
+```sh
+python width_rule_ablation.py build frozen_width_rule_04
+YWHY_MODEL_CACHE="$PWD/model-cache" node page_recognize.mjs frozen_width_rule_04 > width-rule-04-local.json
+python width_rule_ablation.py score width-rule-04-local.json
+```
+
+If the same denominator is wrong in multiple arms, count the whole chain
+wrong in each. Do not infer correctness from the student's other lines
+or resolve ambiguous glyphs using algebra.
+
+| Synthetic ruling | Aperture | Exact rows | Exact chains |
+| --- | --- | ---: | ---: |
+| Off | 93–207 px | 10/12 | 3/4 |
+| Off | 614–615 px | 1/12 | 0/4 |
+| On | 93–207 px | 10/12 | 3/4 |
+| On | 614–615 px | 1/12 | 0/4 |
+
+The aperture change moved the result by nine rows in each condition;
+switching the rules off did not recover a complete solution from wide
+crops. The two wide arms got different single rows right. The paired
+test points to finding a tight horizontal crop before trying to erase
+notebook ruling. It does not establish that ruling never matters or
+that the recognizer handles all tightly cropped equations: the
+denominator `9` still became `g` in both narrow views on two related
+rows. The original OCR path is unchanged.
+
+[Raw diagnostic output](width-rule-04-results.json). Frozen manifest
+SHA-256: `753c35f51d5e42e15f93e01ad4466fd4adccda547b8d1b360f82c392e2130cb4`.
