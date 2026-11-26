@@ -1,5 +1,5 @@
 import { findEquationWitness, verifyRows, parseExpression } from './verify.mjs';
-import { checkOperationClaim, classifyTypedStep, checkTypedRepair, checkNeutralIntermediate, freshTaskForClaim, createTypedRetry, exposeTypedRetryHint, recordTypedRetry } from './operation_claim.mjs';
+import { checkOperationClaim, classifyTypedStep, checkTypedRepair, checkNeutralIntermediate, freshTaskForClaim, delayedTaskForClaim, createTypedRetry, exposeTypedRetryHint, recordTypedRetry } from './operation_claim.mjs';
 import { diagnoseStep, interpretProbe } from './diagnostic.mjs';
 
 import { curriculumReference } from './curriculum.mjs';
@@ -25,6 +25,7 @@ if (formulaPhoto) {
   $('anchor-text').textContent = 'I checked the full photo: every active line is present in order, from the original equation through my last written step.';
 }
 const delayedReview = createDelayedReview({store:() => window.localStorage});
+let displayedReviewKey = null;
 // The photo route uses a raw body. Keep headroom for a 4.5 MB ingress
 // and mirror this cap in ocr_server.py.
 const MAX_BYTES = 4_000_000;
@@ -100,6 +101,7 @@ function clearTypedRetry() {
   $('typed-retry-result').textContent = '';
   $('typed-retry-evidence').textContent = '';
   $('typed-retry-answer').value = '';
+  showDelayed();
 }
 function clearTypedRepairFlow() {
   typedRepairMode = null; typedRepairContext = null;
@@ -567,6 +569,7 @@ function showTypedRetry() {
     : hasAttempt
       ? 'No evaluable equation has been checked yet. Enter one before opening a hint. This record stays on this page only.'
       : 'No response recorded. Try once before opening a hint. This record stays on this page only.';
+  showDelayed();
 }
 $('typed-repair-answer').addEventListener('input', () => {
   $('typed-repair-feedback').textContent='';
@@ -879,20 +882,41 @@ $('retry-form').addEventListener('submit', e => {
   retrySession = recordRetry(retrySession,{text:$('retry-answer').value});showRetry();
 });
 
-function canSaveReview() {
-  return !!diagnosis?.probe && !$('retry').hidden && !!retrySession?.firstSuccess;
+function availableReview() {
+  if (!$('typed-retry').hidden && typedRetrySession?.firstSuccess && currentTypedActionIsLive(typedRepairContext)) {
+    const selected = delayedTaskForClaim(typedRepairContext.claim,{
+      confirmedRows:typedRepairContext.allRows.map(({text})=>({text,confirmed:true})),
+      repair:$('typed-repair-answer').value.trim(),
+      practiceId:typedRetryTask.id,
+    });
+    return selected ? {item:selected.id} : null;
+  }
+  return diagnosis?.probe && !$('retry').hidden && retrySession?.firstSuccess ? {} : null;
 }
-function showDelayed(state=delayedReview.inspect()) {
-  const offer = canSaveReview() && state.status==='empty';
+function showDelayed(state=delayedReview.inspect({includeKey:true})) {
+  if (state.status==='ready' && !state.key) {
+    const latest=delayedReview.inspect({includeKey:true});
+    const notes=latest.status==='ready' && latest.prompt===state.prompt
+      ? {needsReadable:state.needsReadable,stale:state.stale} : {};
+    state={...latest,...notes};
+  }
+  if ((state.key ?? null)!==displayedReviewKey || state.stale) $('delayed-answer').value='';
+  displayedReviewKey=state.key ?? null;
+  const offer = !!availableReview() && state.status==='empty';
   const ready = state.status==='ready';
+  const equation = state.format==='equation';
   const text = {
     empty: offer ? 'Save a different exercise to try without a hint tomorrow.' : '',
     waiting: state.dueAt ? 'Available after ' + new Date(state.dueAt).toLocaleString() + ' (this device’s clock).' : '',
-    ready: state.needsReadable ? 'Enter one readable expression without an equals sign. No response was recorded.' : 'One readable response will be recorded. No hints are shown for this question.',
+    ready: state.stale ? 'This review changed in another tab. No response was recorded.' : state.needsReadable
+      ? (equation ? 'Enter one readable equation. No response was recorded.' :
+        'Enter one readable expression without an equals sign. No response was recorded.')
+      : 'One readable response will be recorded. No hints are shown for this question.',
     complete: {
-      correct:'First readable answer: correct and fully simplified.',
-      'not-yet':'First readable answer: not equivalent to the original.',
+      correct:equation?'First readable answer: exact and shows the requested move.':'First readable answer: correct and fully simplified.',
+      'not-yet':equation?'First readable answer: changes the solution set.':'First readable answer: not equivalent to the original.',
       unfinished:'First readable answer: equivalent but not fully simplified.',
+      'equivalent-other':'First readable answer: preserves the solution set, but does not show the requested move.',
       'outside-supported-form':'First readable answer: outside the form this checker can score.',
     }[state.outcome],
     unavailable:'The saved review couldn’t be read or updated. No result can be confirmed. You can try deleting the saved review.',
@@ -903,11 +927,14 @@ function showDelayed(state=delayedReview.inspect()) {
   $('delayed-clear').hidden = state.status==='empty';
   $('delayed-status').textContent = text[state.status] || '';
   $('delayed-form').hidden = !ready;
-  $('delayed-prompt').textContent = ready ? 'Expand and simplify without an equals sign: ' + state.prompt : '';
+  $('delayed-answer-label').textContent = equation ? 'Your next equation' : 'Your expansion';
+  $('delayed-prompt').textContent = ready ? equation ? state.prompt + '. ' + state.instruction
+    : 'Expand and simplify without an equals sign: ' + state.prompt : '';
   if (!ready) $('delayed-answer').value = '';
 }
 $('delayed-save').addEventListener('click', () => {
-  if (canSaveReview()) showDelayed(delayedReview.optIn({consent:true}));
+  const offer=availableReview();
+  if (offer && !$('delayed-save').hidden) showDelayed(delayedReview.optIn({consent:true,...offer}));
 });
 $('delayed-refresh').addEventListener('click', () => showDelayed());
 $('delayed-clear').addEventListener('click', () => {
@@ -916,8 +943,8 @@ $('delayed-clear').addEventListener('click', () => {
 });
 $('delayed-form').addEventListener('submit', e => {
   e.preventDefault();
-  if ($('delayed-form').hidden) return;
-  showDelayed(delayedReview.submit($('delayed-answer').value));
+  if ($('delayed-form').hidden || !displayedReviewKey) return;
+  showDelayed(delayedReview.submit($('delayed-answer').value,{expectedKey:displayedReviewKey}));
 });
 globalThis.addEventListener?.('focus', () => showDelayed());
 globalThis.addEventListener?.('storage', event => {

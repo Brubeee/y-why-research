@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {TYPED_RETRY_TASKS,freshTaskForClaim,createTypedRetry,exposeTypedRetryHint,recordTypedRetry} from './operation_claim.mjs';
+import {TYPED_RETRY_TASKS,freshTaskForClaim,delayedTaskForClaim,checkTypedRepair,createTypedRetry,exposeTypedRetryHint,recordTypedRetry} from './operation_claim.mjs';
 
 const attempt=(state,text)=>recordTypedRetry(state,{text});
 
@@ -86,5 +86,21 @@ test('retries exclude exact, renamed and number-swapped written templates and al
     assert.equal(attempt(createTypedRetry(task),answer).firstSuccess?.mode,'no-hint');
     assert.equal(freshTaskForClaim({kind},{...context,seenIds:[alternate]}),null);
     assert.equal(freshTaskForClaim({kind},{...context,confirmedRows:[...context.confirmedRows,{text:task.source,confirmed:true}]}),null);
+  }
+});
+
+test('one delayed item per family is distinct from both the prior work and immediate practice',()=>{
+  for(const [kind,practiceId,answer] of [
+    ['subtract','balance-variable-both-sides-v1','4(2s+3)+12=3s'],
+    ['distribution-left','distribution-outside-addend-v1','a+4=16−6a'],
+    ['divide','fraction-variable-both-sides-v1','5h−7=2(h+3)'],
+  ]){
+    const context={confirmedRows:[{text:'2x=8',confirmed:true},{text:'x=3',confirmed:true}],repair:'x=4',practiceId};
+    const task=delayedTaskForClaim({kind},context);
+    assert.ok(task);
+    assert.equal(checkTypedRepair({before:{text:task.source,confirmed:true},candidate:{text:answer,confirmed:true},claim:task.claim}).status,'supported');
+    assert.equal(delayedTaskForClaim({kind},{...context,practiceId:'unknown'}),null);
+    assert.equal(delayedTaskForClaim({kind},{...context,
+      confirmedRows:[...context.confirmedRows,{text:task.source,confirmed:true}]}),null);
   }
 });

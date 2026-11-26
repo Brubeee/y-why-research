@@ -142,3 +142,21 @@ For typed-only review, serve the repository root with
 `python -m http.server 8766 --bind 127.0.0.1` and open
 `http://127.0.0.1:8766/paper_lab/`. That static server does not provide OCR;
 use the local formula worker above to exercise both entry routes.
+
+### Optional next-day equation practice
+
+After a supported repair and an exact correct immediate practice step, either
+confirmed entry route can offer one additional authored problem for tomorrow.
+The offer excludes a known written template from the current chain, its repair,
+and that session's immediate practice. No offer appears when there is no
+distinct reviewed item. Today's evidence stays separate from the next-day
+result, even when today's success followed a hint.
+
+Saving requires a click. The browser stores only a version, authored item ID,
+due time and coarse first-readable outcome. It stores no worksheet image,
+transcription, answer, or account information for this feature. Return in the
+same browser after 24 hours (device clock); there is no reminder, account sync,
+or hint. **Clear** removes current work, while **Delete saved review** separately
+removes the browser record. The app honors existing expression reviews. Results
+are not a mastery or retention score. Simultaneous use across tabs is not a
+transactional assessment system.

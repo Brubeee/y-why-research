@@ -349,6 +349,27 @@ const typedRetry = (() => {
       hint:'Multiply the entire left side and the entire fraction on the right by 2.',
     }),
   });
+  const delayed = Object.freeze({
+    distribution:freeze({
+      id:'review-distribution-variable-other-side-v2',
+      source:'a+4=19−3(2a+1)', target:'a+4=16−6a',
+      claim:{kind:'distribution-right'},
+      instruction:'Distribute the factor on the right and simplify one intermediate line.',
+    }),
+    balance:freeze({
+      id:'review-balance-grouped-left-v2',
+      source:'4(2s+3)+5=3s−7', target:'4(2s+3)+12=3s',
+      claim:{kind:'add',constant:'7'},
+      instruction:'Add 7 to both sides and write one intermediate equation.',
+    }),
+    fraction:freeze({
+      id:'review-fractions-both-sides-v2',
+      source:'(5h−7)/4=(h+3)/2', target:'5h−7=2(h+3)',
+      claim:{kind:'multiply',constant:'4'},
+      instruction:'Multiply both sides by 4 and write one intermediate equation.',
+    }),
+  });
+  const delayedTaskById = id => Object.values(delayed).find(item=>item.id===id) ?? null;
   const bank = [...Object.values(tasks),...Object.values(alternates)];
   // A deliberately conservative written-template exclusion. This is not
   // algebraic equivalence: sharing an answer does not make two tasks the same.
@@ -357,14 +378,30 @@ const typedRetry = (() => {
       .replace(/\s+/g,'').replace(/[A-Za-z]/g,'v').replace(/(?:\d+\.?\d*|\.\d+)/g,'#')
       .replace(/(#[*])(?=[v(])/g,'#').split('=').sort().join('=');
   }
-  function freshTaskForClaim(claim,{confirmedRows,repair,seenIds=[]}={}) {
-    const key = byClaim[claim?.kind];
+  function validFamily(claim,{confirmedRows,repair}={}) {
+    const key = Object.hasOwn(byClaim,claim?.kind) ? byClaim[claim.kind] : null;
     if (!key || !Array.isArray(confirmedRows) || confirmedRows.length < 2 ||
         !confirmedRows.every(row => row?.confirmed && typeof row.text==='string' && parseEquation(row.text).ok) ||
         typeof repair !== 'string' || !parseEquation(repair).ok) return null;
     const excluded = new Set([...confirmedRows.map(row=>templateKey(row.text)),templateKey(repair)]);
-    return [tasks[key],alternates[key]].find(task=>!seenIds.includes(task.id) &&
-      !excluded.has(templateKey(task.source)) && !excluded.has(templateKey(task.target))) ?? null;
+    return {key,excluded};
+  }
+  const distinctFrom = (item,excluded) => !excluded.has(templateKey(item.source)) &&
+    !excluded.has(templateKey(item.target));
+  function freshTaskForClaim(claim,{confirmedRows,repair,seenIds=[]}={}) {
+    const context=validFamily(claim,{confirmedRows,repair});
+    if (!context) return null;
+    const {key,excluded}=context;
+    return [tasks[key],alternates[key]].find(task=>!seenIds.includes(task.id) && distinctFrom(task,excluded)) ?? null;
+  }
+  function delayedTaskForClaim(claim,{confirmedRows,repair,practiceId}={}) {
+    const context=validFamily(claim,{confirmedRows,repair});
+    if (!context) return null;
+    const {key,excluded}=context;
+    const practice=[tasks[key],alternates[key]].find(item=>item.id===practiceId);
+    if (!practice) return null;
+    excluded.add(templateKey(practice.source)); excluded.add(templateKey(practice.target));
+    return distinctFrom(delayed[key],excluded) ? delayed[key] : null;
   }
   function createTypedRetry(task) {
     if (!task || !bank.some(item => item.id === task.id)) return null;
@@ -402,7 +439,7 @@ const typedRetry = (() => {
     };
   }
 
-  return {tasks,freshTaskForClaim,createTypedRetry,exposeTypedRetryHint,recordTypedRetry};
+  return {tasks,freshTaskForClaim,delayedTaskForClaim,delayedTaskById,createTypedRetry,exposeTypedRetryHint,recordTypedRetry};
 })();
 
 export const TYPED_RETRY_TASKS = typedRetry.tasks;
@@ -410,3 +447,6 @@ export const freshTaskForClaim = typedRetry.freshTaskForClaim;
 export const createTypedRetry = typedRetry.createTypedRetry;
 export const exposeTypedRetryHint = typedRetry.exposeTypedRetryHint;
 export const recordTypedRetry = typedRetry.recordTypedRetry;
+
+export const delayedTaskForClaim = typedRetry.delayedTaskForClaim;
+export const delayedTaskById = typedRetry.delayedTaskById;

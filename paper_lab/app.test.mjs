@@ -1353,9 +1353,12 @@ test('live loopback formula worker to verified first changed line', {
 test('typed and attested photo routes replace a repeated repair with distinct independent practice',async t=>{
   const oldFetch=globalThis.fetch;
   t.after(()=>{ get('clear').dispatch('click'); delete window.location; globalThis.fetch=oldFetch; });
+  const oldClock=clockMs;
+  t.after(()=>{local.clear();clockMs=oldClock;windowEvents.get('focus')?.();});
   for (const source of ['typed','formula']) {
     if (source==='formula') window.location={search:'?formula=1'};
     await import('./app.mjs?retry-collision-'+source);
+    local.clear();clockMs=100;
     get('clear').dispatch('click');
     if (source==='typed') {
       get('typed-work').value='3m+5=2m+11\nm+5=9';
@@ -1393,6 +1396,7 @@ test('typed and attested photo routes replace a repeated repair with distinct in
     get('typed-retry-answer').value='17=3(2−k)+k';get('typed-retry-form').dispatch('submit');
     assert.match(get('typed-retry-evidence').textContent,/First supported response: before help/);
     if (source==='formula') {
+      assert.equal(get('delayed-save').hidden,false);
       const before=get('typed-retry-evidence').textContent;
       get('typed-repair-form').dispatch('submit');
       assert.equal(get('typed-retry-evidence').textContent,before);
@@ -1400,6 +1404,30 @@ test('typed and attested photo routes replace a repeated repair with distinct in
       assert.equal(get('typed-retry').hidden,true);
       get('typed-retry-form').dispatch('submit');
       assert.equal(get('typed-retry-evidence').textContent,'');
+    }
+    assert.equal(get('delayed-save').hidden,source==='formula',
+      'only completed, live practice may offer a delayed item');
+    if (source==='typed') {
+      assert.equal(local.size,0,'no persistence before opt-in');
+      get('delayed-save').dispatch('click');
+      assert.equal(JSON.parse(local.get(REVIEW_KEY)).item,'review-balance-grouped-left-v2');
+      assert.equal(get('delayed-form').hidden,true);
+      get('clear').dispatch('click');
+      assert.ok(local.get(REVIEW_KEY),'clearing current work does not delete a saved review');
+      const dueAt=REVIEW_DELAY_MS+100;
+      clockMs=dueAt;
+      await import('./app.mjs?typed-delayed-reload');
+      assert.equal(get('delayed-form').hidden,false);
+      assert.match(get('delayed-prompt').textContent,/4\(2s\+3\)\+5=3s−7/);
+      assert.equal(get('delayed-answer-label').textContent,'Your next equation');
+      const replacement={...JSON.parse(local.get(REVIEW_KEY)),item:'review-fractions-both-sides-v2'};
+      local.set(REVIEW_KEY,JSON.stringify(replacement)); // storage event may still be queued
+      get('delayed-answer').value='4(2s+3)+12=3s';get('delayed-form').dispatch('submit');
+      assert.match(get('delayed-status').textContent,/No response was recorded/);
+      assert.equal(get('delayed-answer').value,'');
+      assert.equal(JSON.parse(local.get(REVIEW_KEY)).outcome,null);
+      get('delayed-clear').dispatch('click');
+      assert.equal(local.has(REVIEW_KEY),false);
     }
   }
 });
