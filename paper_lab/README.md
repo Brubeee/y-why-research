@@ -113,4 +113,32 @@ To run the optional full app-listener smoke with the live worker, set
 `YWHY_FORMULA_SMOKE_PORT` to the server port and `YWHY_FORMULA_SMOKE_JPEG` to
 a synthetic JPEG showing `7x+4=53`, `7x=48`, `x=7` in order, then run
 `node --test paper_lab/app.test.mjs`. This is a DOM harness, not a browser or
-handset test.
+handset test. The smoke proceeds from an intact transcription through a
+declared subtraction, verified repair, and independent practice.
+
+## Shared typed and formula-photo tutoring candidate
+
+Typed input and fully attested formula photos use the same exact checker and
+declared-operation tutor. A written step is never attributed to a guessed
+operation. The app shows the actual preceding line and an independently
+evaluated substitution when available. It does not list the anchor's solution.
+A supported one-step repair can open a separate authored practice equation.
+The selection excludes written templates from the complete confirmed chain
+and accepted repair, and never reuses an item previously shown on the current
+page. The check is conservative, not a claim of universal problem similarity.
+If neither item is eligible, the app says so instead of recording a repeat
+as independent. Hints are available only after an evaluable attempt. Success
+on a later attempt is not recorded as first-attempt success. The default
+Tesseract workflow is unchanged.
+
+The typed tutoring, declared-operation checks, and attempt recorder are
+adapted from Manan and Vihan's
+[Diagnostic Studio research branch](https://github.com/Brubeee/y-why-research/tree/906f9d4992b87f164d8a9fcb9cb945b0bfd2142f/paper_lab).
+That branch's notes describe the student decisions, Codex assistance, and
+experimental limits. This integration adds no learned selector and makes no
+claim of learning improvement.
+
+For typed-only review, serve the repository root with
+`python -m http.server 8766 --bind 127.0.0.1` and open
+`http://127.0.0.1:8766/paper_lab/`. That static server does not provide OCR;
+use the local formula worker above to exercise both entry routes.

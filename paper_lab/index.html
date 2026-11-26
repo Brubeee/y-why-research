@@ -12,12 +12,19 @@
 <body>
 <main>
   <header class="mast"><strong class="mark">Y?</strong><span>Paper Lab · R&amp;D reference</span><a href="#profile">Course profile</a></header>
-  <section class="intro"><p class="eyebrow">01 / Test-paper workflow</p><h1>Your work.<br><em>Your next move.</em></h1><p>Photograph a practice paper, confirm how it was read, then check one chain of algebra steps. The checker can spot a changed solution; it can’t read your mind.</p></section>
+  <section class="intro"><p class="eyebrow">01 / Diagnostic Studio · R&amp;D</p><h1>Your work.<br><em>Your next move.</em></h1><p>Type a short algebra solution or photograph a practice paper. Confirm the lines, then inspect the first step that changes the solution set. The checker can spot a change; it can’t read your mind.</p></section>
   <div class="workbench">
     <section class="panel" aria-labelledby="photo-heading">
-      <div class="step"><span>01</span><h2 id="photo-heading">Start with the paper</h2></div>
-      <p>Choose a JPEG or PNG, up to 4 MB. Typed lines are also supported. Only use anonymous practice pages in this research build.</p>
+      <div class="step"><span>01</span><h2 id="photo-heading">Start your work</h2></div>
+      <p>Choose a JPEG or PNG, up to 4 MB, or type a short chain below. Only use anonymous practice pages in this research build.</p>
       <div class="actions"><label class="primary file">Choose photo<input id="photo" type="file" accept="image/png,image/jpeg" capture="environment"></label><button id="example" type="button">Load a typed example</button><button id="clear" type="button">Clear</button></div>
+      <div class="typed-entry">
+        <h3>Or type a short solution</h3>
+        <label for="typed-work">Original equation first, then one equation per line</label>
+        <textarea id="typed-work" rows="5" maxlength="2200" spellcheck="false" placeholder="Type 2–12 algebra steps"></textarea>
+        <div class="actions"><button id="confirm-typed" type="button" class="primary">Confirm and check typed chain</button><button id="edit-typed" type="button" hidden>Edit typed chain</button></div>
+        <p class="fine">Confirm only after checking each line and its order. No photo or OCR is used for typed work.</p>
+      </div>
       <p id="scan-status" class="status" role="status">No photo loaded. OCR drafts are never treated as verified maths.</p>
       <div id="photo-view" class="photo" hidden><img id="image" alt="Your selected practice-paper photo"><span id="region" hidden></span><span id="crop" hidden></span></div>
       <div class="actions" id="region-tools" hidden><button id="select-region" type="button">Select one question</button><button id="read-region" type="button" disabled>Read selected area</button><button id="read-full" type="button">Read full photo</button></div>
@@ -35,7 +42,61 @@
   <section class="panel result" aria-labelledby="result-heading">
     <div class="step"><span>03</span><h2 id="result-heading">See what changed</h2></div>
     <div id="verdict" role="status"><p>Confirmed steps will appear here.</p></div>
-    <section id="probe" class="probe" hidden aria-labelledby="probe-heading"><h3 id="probe-heading">One short follow-up</h3><p id="probe-question"></p><form id="probe-form"><label for="answer">Your expansion</label><div class="actions"><input id="answer" maxlength="100" autocomplete="off" ><button class="primary" type="submit">Check response</button></div></form><button id="probe-skip" type="button">Skip to practice</button><div id="probe-result" role="status"></div></section>
+    <section id="probe" class="probe" hidden aria-labelledby="probe-heading">
+      <h3 id="probe-heading">One short follow-up</h3>
+      <p id="probe-question" aria-live="polite"></p>
+      <section id="operation-claim-panel" class="operation-claim" hidden aria-label="Check a declared operation">
+        <form id="operation-claim-form">
+          <label for="operation-kind">Which single move did you use for this step?</label>
+          <div class="actions">
+            <select id="operation-kind">
+              <option value="">Choose one move</option>
+              <option value="distribution-left">Distribute a factor on the left</option>
+              <option value="distribution-right">Distribute a factor on the right</option>
+              <option value="add">Add to both sides</option>
+              <option value="subtract">Subtract from both sides</option>
+              <option value="multiply">Multiply both sides by</option>
+              <option value="divide">Divide both sides by</option>
+              <option value="other">Something else / Not sure</option>
+              <option value="combined">More than one move</option>
+            </select>
+            <div id="operation-constant-field" hidden>
+              <label for="operation-constant">Exact value or term</label>
+              <input id="operation-constant" type="text" maxlength="80" autocomplete="off" placeholder="6, 1/2, or 2x">
+            </div>
+            <button class="primary" type="submit">Continue with this move</button>
+          </div>
+        </form>
+        <p id="operation-feedback" role="status" aria-live="polite"></p>
+        <form id="typed-repair-form" hidden>
+          <p id="typed-repair-question"></p>
+          <label for="typed-repair-answer">One corrected intermediate equation</label>
+          <div class="actions">
+            <input id="typed-repair-answer" type="text" maxlength="180" autocomplete="off" spellcheck="false">
+            <button class="primary" type="submit">Check this line</button>
+          </div>
+        </form>
+        <p id="typed-repair-feedback" role="status" aria-live="polite"></p>
+        <section id="typed-retry" class="typed-retry" hidden aria-labelledby="typed-retry-heading">
+          <h4 id="typed-retry-heading">Try the same idea in a fresh problem</h4>
+          <p id="typed-retry-question"></p>
+          <form id="typed-retry-form">
+            <label for="typed-retry-answer">One next equation</label>
+            <div class="actions">
+              <input id="typed-retry-answer" type="text" maxlength="180" autocomplete="off" spellcheck="false">
+              <button id="typed-retry-submit" class="primary" type="submit">Check first response</button>
+              <button id="typed-retry-hint" type="button" disabled>Show one hint</button>
+            </div>
+          </form>
+          <p id="typed-retry-hint-text" hidden></p>
+          <p id="typed-retry-result" role="status" aria-live="polite"></p>
+          <p id="typed-retry-evidence" class="fine"></p>
+        </section>
+      </section>
+      <form id="probe-form"><label for="answer">Your expansion</label><div class="actions"><input id="answer" maxlength="100" autocomplete="off"><button class="primary" type="submit">Check response</button></div></form>
+      <button id="probe-skip" type="button">Skip to practice</button>
+      <div id="probe-result" role="status"></div>
+    </section>
   </section>
   <section class="panel result" id="retry" hidden aria-labelledby="retry-heading">
     <div class="step"><span>04</span><h2 id="retry-heading">Try the skill again</h2></div>

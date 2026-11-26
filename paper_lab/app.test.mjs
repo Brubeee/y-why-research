@@ -84,6 +84,7 @@ test('OCR draft cannot mark; confirmation exposes first changed step, a separati
   assert.match(get('verdict').words(),/Line 3 · Not checked/);
   assert.match(get('probe-question').textContent,/−3\(y−2\)/);
   assert.equal(get('probe').hidden,false);
+  assert.equal(get('operation-claim-panel').hidden,true,'the declared-operation form is limited to the typed path');
   get('answer').value='-3y-6'; get('probe-form').dispatch('submit');
   assert.match(get('probe-result').words(),/not a confirmed misconception/);
   assert.match(get('probe-result').words(),/Exact expansion: −3y\+6/);
@@ -93,6 +94,196 @@ test('OCR draft cannot mark; confirmation exposes first changed step, a separati
   assert.match(get('verdict').words(),/No verdict was issued/);
   assert.equal(get('probe').hidden,true);
   get('clear').dispatch('click');
+});
+
+test('typed distribution repair reaches a different fresh problem and edits clear every later response',async t=>{
+  t.after(()=>get('clear').dispatch('click'));
+  await import('./app.mjs?typed-diagnostic-studio');
+  get('clear').dispatch('click');
+  get('typed-work').value='−(x−4)=12\n−x−4=12';
+  get('typed-work').dispatch('input');
+  get('confirm-typed').dispatch('click');
+  assert.equal(get('typed-work').disabled,true);
+  assert.match(get('verdict').words(),/Line 2 · First verified change/);
+  assert.match(get('verdict').words(),/First changed step/);
+  assert.match(get('verdict').words(),/Line 1 · exact line before/);
+  assert.match(get('verdict').words(),/Line 2 · first verified change/);
+  assert.match(get('verdict').words(),/x = -16/);
+  assert.match(get('verdict').words(),/20 ≠ 12/);
+  assert.match(get('verdict').words(),/12 = 12/);
+  assert.doesNotMatch(get('verdict').words(),/x\s*=\s*-8\b/);
+  assert.equal(get('probe').hidden,false);
+  assert.match(get('probe-question').textContent,/Choose one move/);
+  assert.doesNotMatch(get('probe-question').textContent,/x\s*=\s*-8\b/);
+  assert.equal(get('operation-claim-panel').hidden,false);
+  assert.equal(get('typed-repair-form').hidden,true);
+
+  get('operation-kind').value='distribution-left';get('operation-kind').dispatch('change');
+  get('operation-claim-form').dispatch('submit');
+  assert.equal(get('typed-repair-form').hidden,false);
+  assert.match(get('typed-repair-question').textContent,/distribute the factor on the left/i);
+  get('typed-repair-answer').value='−x+4=12';get('typed-repair-form').dispatch('submit');
+  assert.match(get('typed-repair-feedback').textContent,/preserves the preceding solution set and shows the declared move/);
+  assert.equal(get('typed-retry').hidden,false);
+  assert.match(get('typed-retry-question').textContent,/3−5\(2z\+1\)=8/);
+  assert.equal(get('typed-retry-hint').disabled,true,'the first retry response is captured before a hint is available');
+  assert.equal(get('typed-retry-submit').textContent,'Check first response');
+  get('typed-retry-answer').value='not an equation';get('typed-retry-form').dispatch('submit');
+  assert.equal(get('typed-retry-hint').disabled,true,'unparseable text cannot unlock the hint');
+  assert.match(get('typed-retry-result').textContent,/outside the supported exact check/);
+  assert.match(get('typed-retry-evidence').textContent,/No evaluable equation has been checked yet/);
+  assert.equal(get('typed-retry-submit').textContent,'Check first response');
+  get('typed-retry-answer').value='3−10z−5=8';get('typed-retry-form').dispatch('submit');
+  assert.match(get('typed-retry-evidence').textContent,/First evaluable response before help: The exact equation and declared move match/);
+  assert.match(get('typed-retry-evidence').textContent,/First supported response: before help/);
+
+  const changed=get('rows').children[1];
+  changed.children[1].value='−x+4=12';
+  changed.children[1].dispatch('input');
+  assert.equal(get('probe').hidden,true);
+  assert.equal(get('typed-retry').hidden,true,'editing the source closes the fresh retry');
+  assert.equal(get('typed-retry-evidence').textContent,'');
+  assert.doesNotMatch(get('verdict').words(),/One exact value/);
+  assert.equal(changed.children[2].children[0].checked,false);
+  changed.children[2].children[0].checked=true;
+  changed.children[2].children[0].dispatch('change');
+  get('verify').dispatch('click');
+  assert.doesNotMatch(get('verdict').words(),/First changed step|One exact value/);
+  assert.equal(get('probe').hidden,true);
+});
+
+test('weak-evidence typed change uses the declared division and checks a predecessor-specific repair',async t=>{
+  t.after(()=>get('clear').dispatch('click'));
+  await import('./app.mjs?typed-clarification');
+  get('clear').dispatch('click');
+  get('typed-work').value='2(x+3)=14\n2x+3=7';
+  get('typed-work').dispatch('input');
+  get('confirm-typed').dispatch('click');
+  const verdict=get('verdict').words();
+  assert.match(verdict,/Line 1 · exact line before/);
+  assert.match(verdict,/2\(x\+3\)=14/);
+  assert.match(verdict,/Line 2 · first verified change/);
+  assert.match(verdict,/2x\+3=7/);
+  assert.match(verdict,/One exact value to check/);
+  assert.match(verdict,/10 ≠ 14/);
+  assert.match(verdict,/7 = 7/);
+  assert.equal(get('probe').hidden,false);
+  assert.match(get('probe-question').textContent,/Choose one move/);
+  assert.equal(get('probe-form').hidden,true);
+  assert.equal(get('operation-claim-panel').hidden,false);
+  assert.equal(get('operation-feedback').textContent,'');
+  assert.equal(get('probe-skip').hidden,true);
+  assert.equal(get('retry').hidden,true);
+  get('operation-kind').value='divide';get('operation-kind').dispatch('change');
+  get('operation-constant').value='2';get('operation-constant').dispatch('input');
+  get('operation-claim-form').dispatch('submit');
+  assert.match(get('operation-feedback').textContent,/matches the declared action on the right side/i);
+  get('typed-repair-answer').value='x+3=7';get('typed-repair-form').dispatch('submit');
+  assert.match(get('typed-repair-feedback').textContent,/preserves the preceding solution set/);
+  assert.equal(get('typed-retry').hidden,false);
+});
+
+test('same changed typed pair routes subtract and divide claims to exact side checks',async t=>{
+  t.after(()=>get('clear').dispatch('click'));
+  await import('./app.mjs?typed-declared-operation');
+  get('clear').dispatch('click');
+  get('typed-work').value='2x+6=14\n2x=9';
+  get('typed-work').dispatch('input');
+  get('confirm-typed').dispatch('click');
+  assert.equal(get('operation-claim-panel').hidden,false);
+
+  get('operation-kind').value='subtract';get('operation-kind').dispatch('change');
+  get('operation-constant').value='6';get('operation-constant').dispatch('input');
+  get('operation-claim-form').dispatch('submit');
+  let feedback=get('operation-feedback').textContent;
+  assert.match(feedback,/matches the declared action on the left side/i);
+  assert.match(get('typed-repair-question').textContent,/subtract 6 from both sides/i);
+  assert.equal(get('typed-repair-form').hidden,false);
+  assert.doesNotMatch(feedback,/x\s*=\s*4\b/);
+  assert.match(get('verdict').words(),/One exact value to check/,'the original verified witness remains visible');
+  get('typed-repair-answer').value='2x=8';get('typed-repair-form').dispatch('submit');
+  assert.equal(get('typed-retry').hidden,false);
+  get('typed-retry-answer').value='m+5=10';get('typed-retry-form').dispatch('submit');
+  assert.match(get('typed-retry-result').textContent,/changes the solution set/);
+  assert.equal(get('typed-retry-hint').disabled,false,'help becomes available only after the first response');
+  assert.equal(get('typed-retry-submit').textContent,'Check another response');
+  get('typed-retry-hint').dispatch('click');
+  assert.equal(get('typed-retry-hint-text').hidden,false);
+  assert.equal(get('typed-retry-submit').textContent,'Check aided correction');
+  get('typed-retry-answer').value='m+5=11';get('typed-retry-form').dispatch('submit');
+  assert.match(get('typed-retry-evidence').textContent,/First evaluable response before help: The response changes the solution set/);
+  assert.match(get('typed-retry-evidence').textContent,/First supported response: after a hint/);
+
+  get('operation-kind').value='divide';get('operation-kind').dispatch('change');
+  assert.equal(get('operation-feedback').textContent,'','changing the declared action clears prior feedback');
+  get('operation-constant').value='2';get('operation-constant').dispatch('input');
+  get('operation-claim-form').dispatch('submit');
+  feedback=get('operation-feedback').textContent;
+  assert.match(feedback,/Neither side matches that single action/i);
+  assert.match(get('typed-repair-question').textContent,/neutral intermediate equation/i);
+  assert.equal(get('typed-retry').hidden,true,'an ambiguous action does not produce a fresh retry');
+  assert.doesNotMatch(feedback,/x\s*=\s*4\b/);
+
+  get('operation-kind').value='other';get('operation-kind').dispatch('change');
+  assert.equal(get('operation-feedback').textContent,'');
+  get('operation-claim-form').dispatch('submit');
+  assert.match(get('operation-feedback').textContent,/cannot separate one supported move/i);
+  assert.equal(get('typed-repair-form').hidden,false,'not sure gets a neutral line, not an inferred operation');
+
+  const source=get('typed-work').value;
+  get('edit-typed').dispatch('click');
+  assert.equal(get('operation-claim-panel').hidden,true);
+  assert.equal(get('operation-feedback').textContent,'');
+  get('confirm-typed').dispatch('click');
+  assert.equal(get('typed-work').value,source);
+  assert.equal(get('operation-claim-panel').hidden,false);
+  assert.equal(get('operation-feedback').textContent,'','reconfirmation cannot restore old claim feedback');
+  assert.equal(get('operation-kind').value,'');
+  assert.equal(get('operation-constant').value,'');
+});
+
+test('typed retry labels a second pre-hint correction as after feedback',async t=>{
+  t.after(()=>get('clear').dispatch('click'));
+  await import('./app.mjs?typed-after-feedback');
+  get('clear').dispatch('click');
+  get('typed-work').value='2x+6=14\n2x=9';
+  get('typed-work').dispatch('input');
+  get('confirm-typed').dispatch('click');
+  get('operation-kind').value='subtract';get('operation-kind').dispatch('change');
+  get('operation-constant').value='6';get('operation-constant').dispatch('input');
+  get('operation-claim-form').dispatch('submit');
+  get('typed-repair-answer').value='2x=8';get('typed-repair-form').dispatch('submit');
+  get('typed-retry-answer').value='m+5=10';get('typed-retry-form').dispatch('submit');
+  get('typed-retry-answer').value='m+5=11';get('typed-retry-form').dispatch('submit');
+  assert.match(get('typed-retry-evidence').textContent,/First evaluable response before help: The response changes the solution set/);
+  assert.match(get('typed-retry-evidence').textContent,/First supported response: after feedback/);
+  assert.equal(get('typed-retry-hint').disabled,false,'the hint may follow the first evaluable response');
+});
+
+test('typed unsupported chains and unresolved prefixes never open witness or follow-up',async t=>{
+  t.after(()=>get('clear').dispatch('click'));
+  await import('./app.mjs?typed-gates');
+  get('clear').dispatch('click');
+  get('typed-work').value='2x=8\nx^2=16\nx=7';
+  get('typed-work').dispatch('input');
+  get('confirm-typed').dispatch('click');
+  assert.match(get('verdict').words(),/Cannot check this line/);
+  assert.match(get('verdict').words(),/Not checked/);
+  assert.doesNotMatch(get('verdict').words(),/One exact value|First changed step/);
+  assert.equal(get('probe').hidden,true);
+  assert.equal(get('operation-claim-panel').hidden,true);
+
+  get('clear').dispatch('click');
+  get('typed-work').value='−(x−4)=12\n−x−4=12';
+  get('typed-work').dispatch('input');
+  get('confirm-typed').dispatch('click');
+  const confirmation=get('rows').children[1].children[2].children[0];
+  confirmation.checked=false;confirmation.dispatch('change');
+  get('verify').dispatch('click');
+  assert.match(get('verdict').words(),/Confirm this transcription/);
+  assert.doesNotMatch(get('verdict').words(),/One exact value|First changed step/);
+  assert.equal(get('probe').hidden,true);
+  assert.equal(get('operation-claim-panel').hidden,true);
 });
 
 test('partial crop keeps the source visible, maps boxes, withholds a whole-question verdict, and clears consent on reread', async () => {
@@ -527,7 +718,7 @@ test('hidden practice events cannot coach; neutral retries do not consume; an un
   get('verify').dispatch('click');
   assert.equal(result.words(),first);
 });
-test('skip unlocks practice only and the hint and skip survive exact recheck and same-page edits',async()=>{
+test('skip and retry are cleared by edits, and stale separator feedback stays closed',async()=>{
   const rows=await startSeparator('separator-skip');
   const result=get('probe-result');
   get('probe-skip').dispatch('click');
@@ -547,10 +738,10 @@ test('skip unlocks practice only and the hint and skip survive exact recheck and
   const confirm=rows[1].children[2].children[0];confirm.checked=true;confirm.dispatch('change');
   get('verify').dispatch('click');
   assert.equal(get('probe-form').hidden,true);
-  assert.equal(get('retry-hint-text').hidden,false);
-  assert.match(result.words(),/Separator skipped/);
-  get('retry-answer').value='14-8z';get('retry-form').dispatch('submit');
-  assert.match(get('retry-evidence').textContent,/followed a hint/);
+  assert.equal(get('retry').hidden,true);
+  assert.equal(get('retry-hint-text').hidden,true);
+  assert.match(result.words(),/no evidence was recorded for this source/i);
+  assert.doesNotMatch(result.words(),/Separator skipped|Earlier first response/);
 });
 test('first modeled evidence is immutable and never attached to a newly verified pair after editing',async()=>{
   const rows=await startSeparator('separator-modeled');
@@ -573,6 +764,29 @@ test('first modeled evidence is immutable and never attached to a newly verified
   assert.equal(get('probe-form').hidden,true);
   assert.match(result.words(),/no evidence was recorded for this source/i);
   assert.doesNotMatch(result.words(),/Exact expansion|matches one simulated rule/);
+});
+
+test('editing and reconfirming identical text cannot restore a prior probe response or retry',async()=>{
+  const rows=await startSeparator('separator-identical-reconfirm');
+  sendProbe('-3y-6');
+  const first=get('probe-result').words();
+  assert.match(first,/not a confirmed misconception/);
+  assert.equal(get('retry').hidden,false);
+  get('retry-hint').dispatch('click');
+  assert.equal(get('retry-hint-text').hidden,false);
+
+  const field=rows[1].children[1];
+  field.value='-x-3=12';field.dispatch('input');
+  field.value='-x-4=12';field.dispatch('input');
+  const confirm=rows[1].children[2].children[0];confirm.checked=true;confirm.dispatch('change');
+  get('verify').dispatch('click');
+
+  assert.equal(get('probe-form').hidden,true);
+  assert.match(get('probe-result').words(),/no evidence was recorded for this source/i);
+  assert.doesNotMatch(get('probe-result').words(),/Earlier first response|Exact expansion|matches one simulated rule/);
+  assert.equal(get('retry').hidden,true);
+  assert.equal(get('retry-hint-text').hidden,true);
+  assert.equal(get('retry-evidence').textContent,'');
 });
 
 test('a cancelled picker or rejected MIME, empty, or oversize selection preserves confirmed photo work',async t=>{
@@ -1125,5 +1339,86 @@ test('live loopback formula worker to verified first changed line', {
   get('anchor-check').checked=true;get('anchor-check').dispatch('change');
   get('verify').dispatch('click');
   assert.match(get('verdict').words(),/Line 2 · First verified change/);
+  get('operation-kind').value='subtract';get('operation-kind').dispatch('change');
+  get('operation-constant').value='4';get('operation-constant').dispatch('input');
+  get('operation-claim-form').dispatch('submit');
+  assert.equal(get('typed-repair-form').hidden,false);
+  get('typed-repair-answer').value='7x=49';get('typed-repair-form').dispatch('submit');
+  assert.match(get('typed-retry-question').textContent,/3m\+5=2m\+11/);
+  get('typed-retry-answer').value='m+5=11';get('typed-retry-form').dispatch('submit');
+  assert.match(get('typed-retry-evidence').textContent,/First supported response: before help/);
   get('clear').dispatch('click');
+});
+
+test('typed and attested photo routes replace a repeated repair with distinct independent practice',async t=>{
+  const oldFetch=globalThis.fetch;
+  t.after(()=>{ get('clear').dispatch('click'); delete window.location; globalThis.fetch=oldFetch; });
+  for (const source of ['typed','formula']) {
+    if (source==='formula') window.location={search:'?formula=1'};
+    await import('./app.mjs?retry-collision-'+source);
+    get('clear').dispatch('click');
+    if (source==='typed') {
+      get('typed-work').value='3m+5=2m+11\nm+5=9';
+      get('confirm-typed').dispatch('click');
+    } else {
+      globalThis.fetch=async (url)=>{
+        assert.equal(url,'/api/formula-draft');
+        return {ok:true,json:async()=>({engine:'glm-ocr',status:'unconfirmed',
+          mode:'glm-ocr/formula-recognition',reviewRequired:true,limitHit:false,
+          raw:'$$\\begin{array}{l}3m+5=2m+11\\\\m+5=9\\end{array}$$'})};
+      };
+      get('photo').files=[new Blob(['synthetic'],{type:'image/jpeg'})];
+      await get('photo').dispatch('change');
+      get('verify').dispatch('click');
+      assert.equal(get('operation-claim-panel').hidden,true);
+      for (const row of get('rows').children) {
+        const confirmation=row.children[2].children[0];
+        confirmation.checked=true;confirmation.dispatch('change');
+      }
+      get('anchor-check').checked=true;get('anchor-check').dispatch('change');
+      get('verify').dispatch('click');
+    }
+    assert.match(get('verdict').words(),/Line 2 · First verified change/);
+    assert.doesNotMatch(get('verdict').words(),/m\s*=\s*6\b/,'do not reveal the anchor root');
+    assert.equal(get('operation-claim-panel').hidden,false);
+    get('operation-kind').value='subtract';get('operation-kind').dispatch('change');
+    get('operation-constant').value='2m';get('operation-constant').dispatch('input');
+    get('operation-claim-form').dispatch('submit');
+    assert.match(get('operation-feedback').textContent,/matches the declared action on the left side/);
+    get('typed-repair-answer').value='m+5=11';get('typed-repair-form').dispatch('submit');
+    assert.match(get('typed-retry-question').textContent,/19=2\+3\(2−k\)\+k/);
+    assert.equal(get('typed-retry-hint').disabled,true);
+    get('typed-retry-form').dispatch('submit');
+    assert.equal(get('typed-retry-hint').disabled,true);
+    get('typed-retry-answer').value='17=3(2−k)+k';get('typed-retry-form').dispatch('submit');
+    assert.match(get('typed-retry-evidence').textContent,/First supported response: before help/);
+    if (source==='formula') {
+      const before=get('typed-retry-evidence').textContent;
+      get('typed-repair-form').dispatch('submit');
+      assert.equal(get('typed-retry-evidence').textContent,before);
+      get('anchor-check').checked=false; get('anchor-check').dispatch('change');
+      assert.equal(get('typed-retry').hidden,true);
+      get('typed-retry-form').dispatch('submit');
+      assert.equal(get('typed-retry-evidence').textContent,'');
+    }
+  }
+});
+
+test('shared exact proof uses the actual predecessor and direction, or abstains',async t=>{
+  t.after(()=>get('clear').dispatch('click'));
+  await import('./app.mjs?live-proof-controls');
+  const inspect=(lines)=>{
+    get('clear').dispatch('click');
+    get('typed-work').value=lines.join('\n');
+    get('confirm-typed').dispatch('click');
+    return get('verdict').words();
+  };
+  const identity=inspect(['4c+2=4c+2','2c=8']);
+  assert.match(identity,/Before:.*22 = 22.*Changed line:.*10 ≠ 8/);
+  const third=inspect(['3(2a−1)=15','6a−3=15','6a=17','a=17/6']);
+  assert.match(third,/Line 2 · exact line before.*Line 3 · first verified change/);
+  assert.match(third,/Before:.*14 ≠ 15.*Changed line:.*17 = 17/);
+  assert.match(inspect(['5b−4=11','0=6']),/No substitution value shown/);
+  assert.doesNotMatch(inspect(['x+2=5','5=2+x']),/First changed step|One exact value/);
+  assert.doesNotMatch(inspect(['x+2=5','x^2=9']),/First changed step|One exact value/);
 });
