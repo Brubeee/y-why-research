@@ -8,7 +8,13 @@ env.allowRemoteModels = false;
 env.allowLocalModels = true;
 const folder = resolve(process.argv[2]);
 const pages = JSON.parse(readFileSync(join(folder,'manifest.json'),'utf8'));
-if (pages.length !== 8) throw Error('Expected eight frozen full pages');
+// Preserve the eight-pack path for existing experiments. The private phone
+// bundle supplies one capture already bound to its frozen upright raster.
+const privatePhone = process.argv[3] === '--private-phone';
+if (!Array.isArray(pages) || pages.length !== (privatePhone ? 1 : 8) ||
+    (privatePhone && pages[0]?.key !== 'private-capture')) {
+  throw Error(privatePhone ? 'Expected a single private capture' : 'Expected eight frozen full pages');
+}
 const recognize = await pipeline('image-to-text','onnx-community/TexTeller3-ONNX',{
   device:'cpu',dtype:'q4',revision:'ed90c6164810242882ca90863bb85697a76f4841'});
 const output = new Map();
