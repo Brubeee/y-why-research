@@ -393,3 +393,26 @@ an in-scope benchmark, not the full corpus. Reproduce with:
 The next evidence target is the paired paper-photo check in
 [PHONE_AFFINE_PROTOCOL.md](PHONE_AFFINE_PROTOCOL.md). Case labels are authored
 practice prompts; no captures or new OCR scores yet.
+
+### PAD-09: crop-margin agreement is not a confidence guarantee
+
+Eight new generated phone-style pages, three rows each. The same source
+pixels and known ink boxes were used for all three arms; only symmetric
+padding changed (6, 12, or 24 source pixels, clipped at the page edge).
+No other authored row entered the tested crop. The frozen manifests and
+crops reproduced byte for byte; the original cached q4 decoder settings
+were unchanged. These are printed synthetic fixtures, not handwriting,
+and detection was bypassed.
+
+Each margin read 22/24 rows and 7/8 whole chains exactly. All three
+agreed on 23/24 rows: 22 correct and one wrong. The one disagreement was
+also wrong at every margin. On the decimal page, the second line was
+written `0.4q=3.2` and returned `0.49=3.2` at all three margins; the
+first misread differed between margins. No margin recovered either line.
+Agreement did not catch the stable variable-to-digit substitution.
+Do not install a margin or a consensus confidence gate from this result.
+
+Reproduce with `python padding_stability.py freeze <new-dir>`, run the
+pinned offline `page_recognize.mjs <new-dir>`, then run
+`python padding_stability.py score <new-dir>/manifest.json <raw-output.json>`.
+See [aggregate counts](padding-09-aggregate.json).

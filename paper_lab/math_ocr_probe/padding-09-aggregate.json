@@ -1,0 +1,25 @@
+{
+  "manifest_sha256": "3ff53acdd81aafc0c879b33c7c8c336dbf4906209467aaea1211abec50d84be9",
+  "raw_sha256": "c1f797b63b169d36ba1c40cfb2b71c2f0fa551820dc78ca1184aad93995124d2",
+  "scope": "Eight new generated phone-style printed pages; clean row geometry, no human ink",
+  "exact_rows": {
+    "6": 22,
+    "12": 22,
+    "24": 22
+  },
+  "exact_chains": {
+    "6": 7,
+    "12": 7,
+    "24": 7
+  },
+  "rows": 24,
+  "chains": 8,
+  "all_three_agree": 23,
+  "all_three_agree_exact": 22,
+  "all_three_agree_wrong": 1,
+  "margin_disagreement": 1,
+  "disagreement_with_exact_12": 0,
+  "any_margin_exact": 22,
+  "all_three_agree_chains": 7,
+  "all_three_agree_exact_chains": 7
+}
