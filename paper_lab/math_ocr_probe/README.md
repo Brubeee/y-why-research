@@ -416,3 +416,20 @@ Reproduce with `python padding_stability.py freeze <new-dir>`, run the
 pinned offline `page_recognize.mjs <new-dir>`, then run
 `python padding_stability.py score <new-dir>/manifest.json <raw-output.json>`.
 See [aggregate counts](padding-09-aggregate.json).
+
+### GLM whole-page draft boundary (research)
+
+`glm_page_draft.mjs` converts only nontruncated GLM Formula Recognition
+outputs in a single-column LaTeX array into ordered, **unconfirmed** draft
+rows. It retains the raw output and per-row source. Inside that math-rendered
+transport alone, ordinary ASCII spaces between digits/decimal points are
+display whitespace; typed input and explicit LaTeX spacing are not changed.
+Fraction groups stay intact and implicit fraction adjacency is unsupported.
+Unknown structures, invalid equations or a mismatched independent row count
+produce no usable rows. A valid array or matching row count cannot establish
+that the model neither omitted nor rewrote a step; the UI must visibly obtain
+confirmation before calling the exact checker. This module does not select,
+execute, deploy or change the app's OCR engine or the existing math checker.
+
+Run `node --test paper_lab/math_ocr_probe/glm_page_draft.test.mjs` for grouped
+fraction, dropped error, wrong-mode, truncation and unsupported-form controls.
