@@ -29,6 +29,7 @@ MIMES = {'.html':'text/html; charset=utf-8','.mjs':'text/javascript; charset=utf
          '.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.json':'application/json; charset=utf-8'}
 LAB = {'index.html','style.css','app.mjs','diagnostic.mjs','verify.mjs','memex.mjs',
        'crop.mjs','expansion_form.mjs','delayed_review.mjs','curriculum.mjs','operation_claim.mjs'}
+FORMULA_MODULES = {'glm_page_draft.mjs','affine_scope.mjs'}
 PROTOTYPE = {'typed-equations.html','typed-equations.js','typed-equations.css'}
 NAME = re.compile(r'^[a-zA-Z0-9_.-]+$')
 PNG = b'\x89PNG\r\n\x1a\n'
@@ -155,6 +156,10 @@ def static_file(raw):
     if path in ('/','/paper_lab/','/paper_lab'):
         path='/paper_lab/index.html'
     parts=path.split('/')
+    if len(parts)==4 and parts[:3]==['','paper_lab','math_ocr_probe'] and parts[3] in FORMULA_MODULES:
+        base=HERE/'math_ocr_probe'
+        p=base/parts[3]
+        return p if p.is_file() and not p.is_symlink() and p.resolve().parent==base.resolve() else None
     if len(parts)!=3 or parts[0]!='':
         return None
     _,head,name=parts

@@ -162,6 +162,7 @@ class OCRTest(TestCase):
                 for name in ('curriculum.mjs', 'operation_claim.mjs'):
                     self.assertIn(urljoin(start, name), seen)
                 get('/paper_lab/photo_flow_bench.mjs', status=404)
+                get("/paper_lab/math_ocr_probe/ocr_verdict.test.mjs", status=404)
                 get('/paper_lab/ocr_server.py', status=404)
             finally:
                 server.shutdown()

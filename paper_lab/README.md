@@ -71,8 +71,9 @@ delayed review or measure learning.
 
 ### Optional local formula OCR worker (research candidate)
 
-The regular Paper Lab UI and `/api/ocr` path are unchanged. To exercise the
-separate `/api/formula-draft` endpoint on a Linux development machine, provision
+The default Paper Lab photo path remains `/api/ocr`. For the opt-in whole-page
+formula candidate, use `/paper_lab/?formula=1` on the local server below.
+On a Linux development machine, provision
 the official MIT `zai-org/GLM-OCR` snapshot at
 `2e85a62840ccac27daa451df36c736c4636b8628` in a local directory. Verify
 `model.safetensors` SHA-256
@@ -92,8 +93,12 @@ python paper_lab/formula_worker_test.py
 The response is unconfirmed model text, **not** a grade, transcript attestation,
 confidence score, or row alignment. Feed it through
 `math_ocr_probe/glm_page_draft.mjs` and show the original image beside the ordered
-editable rows before any confirmation or verification. A rejected adapter
-response must not be checked. This route is not yet wired to the camera UI.
+editable rows before any confirmation or verification. The opt-in photo control does this
+through the strict adapter; it checks nothing until all lines and the full
+order are attested. It never silently falls back to Tesseract or invents row
+boxes. A rejected draft leaves the existing work intact. Use one equation
+chain per photo. Typed entry still works independently. This is a local
+research UI, not the Lovable preview or a release deployment.
 
 The worker keeps one model warm and admits only one inference at a time. It
 does not queue a second image. Startup and inference are separately bounded
@@ -103,3 +108,9 @@ under the shared 4 MB and 12 MP limits. The offline worker orients via EXIF and
 fits within 768 pixels without upscaling. Uploaded images are not written to
 disk or forwarded. Responses are marked `no-store`. This is a private loopback
 test server, not a public hosting or deployment prescription.
+
+To run the optional full app-listener smoke with the live worker, set
+`YWHY_FORMULA_SMOKE_PORT` to the server port and `YWHY_FORMULA_SMOKE_JPEG` to
+a synthetic JPEG showing `7x+4=53`, `7x=48`, `x=7` in order, then run
+`node --test paper_lab/app.test.mjs`. This is a DOM harness, not a browser or
+handset test.

@@ -6,6 +6,7 @@ import { curriculumReference } from './curriculum.mjs';
 import { gradeExpansion } from './expansion_form.mjs';
 import { createDelayedReview, REVIEW_KEY } from './delayed_review.mjs';
 import { RETRY_TASK, createRetry, exposeRetryHint, recordRetry } from './memex.mjs';
+import { draftGlmFormulaPage, GLM_FORMULA_MODE } from './math_ocr_probe/glm_page_draft.mjs';
 import { validateCrop, mapOcrBoxes, encodeImageCrop } from './crop.mjs';
 
 const $ = id => document.getElementById(id);
@@ -15,6 +16,14 @@ const el = (tag, text, cls) => {
   if (cls) item.className = cls;
   return item;
 };
+// The opt-in private candidate never falls back to another OCR route silently.
+const formulaPhoto = new URLSearchParams(window.location?.search ?? '').get('formula') === '1';
+const photoEndpoint = formulaPhoto ? '/api/formula-draft' : '/api/ocr';
+if (formulaPhoto) {
+  $('ocr-note').textContent = 'Experimental whole-page formula OCR on the local host. Use one question per photo. Compare the complete ordered draft with the photo before checking.';
+  $('draft-help').textContent = 'For a photo, check every proposed line in order. Fix any transcription errors and insert any missing steps as written. For typed work, enter the equation and each step in order.';
+  $('anchor-text').textContent = 'I checked the full photo: every active line is present in order, from the original equation through my last written step.';
+}
 const delayedReview = createDelayedReview({store:() => window.localStorage});
 // The photo route uses a raw body. Keep headroom for a 4.5 MB ingress
 // and mirror this cap in ocr_server.py.
@@ -37,7 +46,7 @@ let currentProbe = null, firstSeparator = null, photoCandidate = null;
 const clearAttestation = () => { $('anchor-check').checked = false; };
 function regionButtons() {
   const img = $('image');
-  const compatible = !!currentFile && !!dims && img.naturalWidth === dims.width && img.naturalHeight === dims.height;
+  const compatible = !formulaPhoto && !!currentFile && !!dims && img.naturalWidth === dims.width && img.naturalHeight === dims.height;
   $('select-region').disabled = !compatible;
   $('read-region').disabled = !compatible || !region || selecting;
 }
@@ -92,6 +101,7 @@ function renderRows() {
   for (const [i, row] of rows.entries()) {
     const box = el('div', '', 'row'), select = el('input'), field = el('input'), confirm = el('input');
     select.type = 'checkbox'; select.checked = row.selected;
+    select.disabled = formulaPhoto && !!currentFile;
     select.setAttribute('aria-label', 'Include line ' + (i + 1));
     field.type = 'text'; field.maxLength = 180; field.value = row.text; field.autocomplete = 'off';
     field.setAttribute('aria-label', 'Line ' + (i + 1) + ' transcription');
@@ -105,6 +115,7 @@ function renderRows() {
       crossedOut.disabled = !canMarkCrossedOut(i);
     }
     select.addEventListener('change', () => {
+      if (select.disabled) { select.checked = row.selected; return; }
       row.selected = select.checked; confirm.disabled = !row.selected;
       row.crossedOut = false;
       row.confirmed = confirm.checked = false;
@@ -199,6 +210,17 @@ $('add').addEventListener('click', () => {
   resetResult();
   renderRows().at(-1).focus();
 });
+function prepareFormulaRows(data) {
+  if (data?.engine !== 'glm-ocr' || data?.status !== 'unconfirmed' ||
+      data?.reviewRequired !== true || data?.mode !== GLM_FORMULA_MODE)
+    throw new Error('The formula OCR response was not usable.');
+  const draft = draftGlmFormulaPage({raw:data.raw, mode:data.mode, limitHit:data.limitHit});
+  if (draft.status !== 'review-required' || draft.rows.some(row => row.text.length > 180))
+    throw new Error('This photo did not yield a usable ordered equation draft. Use one clear question per photo, or type all its lines.');
+  return draft.rows.map(row => ({text:row.text, rawLatex:row.rawLatex, box:null,
+    selected:true, confirmed:false}));
+}
+const formulaReady = n => 'Draft ready: ' + n + ' proposed lines, not verified. Compare the complete order and every symbol with the original photo. Add any missing active line.';
 function prepareRows(data, imageSize, useBoxes) {
   if (data?.status !== 'draft' || !Array.isArray(data.lines))
     throw new Error('The OCR response was not usable.');
@@ -215,7 +237,7 @@ function prepareRows(data, imageSize, useBoxes) {
   return {size,prepared};
 }
 async function readDraft(target = null) {
-  if (!currentFile) return;
+  if (!currentFile || (formulaPhoto && target)) return;
   cancelPhotoCandidate();
   inflight?.abort();
   const owner = new AbortController();
@@ -238,11 +260,19 @@ async function readDraft(target = null) {
       file = cropped.blob;
     }
     if (!file.size || file.size > MAX_BYTES) throw new Error(PHOTO_TOO_LARGE);
-    const r = await fetch('/api/ocr', {method:'POST',headers:{'Content-Type':file.type},body:file,signal:owner.signal});
+    const r = await fetch(photoEndpoint, {method:'POST',headers:{'Content-Type':file.type},body:file,signal:owner.signal});
     if (!applicable()) return;
     let data = await readOcrResponse(r);
     if (!applicable()) return;
     if (!r.ok) throw new Error(data?.error || 'OCR could not read this photo.');
+    if (formulaPhoto) {
+      const nextRows = prepareFormulaRows(data);
+      if (!applicable()) return;
+      rows = nextRows;
+      clearAttestation(); resetResult(); renderRows();
+      status(formulaReady(nextRows.length));
+      return;
+    }
     if (data?.status !== 'draft' || !Array.isArray(data.lines)) throw new Error('The OCR response was not usable.');
     if (cropped) data = mapOcrBoxes(data, cropped.rect, imageSize, cropped);
     const {size:nextSize,prepared:nextRows} = prepareRows(data,imageSize,cropped || source.type === 'image/png');
@@ -292,7 +322,7 @@ $('photo').addEventListener('change', async () => {
   };
   status('Checking the selected photo on the local host. Your current work stays in place for now.');
   try {
-    const result = await fetch('/api/ocr', {method:'POST',headers:{'Content-Type':file.type},body:file,signal:owner.abort.signal});
+    const result = await fetch(photoEndpoint, {method:'POST',headers:{'Content-Type':file.type},body:file,signal:owner.abort.signal});
     if (!applicable()) return;
     const data = await readOcrResponse(result);
     if (!applicable()) return;
@@ -303,7 +333,8 @@ $('photo').addEventListener('change', async () => {
       status(reason + ' Photo not replaced. You can try another image or enter lines by hand.');
       return;
     }
-    const {size,prepared} = prepareRows(data,null,file.type === 'image/png');
+    const {size,prepared} = formulaPhoto ? {size:null,prepared:prepareFormulaRows(data)}
+      : prepareRows(data,null,file.type === 'image/png');
     owner.url = URL.createObjectURL(file);
     owner.preview = document.createElement('img');
     owner.preview.src = owner.url;
@@ -316,13 +347,14 @@ $('photo').addEventListener('change', async () => {
     const url = owner.url;
     owner.url = null; photoCandidate = null;
     clearPhoto();
-    currentFile = file; objectUrl = url; dims = {...size};
+    currentFile = file; objectUrl = url; dims = size && {...size};
     $('image').src = objectUrl; $('photo-view').hidden = false;
-    $('region-tools').hidden = false; $('anchor-control').hidden = false;
+    $('region-tools').hidden = formulaPhoto; $('anchor-control').hidden = false;
     rows = prepared;
     if (!rows.length) { add(); add(); }
     resetResult(); renderRows(); regionButtons();
-    status(data.lines.length
+    if (formulaPhoto) status(formulaReady(prepared.length));
+    else status(data.lines.length
       ? 'Draft ready: ' + data.lines.length + ' detected lines. Select one question and verify signs, brackets, and reading order. ' + (data.lines.length > MAX_ROWS ? 'Only the first ' + MAX_ROWS + ' lines are shown. Try selecting a smaller area.' : '')
       : 'No text detected in the new photo. Try another area or type the lines.');
   } catch (e) {
@@ -377,6 +409,11 @@ $('anchor-check').addEventListener('change', () => resetResult());
 $('verify').addEventListener('click', () => {
   resetResult();
   const picked = rows.map((r,i)=>({...r,sourceIndex:i})).filter(r => r.selected);
+  if (formulaPhoto && currentFile && (picked.length !== rows.length ||
+      picked.some(r=>!r.confirmed || !r.text.trim()) || !$('anchor-check').checked)) {
+    resetResult('Confirm every line and the complete order against the original photo before checking. No verdict was issued.');
+    return;
+  }
   if (picked.length < 2 || picked.length > 12) { resetResult('Select between 2 and 12 lines for one question, starting with its original equation.'); return; }
   for (let i=1; i<picked.length; i++) {
     for(let skipped=picked[i-1].sourceIndex+1;skipped<picked[i].sourceIndex;skipped++) {
@@ -413,7 +450,8 @@ $('verify').addEventListener('click', () => {
   const labels = {equivalent:'Same solution set',changed:'First verified change',unsupported:'Cannot check this line',unconfirmed:'Needs transcription confirmation','not-considered':'Not checked'};
   if (result.anchor.status === 'confirmed' && result.anchor.solution?.kind === 'unique') { skillMatch = 'linear'; course(); }
   const out = $('verdict'); out.replaceChildren(el('p','Original equation: ' + anchor.text + '. ' + result.anchor.message));
-  if (currentFile) out.append(el('p','Selected steps only. This is not a pass or grade for the whole question.','fine'));
+  if (currentFile) out.append(el('p',formulaPhoto ? 'Confirmed transcription only. This is not a grade for the whole question.'
+    : 'Selected steps only. This is not a pass or grade for the whole question.','fine'));
   const skippedLines = rows.map((row,i)=>row.crossedOut && i>anchor.sourceIndex && i<picked.at(-1).sourceIndex ? i+1 : null).filter(Boolean);
   if (skippedLines.length) out.append(el('p', 'Marked crossed out; not checked: line ' + skippedLines.join(', ') + '.', 'fine'));
   result.rows.forEach((r,i) => {

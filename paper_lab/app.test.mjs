@@ -27,6 +27,7 @@ globalThis.document.createElement=tag=>tag === 'canvas' ? {
   toBlob(cb){cb(new Blob(['mocked-crop'],{type:'image/png'}));},
 } : createElement(tag);
 let sentCropped=false;
+const nativeFetch=globalThis.fetch;
 globalThis.fetch = async (url,init) => {
   assert.equal(url,'/api/ocr'); assert.equal(init.method,'POST'); assert.equal(init.headers['Content-Type'],'image/png');
   const isCropped=(await init.body.text()) === 'mocked-crop';
@@ -1001,4 +1002,128 @@ test('plain-text and JSON 413 preserve the current photo and edits; a smaller re
   assert.notEqual(img.src,src);
   assert.notEqual(get('rows').children,rows);
   assert.equal(get('anchor-check').checked,false);
+});
+
+test('formula photo route preserves ordered evidence and requires every confirmation before exact checking', async t => {
+  const oldFetch=globalThis.fetch;
+  window.location={search:'?formula=1'};
+  t.after(()=>{ delete window.location; globalThis.fetch=oldFetch; });
+  await import('./app.mjs?formula-candidate-review');
+  const raw=String.raw`$$\begin{array}{l}7x+4=5 3\\7x=4 8\\x=7\end{array}$$`;
+  const payload={engine:'glm-ocr', status:'unconfirmed', mode:'glm-ocr/formula-recognition',
+    reviewRequired:true, limitHit:false, raw};
+  let next=payload, posted=0;
+  globalThis.fetch=async (url,init)=>{
+    assert.equal(url,'/api/formula-draft');
+    assert.equal(init.method,'POST');
+    assert.equal(init.headers['Content-Type'],'image/jpeg');
+    posted++;
+    return {ok:true,json:async()=>next};
+  };
+  const upload=async()=>{
+    get('photo').files=[new Blob(['synthetic page'],{type:'image/jpeg'})];
+    await get('photo').dispatch('change');
+  };
+  const check=()=>get('verify').dispatch('click');
+  const mark=(row,value=true)=>{
+    const cb=row.children[2].children[0];
+    cb.checked=value;cb.dispatch('change');
+  };
+  await upload();
+  assert.match(get('scan-status').textContent,/3 proposed lines, not verified/);
+  assert.equal(get('photo-view').hidden,false);
+  assert.equal(get('region-tools').hidden,true);
+  const rows=get('rows').children;
+  assert.deepEqual(rows.map(row=>row.children[1].value.replaceAll(' ','')), ['7x+4=53','7x=48','x=7']);
+  assert.ok(rows.every(row=>row.children[0].checked && row.children[0].disabled));
+  rows[1].children[1].dispatch('focus');
+  assert.equal(get('crop').hidden,true);
+  mark(rows[0]);mark(rows[1]);get('anchor-check').checked=true;
+  check();
+  assert.match(get('verdict').words(),/No verdict was issued/);
+  assert.doesNotMatch(get('verdict').words(),/First verified change/);
+  mark(rows[2]);get('anchor-check').checked=false;check();
+  assert.match(get('verdict').words(),/No verdict was issued/);
+  get('anchor-check').checked=true;check();
+  assert.match(get('verdict').words(),/Line 2 · First verified change.*7x\s*=\s*48/);
+  next={...payload,limitHit:true};
+  await upload();
+  assert.equal(get('rows').children,rows);
+  assert.match(get('verdict').words(),/First verified change/);
+  assert.match(get('scan-status').textContent,/Photo not replaced/);
+  rows[1].children[1].value='7x=49'; rows[1].children[1].dispatch('input');
+  assert.equal(get('anchor-check').checked,false);
+  check();assert.match(get('verdict').words(),/No verdict was issued/);
+  await get('read-full').dispatch('click');
+  assert.equal(get('rows').children,rows);
+  assert.match(get('scan-status').textContent,/Kept your current work/);
+  assert.equal(posted,3);
+  get('clear').dispatch('click');
+});
+
+test('formula responses that ignore cancellation cannot override a clear, take, or edit', async t => {
+  const oldFetch=globalThis.fetch;
+  window.location={search:'?formula=1'};
+  t.after(()=>{ delete window.location; globalThis.fetch=oldFetch; });
+  await import('./app.mjs?formula-candidate-owner');
+  const requests=[];
+  globalThis.fetch=(url,{signal})=>new Promise(resolve=>requests.push({signal,resolve}));
+  const take=()=>{
+    get('photo').files=[new Blob(['synthetic'],{type:'image/jpeg'})];
+    return get('photo').dispatch('change');
+  };
+  const respond=(i,tail)=>requests[i].resolve({ok:true,json:async()=>({
+    engine:'glm-ocr',status:'unconfirmed',mode:'glm-ocr/formula-recognition',reviewRequired:true,
+    limitHit:false,raw:'$$\\begin{array}{l}x+1=2\\\\x='+tail+'\\end{array}$$',
+  })});
+  const old=take(), fresh=take();
+  assert.equal(requests[0].signal.aborted,true);
+  respond(1,1);await fresh;
+  respond(0,2);await old;
+  assert.equal(get('rows').children[1].children[1].value,'x=1');
+  const pending=take();
+  const input=get('rows').children[1].children[1];
+  input.value='x=3';input.dispatch('input');
+  respond(2,9);await pending;
+  assert.equal(get('rows').children[1].children[1].value,'x=3');
+  const cancelled=take();
+  get('clear').dispatch('click');
+  assert.equal(requests[3].signal.aborted,true);
+  respond(3,4);await cancelled;
+  assert.equal(get('photo-view').hidden,true);
+});
+
+// Optional composed smoke: real local CPU worker + HTTP + the actual app
+// listeners in this DOM harness. The supplied JPEG must be synthetic and
+// contain 7x+4=53, 7x=48, x=7 in that order. No browser claim.
+test('live loopback formula worker to verified first changed line', {
+  skip:!process.env.YWHY_FORMULA_SMOKE_PORT || !process.env.YWHY_FORMULA_SMOKE_JPEG
+},async t=>{
+  const {readFile}=await import('node:fs/promises');
+  const port=Number(process.env.YWHY_FORMULA_SMOKE_PORT);
+  assert.ok(Number.isInteger(port) && port>0 && port<=65535);
+  const oldFetch=globalThis.fetch;
+  window.location={search:'?formula=1'};
+  t.after(()=>{ delete window.location; globalThis.fetch=oldFetch; });
+  globalThis.fetch=(route,options)=>{
+    assert.equal(route,'/api/formula-draft');
+    return nativeFetch('http://127.0.0.1:'+port+route,options);
+  };
+  await import('./app.mjs?formula-candidate-live');
+  const jpeg=await readFile(process.env.YWHY_FORMULA_SMOKE_JPEG);
+  get('photo').files=[new Blob([jpeg],{type:'image/jpeg'})];
+  await get('photo').dispatch('change');
+  assert.match(get('scan-status').textContent,/3 proposed lines, not verified/);
+  assert.deepEqual(get('rows').children.map(row=>row.children[1].value.replaceAll(' ','')),
+    ['7x+4=53','7x=48','x=7']);
+  get('verify').dispatch('click');
+  assert.match(get('verdict').words(),/No verdict was issued/);
+  for (const row of get('rows').children) {
+    const confirmation=row.children[2].children[0];
+    confirmation.checked=true;confirmation.dispatch('change');
+  }
+  get('anchor-check').checked=true;get('anchor-check').dispatch('change');
+  get('verify').dispatch('click');
+  assert.match(get('verdict').words(),/Line 2 · First verified change/);
+  get('clear').dispatch('click');
 });
