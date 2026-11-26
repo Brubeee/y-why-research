@@ -68,3 +68,38 @@ delayed review or measure learning.
   Changing both sides can be mathematically valid. The optional check
   only answers whether the written step fits expanding the left bracket
   without rewriting the right side. It does not infer how you solved it.
+
+### Optional local formula OCR worker (research candidate)
+
+The regular Paper Lab UI and `/api/ocr` path are unchanged. To exercise the
+separate `/api/formula-draft` endpoint on a Linux development machine, provision
+the official MIT `zai-org/GLM-OCR` snapshot at
+`2e85a62840ccac27daa451df36c736c4636b8628` in a local directory. Verify
+`model.safetensors` SHA-256
+`a16eb0de98d199293371c560f95f83130d2a2c9612449df16839f08ff9498815`
+before running. The checked development setup used CPU Torch `2.15.0+cpu`,
+Transformers `5.6.2`, and Pillow. No Hugging Face requests are made at runtime
+and remote model code is not enabled.
+
+```sh
+python paper_lab/ocr_server.py --formula-python /path/to/venv/bin/python \
+  --formula-model /path/to/pinned-model
+curl -H 'Content-Type: image/jpeg' --data-binary @synthetic-page.jpg \
+  http://127.0.0.1:8765/api/formula-draft
+python paper_lab/formula_worker_test.py
+```
+
+The response is unconfirmed model text, **not** a grade, transcript attestation,
+confidence score, or row alignment. Feed it through
+`math_ocr_probe/glm_page_draft.mjs` and show the original image beside the ordered
+editable rows before any confirmation or verification. A rejected adapter
+response must not be checked. This route is not yet wired to the camera UI.
+
+The worker keeps one model warm and admits only one inference at a time. It
+does not queue a second image. Startup and inference are separately bounded
+(120 s and 60 s respectively); an inference deadline kills the worker before
+another request can start. The input is limited to single-frame raw PNG/JPEG
+under the shared 4 MB and 12 MP limits. The offline worker orients via EXIF and
+fits within 768 pixels without upscaling. Uploaded images are not written to
+disk or forwarded. Responses are marked `no-store`. This is a private loopback
+test server, not a public hosting or deployment prescription.

@@ -1,0 +1,117 @@
+"""Process/HTTP regressions without downloading a model or using student data."""
+from contextlib import contextmanager
+from http.client import HTTPConnection
+from http.server import ThreadingHTTPServer
+import json
+from pathlib import Path
+import sys
+import threading
+import unittest
+
+from formula_worker import FormulaWorker, WorkerError
+from ocr_server import Handler, MAX_BYTES
+from ocr_server_test import printed_page
+
+FAKE = r'''
+import json, os, socket, sys, time
+sys.path.insert(0, sys.argv[1])
+from formula_worker import MAX_INPUT, READY, _frame, _write
+sock = socket.socket(fileno=int(sys.argv[2]))
+_write(sock, READY)
+while True:
+    data = _frame(sock, MAX_INPUT)
+    if data == b'timeout':
+        time.sleep(5)
+    if data == b'badframe':
+        _write(sock, b'{"raw":"a","limitHit":0}')
+    elif data == b'badimage':
+        _write(sock, b'{"error":"image"}')
+    else:
+        _write(sock, json.dumps({"raw": r"$$\begin{array}{l}7x+4=53\\7x=48\\x=7\end{array}$$",
+                                "limitHit": data == b'truncated'}).encode())
+'''
+
+
+@contextmanager
+def local_http(worker=None):
+    with ThreadingHTTPServer(('127.0.0.1', 0), Handler) as server:
+        server.formula_worker = worker
+        task = threading.Thread(target=server.serve_forever, daemon=True)
+        task.start()
+        try:
+            def post(data, **headers):
+                with_headers = {'Content-Type': 'image/png', **headers}
+                conn = HTTPConnection('127.0.0.1', server.server_port, timeout=5)
+                try:
+                    conn.request('POST', '/api/formula-draft', data, with_headers)
+                    res = conn.getresponse()
+                    return res.status, res.getheader('Cache-Control'), json.load(res)
+                finally:
+                    conn.close()
+            yield post
+        finally:
+            server.shutdown()
+            task.join(timeout=5)
+
+
+class FormulaWorkerTest(unittest.TestCase):
+    def setUp(self):
+        self.worker = FormulaWorker((sys.executable, '-c', FAKE, str(Path(__file__).resolve().parent)),
+                                    startup_timeout=5, request_timeout=.5)
+        self.addCleanup(self.worker.close)
+
+    def error_code(self, data, code):
+        with self.assertRaises(WorkerError) as err:
+            self.worker.recognize(data)
+        self.assertEqual(err.exception.code, code)
+
+    def test_reuses_process_but_refuses_truncation_and_bad_image(self):
+        first = self.worker.recognize(b'image')
+        proc = self.worker.proc
+        self.assertTrue(first['reviewRequired'])
+        self.assertEqual(first['status'], 'unconfirmed')
+        self.assertNotIn('box', first)
+        self.error_code(b'truncated', 422)
+        self.error_code(b'badimage', 422)
+        self.assertEqual(self.worker.recognize(b'image'), first)
+        self.assertIs(self.worker.proc, proc)
+
+    def test_timeout_kills_worker_and_next_request_starts_clean(self):
+        self.worker.recognize(b'image')
+        prev = self.worker.proc
+        self.error_code(b'timeout', 504)
+        self.assertIsNotNone(prev.poll())
+        self.assertIsNone(self.worker.proc)
+        self.worker.recognize(b'image')
+        self.assertIsNot(self.worker.proc, prev)
+
+    def test_invalid_reply_quarantined(self):
+        self.error_code(b'badframe', 503)
+        self.assertIsNone(self.worker.proc)
+        self.worker.recognize(b'image')
+
+    def test_busy_request_is_not_queued(self):
+        with self.worker.lock:
+            self.error_code(b'image', 503)
+        self.assertIsNone(self.worker.proc)
+
+    def test_loopback_http_honest_outcomes(self):
+        png = printed_page()
+        with local_http() as post:
+            self.assertEqual(post(png)[0], 503)
+        with local_http(self.worker) as post:
+            self.assertEqual(post(png, Origin='https://untrusted.invalid')[0], 403)
+            self.assertEqual(post(png, Host='untrusted.invalid')[0], 403)
+            self.assertEqual(post(b'', **{'Content-Length': str(MAX_BYTES + 1)})[0], 413)
+            self.assertEqual(post(b'not PNG')[0], 415)
+            self.assertIsNone(self.worker.proc)
+            status, cache, draft = post(png)
+            self.assertEqual((status, cache, draft['status']), (200, 'no-store', 'unconfirmed'))
+            self.assertIn('7x=48', draft['raw'])
+            self.assertNotIn('lines', draft)
+            self.assertNotIn('verdict', draft)
+            self.assertNotIn('confidence', draft)
+
+
+if __name__ == '__main__':
+    unittest.main()

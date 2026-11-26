@@ -15,6 +15,7 @@ import tempfile
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import unquote, urlsplit
+from formula_worker import FormulaWorker, WorkerError
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
@@ -216,7 +217,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_HEAD(self): self.serve(True)
     def do_POST(self):
         try:
-            if self.path != '/api/ocr':
+            if self.path not in ('/api/ocr', '/api/formula-draft'):
                 raise Rejected(404,'Not found.')
             if not self.local_request():
                 raise Rejected(403,'Loopback requests only.')
@@ -239,20 +240,41 @@ class Handler(BaseHTTPRequestHandler):
             data=self.rfile.read(n)
             if len(data)!=n:
                 raise Rejected(400,'Image upload was incomplete.')
-            payload=draft_ocr(data,mime)
+            if self.path == '/api/ocr':
+                payload=draft_ocr(data,mime)
+            else:
+                image_info(data,mime)
+                worker = getattr(self.server, 'formula_worker', None)
+                if worker is None:
+                    raise Rejected(503, 'Local formula OCR is not configured.')
+                payload=worker.recognize(data)
         except (TimeoutError, socket.timeout):
             return self.as_json(408,{'status':'error','error':'Image upload timed out.'})
-        except Rejected as e:
+        except (Rejected, WorkerError) as e:
             return self.as_json(e.code,{'status':'error','error':str(e)})
         return self.as_json(200,payload)
 
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--port',type=int,default=8765)
+    ap.add_argument('--formula-python', type=Path, help='Python executable in the local GLM environment')
+    ap.add_argument('--formula-model', type=Path, help='Local pinned GLM model directory')
     args=ap.parse_args()
+    if bool(args.formula_python) != bool(args.formula_model):
+        ap.error('--formula-python and --formula-model must be supplied together')
+    worker = None
+    if args.formula_python:
+        # Keep the venv executable path (resolving its symlink loses the venv).
+        worker = FormulaWorker((args.formula_python.absolute(),
+                                HERE / 'formula_worker.py', args.formula_model.resolve(strict=True)))
     with ThreadingHTTPServer(('127.0.0.1',args.port),Handler) as server:
         print(f'Y? Paper Lab: http://127.0.0.1:{server.server_port}/paper_lab/',flush=True)
-        server.serve_forever()
+        server.formula_worker = worker
+        try:
+            server.serve_forever()
+        finally:
+            if worker:
+                worker.close()
 
 if __name__=='__main__':
     main()
