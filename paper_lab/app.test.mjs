@@ -584,7 +584,7 @@ test('a cancelled picker or rejected MIME, empty, or oversize selection preserve
   globalThis.fetch=async()=>assert.fail('cancelled and rejected picks must not reach OCR');
   picker.files=[];await picker.dispatch('change');
   assert.equal(get('scan-status').textContent,before);
-  const limit=6*1024*1024;
+  const limit=4_000_000;
   for(const file of [
     new Blob(['synthetic unsupported file'],{type:'application/pdf'}),
     new Blob([],{type:'image/jpeg'}),
@@ -603,7 +603,7 @@ test('a cancelled picker or rejected MIME, empty, or oversize selection preserve
     assert.equal(rows[1].children[2].children[0].checked,true);
     assert.equal(get('anchor-check').checked,true);
     assert.equal(get('verdict').words(),verdict);
-    assert.match(get('scan-status').textContent,/Choose a nonempty PNG or JPEG no larger than 6 MiB/);
+    assert.match(get('scan-status').textContent,/Choose a nonempty PNG or JPEG no larger than 4 MB/);
   }
 });
 
@@ -966,4 +966,39 @@ test('a missed final photo line is visibly manual, requires new checks, and surv
   assert.equal(add.textContent,'Add a line');
   add.dispatch('click');
   assert.doesNotMatch(get('rows').children[2].words(),/Typed from photo/);
+});
+
+test('plain-text and JSON 413 preserve the current photo and edits; a smaller retake works', async t=>{
+  t.after(()=>{globalThis.fetch=savedFetch;get('clear').dispatch('click');});
+  const picker=get('photo'), status=get('scan-status');
+  await correctedDraft();
+  const rows=get('rows').children, src=img.src, verdict=get('verdict').words();
+  let requests=0;
+  globalThis.fetch=async ()=>{
+    requests++;
+    return new Response('upstream body limit',{status:413});
+  };
+  picker.files=[new Blob([new Uint8Array(5.5*1024**2)],{type:'image/jpeg'})];
+  await picker.dispatch('change');
+  assert.equal(requests,0);
+  assert.match(status.textContent,/no larger than 4 MB/);
+
+  picker.files=[new Blob(['smaller jpeg fixture'],{type:'image/jpeg'})];
+  await picker.dispatch('change');
+  assert.equal(requests,1);
+  assert.match(status.textContent,/Photo too large.*Resize.*Photo not replaced/);
+  globalThis.fetch=async ()=>new Response('{"error":"downstream limit"}',{status:413});
+  await get('read-full').dispatch('click');
+  assert.match(status.textContent,/Photo too large.*Resize.*Kept your current work/);
+  assert.equal(img.src,src);
+  assert.equal(get('rows').children,rows);
+  assert.equal(get('verdict').words(),verdict);
+
+  globalThis.fetch=savedFetch;
+  picker.files=[new Blob(['smaller png retake fixture'],{type:'image/png'})];
+  await picker.dispatch('change');
+  assert.match(status.textContent,/Draft ready/);
+  assert.notEqual(img.src,src);
+  assert.notEqual(get('rows').children,rows);
+  assert.equal(get('anchor-check').checked,false);
 });

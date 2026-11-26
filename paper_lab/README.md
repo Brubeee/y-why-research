@@ -20,6 +20,8 @@ python paper_lab/ocr_server.py --port 8765
 
 Open `http://127.0.0.1:8765/paper_lab/`. The server listens only on loopback and sends no photo to another service. It temporarily writes a photo for local Tesseract decoding and removes it after completion/error; it does not persist requests or OCR text. Do not make this research server public or use identifiable student work. An eventual phone build needs genuine on-device processing or a separate, consented and secured deployment design.
 
+Photo uploads and rereads currently send PNG or JPEG, up to 4 MB (4,000,000 bytes). A rejected replacement keeps the previous photo and confirmed work. Oversize recovery still asks for a smaller photo; the app does not automatically resize or convert phone captures. This is not a verified public OCR deployment.
+
 ## Verify
 
 ```sh

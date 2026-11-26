@@ -104,6 +104,8 @@ class OCRTest(TestCase):
                 req('GET','/paper_lab/',403,headers={'Host':'outside.invalid'})
                 headers={'Content-Type':'image/png'}
                 raw=printed_page()
+                _,out=req('POST','/api/ocr',413,b'',{**headers,'Content-Length':str(MAX_BYTES+1)})
+                self.assertIn('4 MB',json.loads(out)['error'])
                 req('POST','/api/ocr',403,raw,{**headers,'Origin':'https://outside.invalid'})
                 req('POST','/api/ocr',415,b'not PNG bytes',headers)
                 _,out=req('POST','/api/ocr',200,raw,headers)

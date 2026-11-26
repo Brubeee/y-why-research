@@ -16,7 +16,20 @@ const el = (tag, text, cls) => {
   return item;
 };
 const delayedReview = createDelayedReview({store:() => window.localStorage});
-const MAX_BYTES = 6 * 1024 ** 2;
+// The photo route uses a raw body. Keep headroom for a 4.5 MB ingress
+// and mirror this cap in ocr_server.py.
+const MAX_BYTES = 4_000_000;
+const PHOTO_TOO_LARGE = 'Photo too large to process. Resize it or try a smaller photo (up to 4 MB).';
+async function readOcrResponse(response) {
+  // Ingress may reject before the app runs, returning text or HTML.
+  if (response.status === 413) return {error:PHOTO_TOO_LARGE};
+  try { return await response.json(); }
+  catch (error) {
+    if (error.name === 'AbortError') throw error;
+    if (response.ok) throw new Error('The OCR response was not usable.');
+    return null;
+  }
+}
 const MAX_ROWS = 45;
 let rows = [], objectUrl, dims, inflight, revision = 0, draftRevision = 0, diagnosis = null, skillMatch = null;
 let currentFile = null, region = null, selecting = false, corner = null, retrySession = null;
@@ -224,9 +237,10 @@ async function readDraft(target = null) {
       if (!applicable()) return;
       file = cropped.blob;
     }
+    if (!file.size || file.size > MAX_BYTES) throw new Error(PHOTO_TOO_LARGE);
     const r = await fetch('/api/ocr', {method:'POST',headers:{'Content-Type':file.type},body:file,signal:owner.signal});
     if (!applicable()) return;
-    let data = await r.json();
+    let data = await readOcrResponse(r);
     if (!applicable()) return;
     if (!r.ok) throw new Error(data?.error || 'OCR could not read this photo.');
     if (data?.status !== 'draft' || !Array.isArray(data.lines)) throw new Error('The OCR response was not usable.');
@@ -263,7 +277,7 @@ $('photo').addEventListener('change', async () => {
   if (!file) return;
   if (!['image/png','image/jpeg'].includes(file.type) || !file.size || file.size > MAX_BYTES) {
     $('photo').value = '';
-    status('Choose a nonempty PNG or JPEG no larger than 6 MiB.');
+    status('Choose a nonempty PNG or JPEG no larger than 4 MB.');
     return;
   }
   cancelPhotoCandidate();
@@ -280,7 +294,7 @@ $('photo').addEventListener('change', async () => {
   try {
     const result = await fetch('/api/ocr', {method:'POST',headers:{'Content-Type':file.type},body:file,signal:owner.abort.signal});
     if (!applicable()) return;
-    const data = await result.json();
+    const data = await readOcrResponse(result);
     if (!applicable()) return;
     if (!result.ok) {
       const detail = data?.error || 'OCR could not read this photo.';

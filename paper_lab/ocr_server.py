@@ -18,7 +18,7 @@ from urllib.parse import unquote, urlsplit
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-MAX_BYTES = 8 * 1024 * 1024
+MAX_BYTES = 4_000_000  # Mirrors Paper Lab client; stays below 4.5 MB ingress.
 MAX_PIXELS = 12_000_000
 MAX_SIDE = 7000
 OCR_TIMEOUT = 20
@@ -119,7 +119,7 @@ def parse_tsv(tsv, width, height):
 
 def draft_ocr(data, mime):
     if not data or len(data)>MAX_BYTES:
-        raise Rejected(413, 'Use a nonempty image no larger than 8 MiB.')
+        raise Rejected(413, 'Use a nonempty image no larger than 4 MB.')
     ext, w, h = image_info(data, mime)
     binary = shutil.which('tesseract')
     if binary is None:
@@ -232,7 +232,7 @@ class Handler(BaseHTTPRequestHandler):
                 raise Rejected(411,'A valid Content-Length is required.')
             n=int(sizes[0])
             if not 0<n<=MAX_BYTES:
-                raise Rejected(413,'Use a nonempty image no larger than 8 MiB.')
+                raise Rejected(413,'Use a nonempty image no larger than 4 MB.')
             mime=self.headers.get_content_type()
             if mime not in ('image/png','image/jpeg'):
                 raise Rejected(415,'Send a raw PNG or JPEG image.')
