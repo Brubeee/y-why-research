@@ -4,7 +4,8 @@ import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createHash } from 'node:crypto';
-import { literal,scoreArm,scoreBundle,scoreCohort } from './phone_score.mjs';
+import { affineReference } from './affine_scope.mjs';
+import { literal,verifyFull,scoreArm,scoreBundle,scoreCohort } from './phone_score.mjs';
 
 const rows=['2x+6=14','2x=9','x=9/2'];
 const box=i=>[10,10+i*30,80,30+i*30];
@@ -96,4 +97,41 @@ test('bundle verifies original ordered bytes/metadata and ledger keeps failures'
     writeFileSync(join(dir,manifest[0].name),'changed');
     assert.throws(called,/hash/);
   } finally { rmSync(d,{recursive:true,force:true}); }
+});
+
+
+test('cancellation is supported in a suffix but cannot hide a literal OCR error',()=>{
+  const run=(truth,observed=truth)=>scoreArm(
+    truth.map((literal,i)=>({literal,box:box(i)})),crops(observed));
+  const clean=['0.4q−1.2=2','0.4q=3.2','q=8'];
+  assert.ok(run(clean).firstIssueAgreement);
+  const wrong=run(clean,[clean[0],'0.49=3.2',clean[2]]);
+  assert.ok(wrong.comparable && wrong.introducedIssue && !wrong.exact);
+  assert.equal(wrong.observedFirstChanged,2);
+  for (const chain of [
+    ['2q+0.49=2q+3.2','0.49=3.2','0=2.71'],
+    ['2q+0.49=2q+0.49','0.49=0.49','0=0']
+  ]) {
+    const exact=run(chain);
+    assert.ok(exact.comparable && exact.exact && exact.firstIssueAgreement);
+    assert.equal(exact.expectedFirstChanged,null);
+  }
+  const actualError=run(['2q+3=11','3=11','0=8']);
+  assert.ok(actualError.issuePairPreserved && actualError.firstIssueAgreement);
+  assert.equal(actualError.expectedFirstChanged,2);
+  assert.equal(verifyFull(['1=1','q=q']).supported,false);
+  assert.deepEqual(affineReference('0.49=3.2'),{reason:'no-variable'});
+  assert.equal(verifyFull(['2q+3=11','3=11','9r=9']).supported,false);
+  assert.equal(verifyFull(['q=q',...Array(101).fill('0=0')]).supported,false);
+});
+
+test('repair metrics support a constant predecessor within an attested variable context',()=>{
+  const truth=['2q+3=2q+7','3=7','0=0','0=0'];
+  const run=actual=>scoreArm(truth.map((literal,i)=>({literal,box:box(i)})),crops(actual));
+  const later=run([truth[0],truth[1],'0=4',truth[3]]);
+  assert.ok(later.partialRepair && !later.completeRepair);
+  assert.equal(later.expectedFirstChanged,3);
+  assert.equal(later.observedFirstChanged,4);
+  assert.ok(run([truth[0],truth[1],'0=4','1=5']).completeRepair);
+  assert.ok(!run([truth[0].replaceAll('q','r'),truth[1],'0=4','1=5']).completeRepair);
 });

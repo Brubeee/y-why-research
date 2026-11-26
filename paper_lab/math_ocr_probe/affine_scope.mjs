@@ -4,6 +4,13 @@ import { parseEquation } from '../verify.mjs';
 // or score literal fidelity. Preserve every visible math token, except the
 // stacked fraction bar represented as two explicitly grouped operands.
 export function affineReference(label) {
+  const line = parseAffineDisplay(label);
+  return line.parsed && !line.parsed.variable ? { reason: 'no-variable' } : line;
+}
+
+// Shared lossless display adapter for exact checking, including constant
+// equalities. Inclusion policies (isolated formulas vs ordered rows) differ.
+export function parseAffineDisplay(label) {
   if (typeof label !== 'string' || label.length > 512)
     return { reason: 'layout-outside-scope' };
   if ((label.match(/=/g) ?? []).length !== 1)
@@ -47,6 +54,5 @@ export function affineReference(label) {
   catch { return { reason: 'layout-outside-scope' }; }
   const parsed = parseEquation(text);
   if (!parsed.ok) return { reason: 'checker-unsupported' };
-  if (!parsed.variable) return { reason: 'no-variable' };
   return { text, parsed };
 }

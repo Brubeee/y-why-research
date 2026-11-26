@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { basename, join, resolve } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 import { pathToFileURL } from 'node:url';
-import { affineReference } from './affine_scope.mjs';
+import { parseAffineDisplay } from './affine_scope.mjs';
 import { verifyRows } from '../verify.mjs';
 
 export const ARMS = ['oracle', 'detector', 'rule_mask_detector'];
@@ -25,15 +25,21 @@ function cover([l,t,r,b], [L,T,R,B]) {
     Math.max(0,Math.min(b,B)-Math.max(t,T))/area([L,T,R,B]);
 }
 
-export function verifyFull(lines) {
-  if (lines.length < 2) return {supported:false};
-  // Refuse unsupported suffixes even if the product checker would stop earlier.
-  const all = lines.map(s=>affineReference(unwrap(s)));
-  if (all.some(x=>!x.parsed) || new Set(all.map(x=>x.parsed.variable)).size !== 1)
-    return {supported:false};
-  const [anchor,...rows] = all.map(x=>({text:x.text,confirmed:true}));
+function firstChange(lines) {
+  const [anchor,...rows] = lines.map(x=>({text:x.text,confirmed:true}));
   const v=verifyRows({anchor,rows});
-  return {supported:true,firstChanged:v.firstIssue===null ? null : v.firstIssue+2};
+  return v.firstIssue===null ? null : v.firstIssue+2;
+}
+
+export function verifyFull(lines) {
+  if (lines.length < 2 || lines.length > 101) return {supported:false};
+  // A variable-bearing original defines this cohort. Suffixes may cancel
+  // the variable, but cannot introduce another, even after an early error.
+  const all = lines.map(s=>parseAffineDisplay(unwrap(s)));
+  const variable = all[0].parsed?.variable;
+  if (!variable || all.some(x=>!x.parsed || (x.parsed.variable && x.parsed.variable!==variable)))
+    return {supported:false};
+  return {supported:true,variable,firstChanged:firstChange(all)};
 }
 
 export function scoreArm(ref, crops) {
@@ -52,9 +58,11 @@ export function scoreArm(ref, crops) {
   const firstIssueAgreement=comparable && truth.firstChanged===observed.firstChanged;
   const k=truth.firstChanged===null || !truth.supported ? null : truth.firstChanged-1;
   const issuePairPreserved=k!==null && firstIssueAgreement && same(k-1) && same(k);
-  const pair=k!==null && comparable && same(k-1) && !same(k) ?
-    verifyFull([actual[k-1],actual[k]]) : null;
-  const repair=pair?.supported && pair.firstChanged===null;
+  // The entire chain is already scope-checked. The immediate predecessor
+  // may itself be constant; it is not a new variable-bearing original.
+  const repair=k!==null && comparable && truth.variable===observed.variable &&
+    same(k-1) && !same(k) &&
+    firstChange([actual[k-1],actual[k]].map(s=>parseAffineDisplay(unwrap(s))))===null;
   return {
     expectedRows:ref.length, returnedRows:crops.length, geometryExact, exact,
     missingRows:ref.filter((_,i)=>!links.some(ids=>ids.includes(i))).length,

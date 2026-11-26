@@ -92,7 +92,8 @@ no second row covered at 10% or more. These percentages are box overlap,
 not actual ink coverage; inspect disputed clipping separately.
 
 Compare three distinct measures: exact ordered transcription; agreement on the
-first changed physical row, with every row supported and one common variable;
+first changed physical row, requiring a variable in the first equation and
+allowing constant-only suffix rows from cancellation, but no switched variable;
 and the literal adjacent pair supporting that issue. A correct row index can
 coexist with a changed starting equation. Track when an original erroneous row
 becomes equivalent to its unchanged predecessor and the first issue moves
