@@ -822,55 +822,76 @@ test('a cancelled picker or rejected MIME, empty, or oversize selection preserve
   }
 });
 
-test('a rejected pick leaves the current OCR owner and edit guard intact; a real PNG replacement wins',async t=>{
+test('a newer rejected selection supersedes a pending reread without changing the committed worksheet',async t=>{
   t.after(()=>{globalThis.fetch=savedFetch;get('clear').dispatch('click');});
-  await correctedDraft();
-  const picker=get('photo');
-  async function rejectPick(){
-    picker.files=[new Blob([],{type:'image/jpeg'})];
-    picker.value='empty JPEG';
-    await picker.dispatch('change');
-    assert.equal(picker.value,'');
-  }
-  function pendingReread(){
-    const d=defer();let signal;
-    globalThis.fetch=(url,opts)=>{signal=opts.signal;return d.promise;};
-    const task=get('read-full').dispatch('click');
-    assert.ok(signal);
-    return {signal,task,done:d.resolve};
-  }
-  const unchanged=pendingReread();
-  await rejectPick();assert.equal(unchanged.signal.aborted,false);
-  unchanged.done(response([replyLine('x=10')]));await unchanged.task;
-  assert.equal(get('rows').children[0].children[1].value,'x=10','still-current OCR may commit');
-
-  const changed=pendingReread();
-  const row=get('rows').children[0].children[1];
-  row.value='x=99';row.dispatch('input');
-  await rejectPick();assert.equal(changed.signal.aborted,false);
-  changed.done(response([replyLine('x=11')]));await changed.task;
-  assert.equal(get('rows').children[0].children[1],row);
-  assert.equal(row.value,'x=99','prior edit remains authoritative');
-  assert.match(get('scan-status').textContent,/not applied/);
-
-  const old=pendingReread(), oldSource=img.src;
-  await rejectPick();assert.equal(old.signal.aborted,false);
-  const replacement=photo('new valid PNG');
-  globalThis.fetch=async(url,opts)=>{
-    assert.equal(opts.body,replacement);
-    assert.equal(opts.headers['Content-Type'],'image/png');
-    return response([replyLine('x=30')]);
-  };
-  picker.files=[replacement];await picker.dispatch('change');
-  assert.equal(old.signal.aborted,true);
-  assert.notEqual(img.src,oldSource);
-  assert.equal(get('anchor-check').checked,false);
-  assert.equal(get('region').hidden,true);
-  const rows=get('rows').children;
-  assert.equal(rows[0].children[1].value,'x=30');
-  old.done(response([replyLine('x=12')]));await old.task; // mocked transport ignores abort
+  const rows=await correctedDraft(), verdict=get('verdict').words(), source=img.src, picker=get('photo');
+  const net=defer();let signal;
+  globalThis.fetch=(_url,options)=>{signal=options.signal;return net.promise;};
+  const reread=get('read-full').dispatch('click');
+  assert.ok(signal);
+  picker.files=[new Blob([],{type:'image/jpeg'})];picker.value='empty JPEG';
+  await picker.dispatch('change');
+  const rejection=get('scan-status').textContent;
+  assert.match(rejection,/Choose a nonempty PNG or JPEG/);
+  assert.equal(signal.aborted,true);
+  net.resolve(response([replyLine('x=10')]));await reread; // transport ignores abort
+  assert.equal(get('scan-status').textContent,rejection);
   assert.equal(get('rows').children,rows);
-  assert.equal(rows[0].children[1].value,'x=30');
+  assert.equal(img.src,source);
+  assert.equal(get('anchor-check').checked,true);
+  assert.equal(get('verdict').words(),verdict);
+});
+
+test('picker dismissal leaves a pending candidate alone; invalid real picks supersede it',async t=>{
+  t.after(()=>{globalThis.fetch=savedFetch;get('clear').dispatch('click');});
+  const rows=await correctedDraft(), verdict=get('verdict').words(), source=img.src, picker=get('photo');
+  for(const rejected of [
+    new Blob([new Uint8Array(4_000_001)],{type:'image/png'}),
+    new Blob(['wrong type'],{type:'application/pdf'}),
+  ]){
+    const net=defer();let signal,calls=0;
+    globalThis.fetch=(_url,options)=>{signal=options.signal;calls++;return net.promise;};
+    const pending=loadPhoto('valid candidate');
+    const checking=get('scan-status').textContent;
+    picker.files=[];await picker.dispatch('change');
+    assert.equal(signal.aborted,false);
+    assert.equal(get('scan-status').textContent,checking);
+    picker.files=[rejected];picker.value='rejected candidate';await picker.dispatch('change');
+    assert.equal(picker.value,'');
+    assert.equal(calls,1);
+    assert.equal(signal.aborted,true);
+    const rejection=get('scan-status').textContent;
+    assert.match(rejection,/Choose a nonempty PNG or JPEG/);
+    net.resolve(response([replyLine('x=10')]));await pending;
+    assert.equal(get('scan-status').textContent,rejection);
+    assert.equal(get('rows').children,rows);
+    assert.equal(img.src,source);
+    assert.equal(get('anchor-check').checked,true);
+    assert.equal(get('verdict').words(),verdict);
+  }
+});
+
+test('an edit keeps the worksheet and leaves the picker ready to retry the same photo',async t=>{
+  t.after(()=>{globalThis.fetch=savedFetch;get('clear').dispatch('click');});
+  const rows=await correctedDraft(), source=img.src, picker=get('photo');
+  const file=photo('same PNG'), net=defer(), posted=[];
+  globalThis.fetch=(_url,options)=>{posted.push(options.body);return posted.length===1?net.promise:Promise.resolve(response([replyLine('x=32')]));};
+  const select=()=>{
+    picker.files=[file];picker.value='same.png';
+    return picker.dispatch('change');
+  };
+  const prior=select();
+  const field=rows[1].children[1];
+  field.value='x=99';field.dispatch('input');
+  net.resolve(response([replyLine('x=31')]));await prior;
+  assert.equal(img.src,source);
+  assert.equal(get('rows').children,rows);
+  assert.equal(field.value,'x=99');
+  assert.equal(picker.value,'','clear the input even if the user edits during OCR');
+  await select();
+  assert.deepEqual(posted,[file,file]);
+  assert.notEqual(img.src,source);
+  assert.equal(get('rows').children[0].children[1].value,'x=32');
 });
 
 test('server rejection of a nominal replacement keeps the verified active photo', async t=>{

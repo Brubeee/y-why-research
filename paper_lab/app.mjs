@@ -231,9 +231,14 @@ function cancelPhotoCandidate() {
   disposePhotoCandidate(owner);
   owner.preview = null; owner.url = null;
 }
+function cancelPhotoReread() {
+  const owner = inflight;
+  inflight = null; revision++;
+  owner?.abort();
+}
 function clearPhoto() {
   cancelPhotoCandidate();
-  inflight?.abort(); inflight = null; revision++;
+  cancelPhotoReread();
   if (objectUrl) URL.revokeObjectURL(objectUrl);
   objectUrl = null; dims = null; currentFile = null; clearRegion(); clearAttestation();
   $('region-tools').hidden = true; $('anchor-control').hidden = true;
@@ -353,14 +358,18 @@ async function readDraft(target = null) {
 }
 
 $('photo').addEventListener('change', async () => {
-  const file = $('photo').files?.[0];
-  if (!file) return;
+  const picker = $('photo'), file = picker.files?.[0];
+  if (!file) return; // Closing the picker without selecting isn't a new request.
+  // Retain the File, but allow a same-file retry even if this read is discarded.
+  picker.value = '';
+  // A new selection takes ownership even if it fails validation. Do not clear
+  // any committed photo, rows, or feedback until a replacement actually succeeds.
+  cancelPhotoCandidate();
+  cancelPhotoReread();
   if (!['image/png','image/jpeg'].includes(file.type) || !file.size || file.size > MAX_BYTES) {
-    $('photo').value = '';
     status('Choose a nonempty PNG or JPEG no larger than 4 MB.');
     return;
   }
-  cancelPhotoCandidate();
   const owner = {abort:new AbortController(), url:null, preview:null};
   photoCandidate = owner;
   const draft = draftRevision;
@@ -379,7 +388,6 @@ $('photo').addEventListener('change', async () => {
     if (!result.ok) {
       const detail = data?.error || 'OCR could not read this photo.';
       const reason = [413,415,422].includes(result.status) ? detail : 'OCR temporarily unavailable. ' + detail;
-      $('photo').value='';
       status(reason + ' Photo not replaced. You can try another image or enter lines by hand.');
       return;
     }
@@ -410,7 +418,6 @@ $('photo').addEventListener('change', async () => {
       : 'No text detected in the new photo. Try another area or type the lines.');
   } catch (e) {
     if (applicable()) {
-      $('photo').value='';
       status('Photo not replaced. ' + e.message + ' Try again or type the lines.');
     }
   } finally {
