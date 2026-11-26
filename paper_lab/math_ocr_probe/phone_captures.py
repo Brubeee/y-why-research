@@ -157,7 +157,9 @@ def prepare(bundle, crops_dir):
                              'crop_sha256':digest(path.read_bytes())})
     write_json(crops_dir/'manifest.json', [{'key':'private-capture','crops':manifest}])
     write_json(crops_dir/'binding.json', {'raster_sha256':expected['raster_sha256'],
-                'frozen_sha256':digest(frozen_bytes),'counts':{k:len(v) for k,v in arms.items()}})
+                'frozen_sha256':digest(frozen_bytes),
+                'manifest_sha256':digest((crops_dir/'manifest.json').read_bytes()),
+                'counts':{k:len(v) for k,v in arms.items()}})
 
 
 if __name__ == '__main__':

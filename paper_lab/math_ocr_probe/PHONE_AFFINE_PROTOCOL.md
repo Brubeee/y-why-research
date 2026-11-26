@@ -80,3 +80,31 @@ browser and live endpoint; they do not change the product.
    runtime, `node page_recognize.mjs CROPS --private-phone` accepts this
    one-capture manifest; old eight-pack runs are unchanged. Save any literal
    OCR output only to the private folder.
+
+## Score without crediting a coincidentally correct verdict
+
+Run `node paper_lab/math_ocr_probe/phone_score.mjs BUNDLE CROPS RESULT.json`.
+The scorer checks the frozen and ordered manifest fingerprints, exact returned
+crop metadata/order and each crop file hash. It associates crops to physical
+rows from geometry without looking at their text. Its conservative bounding
+box rule requires at least 90% of each manual box in one crop, in order, with
+no second row covered at 10% or more. These percentages are box overlap,
+not actual ink coverage; inspect disputed clipping separately.
+
+Compare three distinct measures: exact ordered transcription; agreement on the
+first changed physical row, with every row supported and one common variable;
+and the literal adjacent pair supporting that issue. A correct row index can
+coexist with a changed starting equation. Track when an original erroneous row
+becomes equivalent to its unchanged predecessor and the first issue moves
+later or disappears. Neither a one-line capture nor a chain with a broken or
+unsupported suffix earns issue credit. No OCR is rewritten to gain a match.
+
+For cohort reporting, keep a separate local JSON array of planned IDs before
+intake (one ID per capture condition and sheet), then create a receipts JSON
+array. Examples: `{"id":"sheet1-straight","status":"scored","bundle":"...",
+"crops":"...","result":"..."}` and `{"id":"sheet1-oblique","status":"illegible"}`.
+Other explicit receipt statuses are `intake-rejected` and `inference-failed`;
+a planned ID without a receipt remains pending. Run `phone_score.mjs PLANNED.json
+RECEIPTS.json` using Node. The planned denominator includes failed and pending
+captures and the report also gives comparable-chain counts by arm. Byte-identical
+reuploads cannot count twice; that does not establish independent writers.
