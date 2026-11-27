@@ -38,6 +38,13 @@ It must survive OCR and stay unchanged until the reviewer edits it.
 | C1 | Walk through the controls by keyboard or a device screen reader. At high zoom and in phone portrait check both the photo and confirmed rows. | Both photo entry controls are named, each row confirmation can be reached, focus is visible, status changes can be heard, and the review does not require horizontal scrolling to reach the check button. In the typed path, confirmation focuses the result heading and Edit returns focus to the original input. Mark device and assistive technology used. |
 | C2 | After A4, check storage before and after explicitly saving a review. Press **Clear**, reload, then use **Delete saved review** and reload again. | Worksheet and evidence disappear on Clear. Only the opt-in authored item/outcome record survives reload; it contains no photo, rows or answers. Delete removes that record. Check browser Back/Forward separately; a browser-restored live page is not proof of data deletion. |
 
+For B2 on the private formula route, also simulate a connection that stalls
+without closing (waiting for headers or a partial response body). Keep the
+page foregrounded. The 210-second browser deadline should stop waiting,
+keep the current worksheet, and let the user select the same photo again.
+It must not trigger an automatic retry. Browser cancellation does not prove
+the server's inference stopped; check the hosting timeout separately.
+
 ## Evidence to keep separate
 
 - **Exact-loop regression:** The private synthetic smoke is a real OCR HTTP

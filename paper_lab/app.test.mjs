@@ -1614,3 +1614,56 @@ test('typed confirmation and edit move keyboard focus when their triggering butt
   assert.equal(document.activeElement,get('typed-work'),'edit returns focus to the reopened input');
   assert.equal(get('typed-work').value,'2x=8\nx=5');
 });
+
+test('formula request deadline covers both headers and draft body without replacing current work', async t => {
+  const oldFetch=globalThis.fetch;
+  t.after(()=>{globalThis.fetch=oldFetch;get('clear').dispatch('click');delete window.location;});
+  window.location={search:'?formula=1'};
+  await import('./app.mjs?formula-network-deadline');
+  get('clear').dispatch('click');
+  get('typed-work').value='2x+6=14\n2x=9';
+  get('typed-work').dispatch('input');
+  get('confirm-typed').dispatch('click');
+  const oldVerdict=get('verdict').words();
+  assert.match(oldVerdict,/First verified change/);
+  const file=new Blob(['synthetic'],{type:'image/jpeg'});
+  const payload={engine:'glm-ocr',status:'unconfirmed',mode:'glm-ocr/formula-recognition',
+    reviewRequired:true,limitHit:false,raw:'$$\\begin{array}{l}x+1=2\\\\x=1\\end{array}$$'};
+  function select() {
+    get('camera-photo').files=[file];
+    return get('camera-photo').dispatch('change');
+  }
+  t.mock.timers.enable({apis:['setTimeout']});
+  for (const phase of ['headers','body']) {
+    let signal, release, bodyStarted=false;
+    const stalled=new Promise(resolve=>{release=resolve;});
+    globalThis.fetch=(_url,init)=>{
+      signal=init.signal;
+      return phase==='headers' ? stalled : Promise.resolve({
+        ok:true, json:()=>{bodyStarted=true;return stalled;},
+      });
+    };
+    const work=select();
+    await Promise.resolve();
+    assert.equal(bodyStarted,phase==='body');
+    t.mock.timers.tick(209_999);
+    assert.equal(signal.aborted,false);
+    t.mock.timers.tick(1);
+    assert.equal(signal.aborted,true,'timeout aborts transport even if response ignores cancellation');
+    await work;
+    assert.match(get('scan-status').textContent,/taking too long/i);
+    assert.equal(get('verdict').words(),oldVerdict);
+    assert.equal(get('photo-recovery').hidden,true);
+    assert.equal(get('photo-view').hidden,true);
+    release(phase==='headers' ? Response.json(payload) : payload);
+    await Promise.resolve();
+    assert.equal(get('verdict').words(),oldVerdict,'late reply cannot replace the committed worksheet');
+  }
+  let finalSignal;
+  globalThis.fetch=async(_url,init)=>{finalSignal=init.signal;return Response.json(payload);};
+  await select();
+  assert.equal(get('photo-view').hidden,false);
+  assert.equal(get('rows').children[1].children[1].value,'x=1');
+  t.mock.timers.tick(210_000);
+  assert.equal(finalSignal.aborted,false,'a completed upload clears its timer');
+});

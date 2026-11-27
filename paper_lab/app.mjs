@@ -52,6 +52,36 @@ async function readOcrResponse(response) {
     return null;
   }
 }
+// Local GLM allows 120 s to start and 60 s to infer. The browser leaves
+// another 30 s for upload/response, but doesn't leave the learner waiting
+// indefinitely if the connection stalls before headers or mid-body.
+const FORMULA_PHOTO_DEADLINE_MS = 210_000;
+async function requestFormulaPhoto(file, controller) {
+  const {signal} = controller;
+  let interrupted;
+  let timer;
+  const stop = new Promise((_, reject) => {
+    interrupted = () => reject(new DOMException('Photo request cancelled.', 'AbortError'));
+    signal.addEventListener('abort', interrupted, {once:true});
+    timer = setTimeout(() => {
+      reject(new Error('The photo reader is taking too long. Choose the same photo to try again.'));
+      controller.abort();
+    }, FORMULA_PHOTO_DEADLINE_MS);
+  });
+  try {
+    const upload = async () => {
+      const response = await fetch(photoEndpoint, {
+        method:'POST', headers:{'Content-Type':file.type}, body:file, signal,
+      });
+      if (signal.aborted) throw new DOMException('Photo request cancelled.', 'AbortError');
+      return [response, await readOcrResponse(response)];
+    };
+    return await Promise.race([stop, upload()]);
+  } finally {
+    clearTimeout(timer);
+    signal.removeEventListener('abort', interrupted);
+  }
+}
 const MAX_ROWS = 45;
 let rows = [], objectUrl, dims, inflight, revision = 0, draftRevision = 0, chainRevision = 0, diagnosis = null, skillMatch = null;
 let currentFile = null, region = null, selecting = false, corner = null, retrySession = null;
@@ -430,9 +460,14 @@ async function startPhotoCandidate(file,picker) {
   };
   status('Checking the selected photo on the local host. Your current work stays in place for now.');
   try {
-    const result = await fetch(photoEndpoint, {method:'POST',headers:{'Content-Type':file.type},body:file,signal:owner.abort.signal});
-    if (!applicable()) return;
-    const data = await readOcrResponse(result);
+    let result, data;
+    if (formulaPhoto) {
+      [result, data] = await requestFormulaPhoto(file, owner.abort);
+    } else {
+      result = await fetch(photoEndpoint, {method:'POST',headers:{'Content-Type':file.type},body:file,signal:owner.abort.signal});
+      if (!applicable()) return;
+      data = await readOcrResponse(result);
+    }
     if (!applicable()) return;
     if (!result.ok) {
       if (formulaPhoto && result.status === 503 && data?.status === 'error' && data.reason === 'formula_busy') {
