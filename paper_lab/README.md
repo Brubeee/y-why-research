@@ -104,7 +104,10 @@ The worker keeps one model warm and admits only one inference at a time. It
 does not queue a second image. Startup and inference are separately bounded
 (120 s and 60 s respectively); an inference deadline kills the worker before
 another request can start. The input is limited to single-frame raw PNG/JPEG
-under the shared 4 MB and 12 MP limits. The offline worker orients via EXIF and
+up to 4 MB, 12.5 million pixels and 7000 pixels per side. The formula path
+accepts 4032 × 3024 (or portrait) within that byte limit, which the previous
+12-million-pixel cap rejected. The legacy Tesseract cap is unchanged.
+The offline worker orients via EXIF and
 fits within 768 pixels without upscaling. Uploaded images are not written to
 disk or forwarded. Responses are marked `no-store`. This is a private loopback
 test server, not a public hosting or deployment prescription.
@@ -117,7 +120,7 @@ python paper_lab/local_release_smoke.py --formula-python /path/to/venv/bin/pytho
 ```
 
 This uses Pillow, DejaVu Sans, and Node. It generates one synthetic JPEG
-locally, opens only an ephemeral loopback port, runs the suites with the
+locally at 3024 × 4032, opens only an ephemeral loopback port, runs the suites with the
 real worker, and removes the fixture and stops the server on exit. There is
 no user-photo argument. Verify the pinned weight hash above first; the tool
 does not download or authenticate model weights. The composed test preserves

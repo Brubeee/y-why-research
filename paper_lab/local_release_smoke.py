@@ -15,13 +15,16 @@ from PIL import Image, ImageDraw, ImageFont
 HERE = Path(__file__).resolve().parent
 
 
-def synthetic_page(path):
+def synthetic_page(path, *, camera_dimensions=False):
     page = Image.new('RGB', (576, 768), 'white')
     draw = ImageDraw.Draw(page)
     font = ImageFont.truetype('DejaVuSans.ttf', 37)
     # The middle line intentionally changes the solution set.
     for i, line in enumerate(('7x+4=53', '7x=48', 'x=7')):
         draw.text((85, 220 + 66*i), line, fill='black', font=font)
+    if camera_dimensions:
+        # Nominal 12 MP portrait image, not a real phone capture.
+        page = page.resize((3024, 4032), Image.Resampling.LANCZOS)
     page.save(path, format='JPEG', quality=92)
 
 
@@ -49,7 +52,7 @@ def main():
         parser.error('Point to an existing worker Python and pinned local model.')
     with tempfile.TemporaryDirectory(prefix='ywhy-release-smoke-') as tmp:
         fixture = Path(tmp) / 'synthetic.jpg'
-        synthetic_page(fixture)
+        synthetic_page(fixture, camera_dimensions=True)
         with subprocess.Popen(
             [sys.executable, HERE / 'ocr_server.py', '--port', '0',
              '--formula-python', worker_python, '--formula-model', model],

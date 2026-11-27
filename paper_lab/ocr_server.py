@@ -15,7 +15,7 @@ import tempfile
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import unquote, urlsplit
-from formula_worker import FormulaWorker, WorkerError
+from formula_worker import FORMULA_MAX_PIXELS, FORMULA_MAX_SIDE, FormulaWorker, WorkerError
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
@@ -44,7 +44,7 @@ class Rejected(ValueError):
         super().__init__(message)
         self.code = code
 
-def image_info(data, mime):
+def image_info(data, mime, *, max_pixels=MAX_PIXELS, max_side=MAX_SIDE):
     """Read basic dimensions before letting the OCR process decode an image."""
     if mime == 'image/png':
         if (len(data) < 33 or not data.startswith(PNG)
@@ -83,7 +83,7 @@ def image_info(data, mime):
         raise Rejected(415, 'Send a raw PNG or JPEG image.')
     if not w or not h:
         raise Rejected(422, 'Image dimensions are invalid.')
-    if max(w, h) > MAX_SIDE or w*h > MAX_PIXELS:
+    if max(w, h) > max_side or w*h > max_pixels:
         raise Rejected(413, 'Image is too large to decode. Resize it and try again.')
     return ext, w, h
 
@@ -248,7 +248,7 @@ class Handler(BaseHTTPRequestHandler):
             if self.path == '/api/ocr':
                 payload=draft_ocr(data,mime)
             else:
-                image_info(data,mime)
+                image_info(data, mime, max_pixels=FORMULA_MAX_PIXELS, max_side=FORMULA_MAX_SIDE)
                 worker = getattr(self.server, 'formula_worker', None)
                 if worker is None:
                     raise Rejected(503, 'Local formula OCR is not configured.')

@@ -140,6 +140,19 @@ class FormulaWorkerTest(unittest.TestCase):
                 release.set()
                 first.close()
 
+    def test_formula_accepts_standard_camera_dimensions_only_within_bounds(self):
+        # Check the local HTTP size gate with genuine, small-on-disk JPEGs.
+        import io
+        from PIL import Image
+        with local_http(self.worker) as post:
+            for size, expected in [((3024, 4032), 200), ((3200, 4000), 413),
+                                   ((7001, 100), 413)]:
+                with self.subTest(size=size), io.BytesIO() as image:
+                    Image.new('RGB', size, 'white').save(image, 'JPEG')
+                    headers = {'Content-Type': 'image/jpeg'}
+                    status, _, _ = post(image.getvalue(), **headers)
+                    self.assertEqual(status, expected)
+
     def test_loopback_http_honest_outcomes(self):
         png = printed_page()
         with local_http() as post:

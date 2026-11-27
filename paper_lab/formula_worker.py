@@ -10,6 +10,8 @@ import threading
 import time
 
 MAX_INPUT = 4_000_000
+FORMULA_MAX_PIXELS = 12_500_000  # Include nominal 12 MP captures such as 4032 x 3024.
+FORMULA_MAX_SIDE = 7000
 MAX_REPLY = 50_000  # Maximum framed JSON including Unicode escapes.
 MAX_RAW = 8192
 MODE = 'glm-ocr/formula-recognition'
@@ -162,7 +164,8 @@ def _serve(model_path, fd):
         def recognize_image(data):
             try:
                 with Image.open(io.BytesIO(data), formats=('JPEG', 'PNG')) as source:
-                    if (max(source.size) > 7000 or source.width * source.height > 12_000_000
+                    if (max(source.size) > FORMULA_MAX_SIDE
+                            or source.width * source.height > FORMULA_MAX_PIXELS
                             or getattr(source, 'n_frames', 1) != 1):
                         raise ValueError
                     image = ImageOps.exif_transpose(source).convert('RGB')
