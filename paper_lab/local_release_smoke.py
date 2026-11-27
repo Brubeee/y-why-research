@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Reproduce the private, synthetic photo-to-practice smoke on Linux."""
 import argparse
+import hashlib
 import os
 from pathlib import Path
 import re
@@ -13,6 +14,7 @@ import tempfile
 from PIL import Image, ImageDraw, ImageFont
 
 HERE = Path(__file__).resolve().parent
+PINNED_WEIGHTS_SHA256 = "a16eb0de98d199293371c560f95f83130d2a2c9612449df16839f08ff9498815"
 
 
 def synthetic_page(path, *, camera_dimensions=False):
@@ -47,9 +49,21 @@ def main():
     args = parser.parse_args()
     # Keep the executable symlink: resolving it can bypass its virtualenv.
     worker_python = args.formula_python.absolute()
-    model = args.formula_model.resolve(strict=True)
-    if not worker_python.is_file() or not (model / 'model.safetensors').is_file():
-        parser.error('Point to an existing worker Python and pinned local model.')
+    if not worker_python.is_file() or not os.access(worker_python, os.X_OK):
+        parser.error('Worker Python is missing or not executable.')
+    model = args.formula_model.resolve()
+    weights = model / 'model.safetensors'
+    if not weights.is_file():
+        parser.error('Pinned model weights not found. Provision the documented local snapshot first.')
+    digest = hashlib.sha256()
+    try:
+        with weights.open('rb') as source:
+            for block in iter(lambda: source.read(4 * 1024 * 1024), b''):
+                digest.update(block)
+    except OSError:
+        parser.error('Pinned model weights could not be read.')
+    if digest.hexdigest() != PINNED_WEIGHTS_SHA256:
+        parser.error('Pinned model SHA-256 mismatch. The private OCR smoke did not start.')
     with tempfile.TemporaryDirectory(prefix='ywhy-release-smoke-') as tmp:
         fixture = Path(tmp) / 'synthetic.jpg'
         synthetic_page(fixture, camera_dimensions=True)
