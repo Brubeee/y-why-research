@@ -282,6 +282,8 @@ def main():
         server.formula_worker = worker
         try:
             server.serve_forever()
+        except KeyboardInterrupt:
+            pass  # The local operator or a smoke test stopped the server.
         finally:
             if worker:
                 worker.close()

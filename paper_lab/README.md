@@ -8,7 +8,7 @@ This branch is an assistant-assisted R&D prototype requested by the project owne
 - An exact integer/rational affine checker preserves solution-set equivalence, spots the first changed solution set and stops at an unreadable/unconfirmed row. It does not certify every reasoning move or grade the entire page.
 - A bounded symbolic diagnostic compares two executable candidate responses and searches for a new prompt whose predictions and correct answer differ. It reports observed consistency, not a proven misconception, and does not use a trained model. Example: `−(x−4)=12 → −x−4=12` can lead to `−3(y−2)`; `−3y−2`, `−3y−6`, and `−3y+6` are distinct.
 - Course selector uses an optional, explicit book or programme choice. After the checker sees a confirmed supported equation it can suggest one of two book-specific review references; IB MYP stays at the Algebra topic level. This does not infer the photographed chapter or adjust exact correctness.
-- Responsive local web UI includes a camera/file input. No store release, PWA installability, handheld validation, cloud OCR, accounts, saved practice history or MEMEX scheduling yet.
+- Responsive local web UI includes separate native-camera and existing-photo inputs. A short next-day practice item can be saved locally by opt-in (see below). No store release, PWA claim, handheld validation, cloud OCR, account history or MEMEX integration.
 
 ## Run locally
 
@@ -109,12 +109,45 @@ fits within 768 pixels without upscaling. Uploaded images are not written to
 disk or forwarded. Responses are marked `no-store`. This is a private loopback
 test server, not a public hosting or deployment prescription.
 
-To run the optional full app-listener smoke with the live worker, set
-`YWHY_FORMULA_SMOKE_PORT` to the server port and `YWHY_FORMULA_SMOKE_JPEG` to
-a synthetic JPEG showing `7x+4=53`, `7x=48`, `x=7` in order, then run
-`node --test paper_lab/app.test.mjs`. This is a DOM harness, not a browser or
-handset test. The smoke proceeds from an intact transcription through a
-declared subtraction, verified repair, and independent practice.
+Run the reproducible private check with the pinned local model:
+
+```sh
+python paper_lab/local_release_smoke.py --formula-python /path/to/venv/bin/python \
+  --formula-model /path/to/pinned-model
+```
+
+This uses Pillow, DejaVu Sans, and Node. It generates one synthetic JPEG
+locally, opens only an ephemeral loopback port, runs the suites with the
+real worker, and removes the fixture and stops the server on exit. There is
+no user-photo argument. Verify the pinned weight hash above first; the tool
+does not download or authenticate model weights. The composed test preserves
+`7x+4=53 → 7x=48 → x=7` exactly as written, waits for explicit complete-order
+review, then exercises the first changed line, exact repair, and a separate
+unaided practice problem. This is a DOM harness, not a physical phone test.
+
+### Release handoff
+
+Treat the research UI as the behavioral reference for any future frontend,
+not permission to publish or wire up a live site. Keep these gates separate:
+
+- **Local behavior:** photo and typed routes enter the same exact checker only
+  after confirmation. A rejected or superseded photo cannot clear the current
+  verified worksheet. Only contention offers a manual retry of the same photo;
+  the file is held in page memory and only resent on an explicit click.
+- **Real phones:** before release, verify camera and gallery, normal and rotated
+  captures, HEIC/oversize recovery, busy retry and focus, whole-page confirmation,
+  exact repair and independent practice on target Android and iOS browsers.
+  A viewport can check layout only.
+- **Reading quality:** freeze independent anonymous or explicitly consented
+  practice pages before evaluation. Measure written symbols and complete row
+  order separately from checker verdicts. Synthetic passes are not handwriting
+  accuracy. Keep visible confirmation, even if accuracy improves.
+- **Hosting and privacy:** verify same-origin ingress, body limits, cold and
+  warm latency, single-job contention and no-store/no logging at each request
+  hop. The loopback server is not suitable for public exposure. The Lovable
+  visual preview is separate, with no connected live OCR in the reviewed build.
+  Do not upload real student work, connect a live service or publish from this
+  checklist.
 
 ## Shared typed and formula-photo tutoring candidate
 
