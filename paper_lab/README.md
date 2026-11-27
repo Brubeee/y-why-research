@@ -78,9 +78,19 @@ the official MIT `zai-org/GLM-OCR` snapshot at
 `2e85a62840ccac27daa451df36c736c4636b8628` in a local directory. Verify
 `model.safetensors` SHA-256
 `a16eb0de98d199293371c560f95f83130d2a2c9612449df16839f08ff9498815`
-before running. The checked development setup used CPU Torch `2.15.0+cpu`,
-Transformers `5.6.2`, and Pillow. No Hugging Face requests are made at runtime
-and remote model code is not enabled.
+before running. The checked Linux/Python 3.12 setup used the following
+packages in a dedicated virtual environment:
+
+```sh
+python3 -m venv /path/to/venv
+/path/to/venv/bin/python -m pip install --index-url https://download.pytorch.org/whl/cpu \
+  'torch==2.15.0+cpu' 'torchvision==0.29.2+cpu'
+/path/to/venv/bin/python -m pip install 'transformers==5.6.2' 'Pillow==13.0.0'
+```
+
+Transformers initializes a video processor as part of loading this model,
+so Torchvision is needed even though Paper Lab only accepts still images.
+No Hugging Face requests are made at runtime and remote model code is not enabled.
 
 ```sh
 python paper_lab/ocr_server.py --formula-python /path/to/venv/bin/python \
