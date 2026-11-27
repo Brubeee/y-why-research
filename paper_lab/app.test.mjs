@@ -1527,11 +1527,16 @@ test('typed and attested photo routes replace a repeated repair with distinct in
     assert.equal(get('typed-retry-hint').disabled,true);
     get('typed-retry-answer').value='17=3(2−k)+k';get('typed-retry-form').dispatch('submit');
     assert.match(get('typed-retry-evidence').textContent,/First supported response: before help/);
-    if (source==='formula') {
+    assert.equal(get('delayed-save').hidden,false);
+    const evidence=get('typed-retry-evidence').textContent;
+    const prompt=get('typed-retry-question').textContent;
+    for (const [control,event] of [['verify','click'],['operation-claim-form','submit'],['typed-repair-form','submit']]) {
+      get(control).dispatch(event);
+      assert.equal(get('typed-retry-evidence').textContent,evidence,source+' recheck via '+control);
+      assert.equal(get('typed-retry-question').textContent,prompt);
       assert.equal(get('delayed-save').hidden,false);
-      const before=get('typed-retry-evidence').textContent;
-      get('typed-repair-form').dispatch('submit');
-      assert.equal(get('typed-retry-evidence').textContent,before);
+    }
+    if (source==='formula') {
       get('anchor-check').checked=false; get('anchor-check').dispatch('change');
       assert.equal(get('typed-retry').hidden,true);
       get('typed-retry-form').dispatch('submit');

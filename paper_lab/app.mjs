@@ -556,6 +556,10 @@ $('operation-claim-form').addEventListener('submit', event => {
     return;
   }
   const claim = {kind,constant:$('operation-constant').value.trim()};
+  // A second tap on the same declared move must not discard a live retry.
+  if (currentTypedActionIsLive(typedRepairContext) &&
+      typedRepairContext.claim?.kind === claim.kind &&
+      typedRepairContext.claim?.constant === claim.constant) return;
   const result = classifyTypedStep({
     before:currentActionContext.before,
     observed:currentActionContext.after,
@@ -707,6 +711,12 @@ $('edit-typed').addEventListener('click', () => {
 });
 $('verify').addEventListener('click', checkSelectedWork);
 function checkSelectedWork() {
+  if (currentTypedActionIsLive()) {
+    // Preserve the proof, repair and first-attempt record for the exact same
+    // confirmed source. An actual source edit still invalidates them.
+    advanceDraft();
+    return;
+  }
   resetResult(undefined,false);
   const picked = rows.map((r,i)=>({...r,sourceIndex:i})).filter(r => r.selected);
   if (formulaPhoto && currentFile && (picked.length !== rows.length ||

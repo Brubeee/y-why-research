@@ -162,7 +162,9 @@ and accepted repair, and never reuses an item previously shown on the current
 page. The check is conservative, not a claim of universal problem similarity.
 If neither item is eligible, the app says so instead of recording a repeat
 as independent. Hints are available only after an evaluable attempt. Success
-on a later attempt is not recorded as first-attempt success. The default
+on a later attempt is not recorded as first-attempt success. Rechecking the
+same confirmed work or submitting the same operation again keeps that
+record and the current practice item. Edits still invalidate them. The default
 Tesseract workflow is unchanged.
 
 The typed tutoring, declared-operation checks, and attempt recorder are
