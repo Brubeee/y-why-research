@@ -65,8 +65,9 @@ function clearRegion() {
 function status(text) { $('scan-status').textContent = text; }
 function dropPhotoRetry(message) {
   if (!busyPhoto) return;
+  const {picker} = busyPhoto;
   busyPhoto = null;
-  if ([$('photo-retry'), $('photo-discard')].includes(document.activeElement)) $('photo').focus();
+  if ([$('photo-retry'), $('photo-discard')].includes(document.activeElement)) picker.focus();
   $('photo-recovery').hidden = true;
   if (message) status(message);
 }
@@ -255,7 +256,8 @@ function clearPhoto() {
   if (objectUrl) URL.revokeObjectURL(objectUrl);
   objectUrl = null; dims = null; currentFile = null; clearRegion(); clearAttestation();
   $('region-tools').hidden = true; $('anchor-control').hidden = true;
-  $('image').removeAttribute('src'); $('photo-view').hidden = true; $('crop').hidden = true; $('photo').value = '';
+  $('image').removeAttribute('src'); $('photo-view').hidden = true; $('crop').hidden = true;
+  for (const id of ['photo','camera-photo']) $(id).value = '';
 }
 $('clear').addEventListener('click', () => {
   resetTypedEntry();
@@ -371,8 +373,8 @@ async function readDraft(target = null) {
   }
 }
 
-$('photo').addEventListener('change', () => {
-  const picker = $('photo'), file = picker.files?.[0];
+function selectPhoto(picker) {
+  const file = picker.files?.[0];
   if (!file) return; // Closing the picker without selecting isn't a new request.
   // Retain the File, but allow a same-file retry even if this read is discarded.
   picker.value = '';
@@ -382,21 +384,29 @@ $('photo').addEventListener('change', () => {
   cancelPhotoCandidate();
   cancelPhotoReread();
   if (!['image/png','image/jpeg'].includes(file.type) || !file.size || file.size > MAX_BYTES) {
-    status('Choose a nonempty PNG or JPEG no larger than 4 MB.');
+    const heic = /^(?:image\/(?:heic|heif)(?:-sequence)?)$/i.test(file.type)
+      || /\.(?:heic|heif)$/i.test(file.name ?? '');
+    status(heic
+      ? 'This photo is HEIC or HEIF. Save a JPEG copy and choose it here. Your current work is unchanged.'
+      : 'Choose a nonempty PNG or JPEG no larger than 4 MB. Your current work is unchanged.');
     return;
   }
-  return startPhotoCandidate(file);
-});
+  return startPhotoCandidate(file,picker);
+}
+for (const id of ['photo','camera-photo']) {
+  const picker = $(id);
+  picker.addEventListener('change', () => selectPhoto(picker));
+}
 $('photo-retry').addEventListener('click', () => {
   const pending = busyPhoto;
   if (!pending || pending.draft !== draftRevision) return;
   dropPhotoRetry();
-  return startPhotoCandidate(pending.file);
+  return startPhotoCandidate(pending.file,pending.picker);
 });
 $('photo-discard').addEventListener('click', () => {
   dropPhotoRetry('New photo discarded. Kept your current work.');
 });
-async function startPhotoCandidate(file) {
+async function startPhotoCandidate(file,picker) {
   const owner = {abort:new AbortController(), url:null, preview:null};
   photoCandidate = owner;
   const draft = draftRevision;
@@ -414,7 +424,7 @@ async function startPhotoCandidate(file) {
     if (!applicable()) return;
     if (!result.ok) {
       if (formulaPhoto && result.status === 503 && data?.status === 'error' && data.reason === 'formula_busy') {
-        busyPhoto = {file, draft};
+        busyPhoto = {file, draft, picker};
         $('photo-recovery').hidden = false;
         status('The photo reader is busy. Wait a moment, then retry this photo without taking it again. Your current work is unchanged.');
         return;

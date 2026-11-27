@@ -822,6 +822,48 @@ test('a cancelled picker or rejected MIME, empty, or oversize selection preserve
   }
 });
 
+test('camera and gallery have separate accessible inputs and share one photo owner',async t=>{
+  const {readFile}=await import('node:fs/promises');
+  const markup=await readFile(new URL('./index.html',import.meta.url),'utf8');
+  const cam=markup.match(/<input id="camera-photo"[^>]*>/)?.[0]??'';
+  const gallery=markup.match(/<input id="photo"[^>]*>/)?.[0]??'';
+  assert.match(cam,/capture="environment"/);
+  assert.doesNotMatch(gallery,/capture/);
+  for(const input of [cam,gallery]){
+    assert.match(input,/type="file"/);
+    assert.match(input,/aria-describedby="photo-guide"/);
+  }
+  t.after(()=>{globalThis.fetch=savedFetch;get('clear').dispatch('click');});
+  const rows=await correctedDraft(), source=img.src, verdict=get('verdict').words();
+  const camera=get('camera-photo'), existing=get('photo');
+  function pick(picker,file){
+    picker.value='selected';
+    picker.files=file?[file]:[];
+    return picker.dispatch('change');
+  }
+  const net=defer(), posted=[];
+  const one=photo('camera jpg stand-in'), two=photo('selected gallery PNG');
+  globalThis.fetch=(_url,options)=>{posted.push(options);return posted.length===1?net.promise:Promise.resolve(response([replyLine('x=42')]));};
+  const pending=pick(camera,one);
+  assert.equal(camera.value,'');
+  await pick(existing,null);
+  assert.equal(posted[0].signal.aborted,false);
+  await pick(existing,new Blob(['HEIF fixture'],{type:'image/heic'}));
+  assert.equal(posted[0].signal.aborted,true);
+  assert.equal(posted.length,1);
+  assert.match(get('scan-status').textContent,/HEIC or HEIF.*JPEG copy/);
+  net.resolve(response([replyLine('x=41')]));await pending;
+  assert.equal(get('rows').children,rows);
+  assert.equal(img.src,source);
+  assert.equal(get('verdict').words(),verdict);
+  assert.match(get('scan-status').textContent,/HEIC or HEIF/);
+  await pick(existing,two);
+  assert.deepEqual(posted.map(opts=>opts.body),[one,two]);
+  assert.equal(existing.value,'');
+  assert.equal(get('rows').children[0].children[1].value,'x=42');
+  assert.notEqual(img.src,source);
+});
+
 test('a newer rejected selection supersedes a pending reread without changing the committed worksheet',async t=>{
   t.after(()=>{globalThis.fetch=savedFetch;get('clear').dispatch('click');});
   const rows=await correctedDraft(), verdict=get('verdict').words(), source=img.src, picker=get('photo');

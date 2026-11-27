@@ -16,8 +16,12 @@
   <div class="workbench">
     <section class="panel" aria-labelledby="photo-heading">
       <div class="step"><span>01</span><h2 id="photo-heading">Start your work</h2></div>
-      <p>Choose a JPEG or PNG, up to 4 MB, or type a short chain below. Only use anonymous practice pages in this research build.</p>
-      <div class="actions"><label class="primary file">Choose photo<input id="photo" type="file" accept="image/png,image/jpeg" capture="environment"></label><button id="example" type="button">Load a typed example</button><button id="clear" type="button">Clear</button></div>
+      <p id="photo-guide">Photograph one complete question. Keep every active line in view, avoid shadows, and hold the phone above the page. Use an anonymous JPEG or PNG, up to 4 MB.</p>
+      <div class="actions photo-choices">
+        <label class="primary file">Take photo<input id="camera-photo" type="file" accept="image/png,image/jpeg" capture="environment" aria-describedby="photo-guide"></label>
+        <label class="file">Choose existing photo<input id="photo" type="file" accept="image/png,image/jpeg" aria-describedby="photo-guide"></label>
+      </div>
+      <div class="actions"><button id="example" type="button">Load a typed example</button><button id="clear" type="button">Clear</button></div>
       <div class="typed-entry">
         <h3>Or type a short solution</h3>
         <label for="typed-work">Original equation first, then one equation per line</label>
