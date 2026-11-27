@@ -1328,6 +1328,75 @@ test('formula responses that ignore cancellation cannot override a clear, take, 
   assert.equal(get('photo-view').hidden,true);
 });
 
+test('busy formula retakes offer explicit, current-only retry; other failures do not',async t=>{
+  const oldFetch=globalThis.fetch;
+  window.location={search:'?formula=1'};
+  const recovery=get('photo-recovery'), picker=get('photo'), scan=get('scan-status');
+  recovery.hidden=true;
+  t.after(()=>{get('clear').dispatch('click');delete window.location;globalThis.fetch=oldFetch;});
+  await import('./app.mjs?formula-busy-retry');
+  const take=(file)=>{picker.files=[file];return picker.dispatch('change');};
+  const outcome=(status,data)=>({ok:status===200,status,json:async()=>data});
+  const good=(end)=>outcome(200,{engine:'glm-ocr',status:'unconfirmed',
+    mode:'glm-ocr/formula-recognition',reviewRequired:true,limitHit:false,
+    raw:String.raw`$$\begin{array}{l}x+1=2\\x=${end}\end{array}$$`});
+  const busy=outcome(503,{status:'error',reason:'formula_busy',error:'Reader busy.'});
+  const first=photo('committed'), next=photo('retake'), uploaded=[];
+  let reply=good(2);
+  globalThis.fetch=async(_url,opts)=>{uploaded.push(opts.body);return reply;};
+  await take(first);
+  const source=img.src, rows=get('rows').children;
+  for (const row of rows) {
+    const check=row.children[2].children[0];check.checked=true;check.dispatch('change');
+  }
+  get('anchor-check').checked=true;get('anchor-check').dispatch('change');
+  get('verify').dispatch('click');
+  const verdict=get('verdict').words();
+  assert.match(verdict,/First verified change/);
+
+  reply=busy;await take(next);
+  assert.equal(recovery.hidden,false);
+  assert.match(scan.textContent,/retry this photo/);
+  assert.equal(img.src,source);
+  assert.equal(get('rows').children,rows);
+  assert.equal(get('verdict').words(),verdict);
+  assert.deepEqual(uploaded,[first,next]);
+  picker.files=[];await picker.dispatch('change');
+  assert.equal(recovery.hidden,false);
+  await get('photo-retry').dispatch('click'); // still busy; stays recoverable
+  assert.equal(recovery.hidden,false);
+  reply=good(1);await get('photo-retry').dispatch('click');
+  assert.deepEqual(uploaded,[first,next,next,next]);
+  assert.equal(recovery.hidden,true);
+  assert.notEqual(img.src,source);
+  assert.equal(get('anchor-check').checked,false);
+  assert.equal(get('rows').children[1].children[1].value,'x=1');
+
+  reply=outcome(503,{status:'error',error:'Reader not configured.'});await take(next);
+  assert.equal(recovery.hidden,true);
+  assert.match(scan.textContent,/not configured/);
+  for (const invalidate of [
+    ()=>get('photo-discard').dispatch('click'),
+    ()=>get('rows').children[1].children[1].dispatch('input'),
+    ()=>take(new Blob(['invalid'],{type:'application/pdf'})),
+    ()=>get('clear').dispatch('click'),
+    ()=>get('example').dispatch('click'),
+  ]){
+    reply=busy;await take(next);assert.equal(recovery.hidden,false);
+    const count=uploaded.length;
+    await invalidate();
+    assert.equal(recovery.hidden,true);
+    await get('photo-retry').dispatch('click');
+    assert.equal(uploaded.length,count,'stale retry never sends a request');
+  }
+  const older=defer();
+  reply=older.promise;
+  const oldTask=take(next);
+  reply=good(1);await take(first);
+  older.resolve(busy);await oldTask;
+  assert.equal(recovery.hidden,true,'late busy response cannot retain the obsolete file');
+});
+
 // Optional composed smoke: real local CPU worker + HTTP + the actual app
 // listeners in this DOM harness. The supplied JPEG must be synthetic and
 // contain 7x+4=53, 7x=48, x=7 in that order. No browser claim.

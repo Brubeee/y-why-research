@@ -255,7 +255,12 @@ class Handler(BaseHTTPRequestHandler):
                 payload=worker.recognize(data)
         except (TimeoutError, socket.timeout):
             return self.as_json(408,{'status':'error','error':'Image upload timed out.'})
-        except (Rejected, WorkerError) as e:
+        except WorkerError as e:
+            payload={'status':'error','error':str(e)}
+            if e.reason is not None:
+                payload['reason']=e.reason
+            return self.as_json(e.code,payload)
+        except Rejected as e:
             return self.as_json(e.code,{'status':'error','error':str(e)})
         return self.as_json(200,payload)
 

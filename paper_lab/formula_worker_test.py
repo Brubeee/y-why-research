@@ -5,8 +5,12 @@ from http.server import ThreadingHTTPServer
 import json
 from pathlib import Path
 import sys
+import socket
 import threading
 import unittest
+from unittest import mock
+
+import formula_worker
 
 from formula_worker import FormulaWorker, WorkerError
 from ocr_server import Handler, MAX_BYTES
@@ -33,22 +37,24 @@ while True:
 
 
 @contextmanager
-def local_http(worker=None):
+def local_http(worker=None, *, with_connection=False):
     with ThreadingHTTPServer(('127.0.0.1', 0), Handler) as server:
         server.formula_worker = worker
         task = threading.Thread(target=server.serve_forever, daemon=True)
         task.start()
         try:
+            def connection():
+                return HTTPConnection('127.0.0.1', server.server_port, timeout=5)
             def post(data, **headers):
                 with_headers = {'Content-Type': 'image/png', **headers}
-                conn = HTTPConnection('127.0.0.1', server.server_port, timeout=5)
+                conn = connection()
                 try:
                     conn.request('POST', '/api/formula-draft', data, with_headers)
                     res = conn.getresponse()
                     return res.status, res.getheader('Cache-Control'), json.load(res)
                 finally:
                     conn.close()
-            yield post
+            yield (post,connection) if with_connection else post
         finally:
             server.shutdown()
             task.join(timeout=5)
@@ -95,10 +101,51 @@ class FormulaWorkerTest(unittest.TestCase):
             self.error_code(b'image', 503)
         self.assertIsNone(self.worker.proc)
 
+    def test_disconnected_read_can_be_busy_but_same_retake_works_after_release(self):
+        a, b = printed_page(), printed_page('JPEG')
+        self.worker.request_timeout = 8
+        entered, release, finished = threading.Event(), threading.Event(), threading.Event()
+        actual_frame, recognize = formula_worker._frame, self.worker.recognize
+
+        def delayed_frame(sock, maximum, deadline=None):
+            if maximum == formula_worker.MAX_REPLY and not entered.is_set():
+                entered.set()
+                if not release.wait(5):
+                    raise TimeoutError('Test never released first request')
+            return actual_frame(sock, maximum, deadline)
+
+        def track_completion(data):
+            try:
+                return recognize(data)
+            finally:
+                if data == a:
+                    finished.set()
+
+        with local_http(self.worker, with_connection=True) as (post, connection), \
+                mock.patch('formula_worker._frame', delayed_frame), \
+                mock.patch.object(self.worker, 'recognize', side_effect=track_completion):
+            first = connection()
+            try:
+                first.request('POST', '/api/formula-draft', a, {'Content-Type':'image/png'})
+                self.assertTrue(entered.wait(5))
+                first.sock.shutdown(socket.SHUT_RDWR)
+                first.close()
+                status, cache, result = post(b, **{'Content-Type':'image/jpeg'})
+                self.assertEqual((status, cache, result['reason']), (503, 'no-store', 'formula_busy'))
+                release.set()
+                self.assertTrue(finished.wait(5))
+                status, _, result = post(b, **{'Content-Type':'image/jpeg'})
+                self.assertEqual((status, result['status']), (200, 'unconfirmed'))
+            finally:
+                release.set()
+                first.close()
+
     def test_loopback_http_honest_outcomes(self):
         png = printed_page()
         with local_http() as post:
-            self.assertEqual(post(png)[0], 503)
+            status, _, offline = post(png)
+            self.assertEqual(status, 503)
+            self.assertNotIn('reason', offline)
         with local_http(self.worker) as post:
             self.assertEqual(post(png, Origin='https://untrusted.invalid')[0], 403)
             self.assertEqual(post(png, Host='untrusted.invalid')[0], 403)

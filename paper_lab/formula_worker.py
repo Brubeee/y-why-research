@@ -17,9 +17,10 @@ READY = b'{"ready":true}'
 
 
 class WorkerError(Exception):
-    def __init__(self, code, message):
+    def __init__(self, code, message, *, reason=None):
         super().__init__(message)
         self.code = code
+        self.reason = reason
 
 
 def _read(sock, n, deadline=None):
@@ -100,7 +101,7 @@ class FormulaWorker:
         if not 0 < len(data) <= MAX_INPUT:
             raise WorkerError(413, 'Use a nonempty image no larger than 4 MB.')
         if not self.lock.acquire(blocking=False):
-            raise WorkerError(503, 'Formula OCR is busy. Try again in a moment.')
+            raise WorkerError(503, 'Formula OCR is busy. Try again in a moment.', reason='formula_busy')
         try:
             if self.closed:
                 raise WorkerError(503, 'Local formula OCR is not available.')

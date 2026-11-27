@@ -44,6 +44,7 @@ const MAX_ROWS = 45;
 let rows = [], objectUrl, dims, inflight, revision = 0, draftRevision = 0, chainRevision = 0, diagnosis = null, skillMatch = null;
 let currentFile = null, region = null, selecting = false, corner = null, retrySession = null;
 let currentProbe = null, firstSeparator = null, photoCandidate = null, typedWorkflow = false, currentActionContext = null;
+let busyPhoto = null;
 let typedRepairMode = null, typedRepairContext = null, typedRetryTask = null, typedRetrySession = null;
 const shownPracticeIds = new Set();
 const clearAttestation = () => { $('anchor-check').checked = false; };
@@ -62,8 +63,19 @@ function clearRegion() {
 }
 
 function status(text) { $('scan-status').textContent = text; }
-function resetResult(message = 'Run the check on your selected, confirmed lines.', advanceChain = true) {
+function dropPhotoRetry(message) {
+  if (!busyPhoto) return;
+  busyPhoto = null;
+  if ([$('photo-retry'), $('photo-discard')].includes(document.activeElement)) $('photo').focus();
+  $('photo-recovery').hidden = true;
+  if (message) status(message);
+}
+function advanceDraft() {
   draftRevision++;
+  dropPhotoRetry('Kept your current work. The pending photo was discarded after a change.');
+}
+function resetResult(message = 'Run the check on your selected, confirmed lines.', advanceChain = true) {
+  advanceDraft();
   if (advanceChain) {
     chainRevision++;
     if (firstSeparator) firstSeparator = { closed:true };
@@ -237,6 +249,7 @@ function cancelPhotoReread() {
   owner?.abort();
 }
 function clearPhoto() {
+  dropPhotoRetry();
   cancelPhotoCandidate();
   cancelPhotoReread();
   if (objectUrl) URL.revokeObjectURL(objectUrl);
@@ -292,6 +305,7 @@ function prepareRows(data, imageSize, useBoxes) {
 }
 async function readDraft(target = null) {
   if (!currentFile || (formulaPhoto && target)) return;
+  dropPhotoRetry();
   cancelPhotoCandidate();
   inflight?.abort();
   const owner = new AbortController();
@@ -357,11 +371,12 @@ async function readDraft(target = null) {
   }
 }
 
-$('photo').addEventListener('change', async () => {
+$('photo').addEventListener('change', () => {
   const picker = $('photo'), file = picker.files?.[0];
   if (!file) return; // Closing the picker without selecting isn't a new request.
   // Retain the File, but allow a same-file retry even if this read is discarded.
   picker.value = '';
+  dropPhotoRetry();
   // A new selection takes ownership even if it fails validation. Do not clear
   // any committed photo, rows, or feedback until a replacement actually succeeds.
   cancelPhotoCandidate();
@@ -370,6 +385,18 @@ $('photo').addEventListener('change', async () => {
     status('Choose a nonempty PNG or JPEG no larger than 4 MB.');
     return;
   }
+  return startPhotoCandidate(file);
+});
+$('photo-retry').addEventListener('click', () => {
+  const pending = busyPhoto;
+  if (!pending || pending.draft !== draftRevision) return;
+  dropPhotoRetry();
+  return startPhotoCandidate(pending.file);
+});
+$('photo-discard').addEventListener('click', () => {
+  dropPhotoRetry('New photo discarded. Kept your current work.');
+});
+async function startPhotoCandidate(file) {
   const owner = {abort:new AbortController(), url:null, preview:null};
   photoCandidate = owner;
   const draft = draftRevision;
@@ -386,6 +413,12 @@ $('photo').addEventListener('change', async () => {
     const data = await readOcrResponse(result);
     if (!applicable()) return;
     if (!result.ok) {
+      if (formulaPhoto && result.status === 503 && data?.status === 'error' && data.reason === 'formula_busy') {
+        busyPhoto = {file, draft};
+        $('photo-recovery').hidden = false;
+        status('The photo reader is busy. Wait a moment, then retry this photo without taking it again. Your current work is unchanged.');
+        return;
+      }
       const detail = data?.error || 'OCR could not read this photo.';
       const reason = [413,415,422].includes(result.status) ? detail : 'OCR temporarily unavailable. ' + detail;
       status(reason + ' Photo not replaced. You can try another image or enter lines by hand.');
@@ -424,11 +457,11 @@ $('photo').addEventListener('change', async () => {
     if (photoCandidate === owner) photoCandidate = null;
     disposePhotoCandidate(owner);
   }
-});
+}
 $('image').addEventListener('load', () => { regionButtons(); syncPhotoDispositions.forEach(sync => sync()); });
 $('select-region').addEventListener('click', () => {
   if ($('select-region').disabled) return;
-  draftRevision++;
+  advanceDraft();
   clearRegion(); selecting = true;
   $('photo-view').classList?.add('selecting');
   $('region-help').hidden = false;
@@ -442,7 +475,7 @@ $('image').addEventListener('click', e => {
   const point = ['width','height'].map((dim, i) => Math.round(dims[dim] * Math.max(0, Math.min(1,
     ((i ? e.clientY : e.clientX) - (i ? box.top : box.left))/box[dim]))));
   if (point.some(x => !Number.isFinite(x))) return;
-  draftRevision++;
+  advanceDraft();
   if (!corner) {
     corner = point;
     $('region-help').textContent = 'Now tap the opposite corner.';
