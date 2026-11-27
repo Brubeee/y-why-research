@@ -40,9 +40,10 @@ DISCLAIMERS = [
 ]
 
 class Rejected(ValueError):
-    def __init__(self, code, message):
+    def __init__(self, code, message, *, reason=None):
         super().__init__(message)
         self.code = code
+        self.reason = reason
 
 def image_info(data, mime, *, max_pixels=MAX_PIXELS, max_side=MAX_SIDE):
     """Read basic dimensions before letting the OCR process decode an image."""
@@ -84,7 +85,7 @@ def image_info(data, mime, *, max_pixels=MAX_PIXELS, max_side=MAX_SIDE):
     if not w or not h:
         raise Rejected(422, 'Image dimensions are invalid.')
     if max(w, h) > max_side or w*h > max_pixels:
-        raise Rejected(413, 'Image is too large to decode. Resize it and try again.')
+        raise Rejected(413, 'Image is too large to decode. Resize it and try again.', reason='photo_dimensions')
     return ext, w, h
 
 def box(x, y, w, h):
@@ -255,13 +256,11 @@ class Handler(BaseHTTPRequestHandler):
                 payload=worker.recognize(data)
         except (TimeoutError, socket.timeout):
             return self.as_json(408,{'status':'error','error':'Image upload timed out.'})
-        except WorkerError as e:
+        except (WorkerError, Rejected) as e:
             payload={'status':'error','error':str(e)}
             if e.reason is not None:
                 payload['reason']=e.reason
             return self.as_json(e.code,payload)
-        except Rejected as e:
-            return self.as_json(e.code,{'status':'error','error':str(e)})
         return self.as_json(200,payload)
 
 def main():

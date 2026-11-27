@@ -1265,6 +1265,10 @@ test('plain-text and JSON 413 preserve the current photo and edits; a smaller re
   await picker.dispatch('change');
   assert.equal(requests,1);
   assert.match(status.textContent,/Photo too large.*Resize.*Photo not replaced/);
+  globalThis.fetch=async ()=>Response.json({status:'error',reason:'photo_dimensions',error:'internal error text'}, {status:413});
+  await picker.dispatch('change');
+  assert.match(status.textContent,/resolution is too high.*pixel dimensions.*Photo not replaced/);
+  assert.doesNotMatch(status.textContent,/4 MB|internal error text/);
   globalThis.fetch=async ()=>new Response('{"error":"downstream limit"}',{status:413});
   await get('read-full').dispatch('click');
   assert.match(status.textContent,/Photo too large.*Resize.*Kept your current work/);

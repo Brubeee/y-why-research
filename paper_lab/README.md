@@ -106,7 +106,9 @@ does not queue a second image. Startup and inference are separately bounded
 another request can start. The input is limited to single-frame raw PNG/JPEG
 up to 4 MB, 12.5 million pixels and 7000 pixels per side. The formula path
 accepts 4032 × 3024 (or portrait) within that byte limit, which the previous
-12-million-pixel cap rejected. The legacy Tesseract cap is unchanged.
+12-million-pixel cap rejected. The legacy Tesseract cap is unchanged. The
+review screen distinguishes a known resolution rejection from a generic
+upload-size limit and keeps the current verified work in either case.
 The offline worker orients via EXIF and
 fits within 768 pixels without upscaling. Uploaded images are not written to
 disk or forwarded. Responses are marked `no-store`. This is a private loopback

@@ -31,8 +31,20 @@ let displayedReviewKey = null;
 const MAX_BYTES = 4_000_000;
 const PHOTO_TOO_LARGE = 'Photo too large to process. Resize it or try a smaller photo (up to 4 MB).';
 async function readOcrResponse(response) {
-  // Ingress may reject before the app runs, returning text or HTML.
-  if (response.status === 413) return {error:PHOTO_TOO_LARGE};
+  if (response.status === 413) {
+    // Only interpret the known same-origin JSON code. Proxies can return
+    // arbitrary text, HTML or JSON for their own byte limits.
+    if (response.headers?.get('Content-Type')?.split(';',1)[0].trim().toLowerCase() === 'application/json') {
+      try {
+        const body = await response.json();
+        if (body?.status === 'error' && body.reason === 'photo_dimensions')
+          return {error:'The photo resolution is too high. Resize its pixel dimensions or retake it at a lower resolution; file compression alone will not help.'};
+      } catch (error) {
+        if (error.name === 'AbortError') throw error;
+      }
+    }
+    return {error:PHOTO_TOO_LARGE};
+  }
   try { return await response.json(); }
   catch (error) {
     if (error.name === 'AbortError') throw error;

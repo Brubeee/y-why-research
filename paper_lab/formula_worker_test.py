@@ -150,8 +150,10 @@ class FormulaWorkerTest(unittest.TestCase):
                 with self.subTest(size=size), io.BytesIO() as image:
                     Image.new('RGB', size, 'white').save(image, 'JPEG')
                     headers = {'Content-Type': 'image/jpeg'}
-                    status, _, _ = post(image.getvalue(), **headers)
+                    status, _, result = post(image.getvalue(), **headers)
                     self.assertEqual(status, expected)
+                    if expected == 413:
+                        self.assertEqual(result['reason'], 'photo_dimensions')
 
     def test_loopback_http_honest_outcomes(self):
         png = printed_page()
@@ -162,7 +164,9 @@ class FormulaWorkerTest(unittest.TestCase):
         with local_http(self.worker) as post:
             self.assertEqual(post(png, Origin='https://untrusted.invalid')[0], 403)
             self.assertEqual(post(png, Host='untrusted.invalid')[0], 403)
-            self.assertEqual(post(b'', **{'Content-Length': str(MAX_BYTES + 1)})[0], 413)
+            status, _, upload_limit = post(b'', **{'Content-Length': str(MAX_BYTES + 1)})
+            self.assertEqual(status, 413)
+            self.assertNotIn('reason', upload_limit)
             self.assertEqual(post(b'not PNG')[0], 415)
             self.assertIsNone(self.worker.proc)
             status, cache, draft = post(png)
