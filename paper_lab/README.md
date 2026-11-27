@@ -129,6 +129,7 @@ unaided practice problem. This is a DOM harness, not a physical phone test.
 
 Treat the research UI as the behavioral reference for any future frontend,
 not permission to publish or wire up a live site. Keep these gates separate:
+Use the [release check sheet](RELEASE_CHECKS.md) to record device-specific evidence.
 
 - **Local behavior:** photo and typed routes enter the same exact checker only
   after confirmation. A rejected or superseded photo cannot clear the current
