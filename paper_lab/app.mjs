@@ -708,6 +708,7 @@ $('confirm-typed').addEventListener('click', () => {
   status('Typed chain confirmed. Checking only the exact lines you entered.');
   resetResult('Typed chain confirmed. Checking only the exact lines you entered.');
   checkSelectedWork();
+  $('result-heading').focus();
 });
 $('edit-typed').addEventListener('click', () => {
   if (!typedWorkflow) return;
@@ -720,6 +721,7 @@ $('edit-typed').addEventListener('click', () => {
   $('confirm-typed').hidden = false;
   $('edit-typed').hidden = true;
   status('Editing the typed draft. Confirm it again before checking.');
+  $('typed-work').focus();
 });
 $('verify').addEventListener('click', checkSelectedWork);
 function checkSelectedWork() {

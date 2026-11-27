@@ -1591,3 +1591,26 @@ test('shared exact proof uses the actual predecessor and direction, or abstains'
   assert.doesNotMatch(inspect(['x+2=5','5=2+x']),/First changed step|One exact value/);
   assert.doesNotMatch(inspect(['x+2=5','x^2=9']),/First changed step|One exact value/);
 });
+
+test('typed confirmation and edit move keyboard focus when their triggering button is hidden', async t => {
+  t.after(() => get('clear').dispatch('click'));
+  await import('./app.mjs?typed-focus-transitions');
+  get('clear').dispatch('click');
+  get('confirm-typed').focus();
+  get('typed-work').value='2x=8';
+  get('typed-work').dispatch('input');
+  get('confirm-typed').dispatch('click');
+  assert.equal(document.activeElement,get('confirm-typed'),'invalid input leaves the control in place');
+
+  get('typed-work').value='2x=8\nx=5';
+  get('typed-work').dispatch('input');
+  get('confirm-typed').dispatch('click');
+  assert.equal(get('confirm-typed').hidden,true);
+  assert.equal(document.activeElement,get('result-heading'),'confirmed work moves focus to its result');
+
+  get('edit-typed').focus();
+  get('edit-typed').dispatch('click');
+  assert.equal(get('edit-typed').hidden,true);
+  assert.equal(document.activeElement,get('typed-work'),'edit returns focus to the reopened input');
+  assert.equal(get('typed-work').value,'2x=8\nx=5');
+});
