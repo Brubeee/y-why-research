@@ -14,7 +14,7 @@ import subprocess
 import tempfile
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import unquote, urlsplit
+from urllib.parse import parse_qs, unquote, urlsplit
 from formula_worker import FORMULA_MAX_PIXELS, FORMULA_MAX_SIDE, FormulaWorker, WorkerError
 
 HERE = Path(__file__).resolve().parent
@@ -205,9 +205,17 @@ class Handler(BaseHTTPRequestHandler):
     def serve(self, head=False):
         if not self.local_request():
             return self.result(403,'text/plain; charset=utf-8',b'Loopback only',head)
-        if urlsplit(self.path).path in ('/','/paper_lab'):
+        try:
+            target = urlsplit(self.path)
+        except ValueError:
+            return self.result(404,'text/plain; charset=utf-8',b'Not found',head)
+        if target.path in ('/','/paper_lab'):
+            # Match URLSearchParams.get: the first value counts, even if
+            # blank. Preserve only the fixed opt-in, never reflect user input.
+            formula = parse_qs(target.query, keep_blank_values=True).get('formula', [''])[0] == '1'
             self.send_response(302)
-            self.send_header('Location','/paper_lab/')
+            self.send_header('Location','/paper_lab/?formula=1' if formula else '/paper_lab/')
+            self.send_header('Cache-Control','no-store')
             self.send_header('Content-Length','0')
             self.end_headers()
             return

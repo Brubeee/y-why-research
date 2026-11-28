@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Use only synthetic raster pages. Run: python paper_lab/ocr_server_test.py"""
 import io
+from contextlib import closing
 from http.client import HTTPConnection
 from http.server import ThreadingHTTPServer
 import json
@@ -135,6 +136,22 @@ class OCRTest(TestCase):
                         return response.read().decode('utf-8')
                     finally:
                         with_response.close()
+
+                # The URL handed to a phone may omit the trailing slash.
+                # A redirect must not silently change an explicit OCR engine.
+                for method, target, location in [
+                    ('GET','/paper_lab?formula=1','/paper_lab/?formula=1'),
+                    ('HEAD','/?formula=1&next=https://other.invalid/','/paper_lab/?formula=1'),
+                    ('GET','/paper_lab?formula=&formula=1','/paper_lab/'),
+                    ('GET','/paper_lab?formula=0','/paper_lab/'),
+                ]:
+                    with closing(HTTPConnection('127.0.0.1', server.server_port, timeout=5)) as conn:
+                        conn.request(method,target)
+                        redirected=conn.getresponse()
+                        self.assertEqual(redirected.status,302,target)
+                        self.assertEqual(redirected.getheader('Location'),location,target)
+                        self.assertEqual(redirected.getheader('Cache-Control'),'no-store')
+                        self.assertEqual(redirected.read(),b'')
 
                 start = '/paper_lab/'
                 page = get(start, mime='text/html')
