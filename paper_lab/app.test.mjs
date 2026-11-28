@@ -1667,3 +1667,18 @@ test('formula request deadline covers both headers and draft body without replac
   t.mock.timers.tick(210_000);
   assert.equal(finalSignal.aborted,false,'a completed upload clears its timer');
 });
+
+test('practice and repair answer controls keep their specific question as an accessible description',async()=>{
+  const {readFile}=await import('node:fs/promises');
+  const markup=await readFile(new URL('./index.html',import.meta.url),'utf8');
+  for(const [input,prompt] of [
+    ['answer','probe-question'],['typed-repair-answer','typed-repair-question'],
+    ['typed-retry-answer','typed-retry-question'],['retry-answer','retry-question'],
+    ['delayed-answer','delayed-prompt'],
+  ]){
+    const tag=markup.match(new RegExp('<input id="'+input+'"[^>]*>'))?.[0]??'';
+    assert.ok(tag.includes('aria-describedby="'+prompt+'"'),input);
+    assert.equal(markup.split('id="'+prompt+'"').length-1,1,prompt);
+    assert.match(markup,new RegExp('<label[^>]* for="'+input+'"[^>]*>'),input);
+  }
+});
