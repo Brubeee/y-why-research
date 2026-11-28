@@ -1455,8 +1455,19 @@ test('live loopback formula worker to verified first changed line', {
   const port=Number(process.env.YWHY_FORMULA_SMOKE_PORT);
   assert.ok(Number.isInteger(port) && port>0 && port<=65535);
   const oldFetch=globalThis.fetch;
-  window.location={search:'?formula=1'};
-  t.after(()=>{ delete window.location; globalThis.fetch=oldFetch; });
+  const url='http://127.0.0.1:'+port;
+  const page=await nativeFetch(url+'/paper_lab/');
+  assert.equal(page.status,200);
+  assert.equal(page.headers.get('Cache-Control'),'no-store');
+  assert.equal(page.redirected,false);
+  const engine=/<html lang="en" data-photo-engine="([^"]+)">/.exec(await page.text())?.[1];
+  assert.equal(engine,'formula');
+  const retired=await nativeFetch(url+'/api/ocr',{method:'POST',headers:{'Content-Type':'image/jpeg'},body:new Uint8Array([1])});
+  assert.equal(retired.status,404);
+  await retired.text();
+  window.location={search:''};
+  document.documentElement={dataset:{photoEngine:engine}};
+  t.after(()=>{ delete window.location; delete document.documentElement; globalThis.fetch=oldFetch; });
   globalThis.fetch=(route,options)=>{
     assert.equal(route,'/api/formula-draft');
     return nativeFetch('http://127.0.0.1:'+port+route,options);

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Private loopback static app + Tesseract draft OCR. No cloud services."""
+"""Private loopback app with local draft OCR. No cloud services."""
 import argparse
 import csv
 import io
@@ -209,10 +209,11 @@ class Handler(BaseHTTPRequestHandler):
             target = urlsplit(self.path)
         except ValueError:
             return self.result(404,'text/plain; charset=utf-8',b'Not found',head)
+        formula_only = getattr(self.server, 'formula_only', False)
         if target.path in ('/','/paper_lab'):
             # Match URLSearchParams.get: the first value counts, even if
             # blank. Preserve only the fixed opt-in, never reflect user input.
-            formula = parse_qs(target.query, keep_blank_values=True).get('formula', [''])[0] == '1'
+            formula = not formula_only and parse_qs(target.query, keep_blank_values=True).get('formula', [''])[0] == '1'
             self.send_response(302)
             self.send_header('Location','/paper_lab/?formula=1' if formula else '/paper_lab/')
             self.send_header('Cache-Control','no-store')
@@ -226,12 +227,18 @@ class Handler(BaseHTTPRequestHandler):
         try: data=p.read_bytes()
         except OSError:
             return self.result(404,'text/plain; charset=utf-8',b'Not found',head)
+        if formula_only and p == HERE / 'index.html':
+            marker = b'<html lang="en">'
+            if data.count(marker) != 1:
+                return self.result(500,'text/plain; charset=utf-8',b'Formula-only page is unavailable',head)
+            data = data.replace(marker, b'<html lang="en" data-photo-engine="formula">', 1)
         return self.result(200,MIMES[p.suffix],data,head)
     def do_GET(self): self.serve()
     def do_HEAD(self): self.serve(True)
     def do_POST(self):
         try:
-            if self.path not in ('/api/ocr', '/api/formula-draft'):
+            accepted = ('/api/formula-draft',) if getattr(self.server, 'formula_only', False) else ('/api/ocr', '/api/formula-draft')
+            if self.path not in accepted:
                 raise Rejected(404,'Not found.')
             if not self.local_request():
                 raise Rejected(403,'Loopback requests only.')
@@ -276,7 +283,10 @@ def main():
     ap.add_argument('--port',type=int,default=8765)
     ap.add_argument('--formula-python', type=Path, help='Python executable in the local GLM environment')
     ap.add_argument('--formula-model', type=Path, help='Local pinned GLM model directory')
+    ap.add_argument('--formula-only', action='store_true', help='Use formula OCR on the ordinary page and disable the legacy upload endpoint (loopback only)')
     args=ap.parse_args()
+    if args.formula_only and not (args.formula_python and args.formula_model):
+        ap.error('--formula-only requires --formula-python and --formula-model')
     if bool(args.formula_python) != bool(args.formula_model):
         ap.error('--formula-python and --formula-model must be supplied together')
     worker = None
@@ -285,8 +295,9 @@ def main():
         worker = FormulaWorker((args.formula_python.absolute(),
                                 HERE / 'formula_worker.py', args.formula_model.resolve(strict=True)))
     with ThreadingHTTPServer(('127.0.0.1',args.port),Handler) as server:
-        print(f'Y? Paper Lab: http://127.0.0.1:{server.server_port}/paper_lab/',flush=True)
         server.formula_worker = worker
+        server.formula_only = args.formula_only
+        print(f'Y? Paper Lab: http://127.0.0.1:{server.server_port}/paper_lab/',flush=True)
         try:
             server.serve_forever()
         except KeyboardInterrupt:

@@ -132,12 +132,14 @@ python paper_lab/local_release_smoke.py --formula-python /path/to/venv/bin/pytho
 ```
 
 This uses Pillow, DejaVu Sans, and Node. It generates one synthetic JPEG
-locally at 3024 × 4032, opens only an ephemeral loopback port, runs the suites with the
+locally at 3024 × 4032, opens only an ephemeral loopback port in `--formula-only`
+mode, runs the suites with the
 real worker, and removes the fixture and stops the server on exit. There is
 no user-photo argument. The smoke verifies the SHA-256 of the local weights
 against the pin above before starting the server. It does not download files
 or verify the provenance of the rest of the local snapshot. If the weights
-are missing or different, record the real OCR smoke as blocked, not passed. The composed test preserves
+are missing or different, record the real OCR smoke as blocked, not passed. The composed test verifies that the ordinary page selects formula OCR without a
+query flag and the legacy upload route is unavailable. It preserves
 `7x+4=53 → 7x=48 → x=7` exactly as written, waits for explicit complete-order
 review, then exercises the first changed line, exact repair, and a separate
 unaided practice problem. This is a DOM harness, not a physical phone test.

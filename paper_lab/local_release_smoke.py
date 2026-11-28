@@ -69,7 +69,7 @@ def main():
         synthetic_page(fixture, camera_dimensions=True)
         with subprocess.Popen(
             [sys.executable, HERE / 'ocr_server.py', '--port', '0',
-             '--formula-python', worker_python, '--formula-model', model],
+             '--formula-python', worker_python, '--formula-model', model, '--formula-only'],
             cwd=HERE.parent, stdout=subprocess.PIPE, start_new_session=True,
         ) as server:
             try:

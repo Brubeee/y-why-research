@@ -9,6 +9,14 @@ SCRIPT = Path(__file__).with_name('local_release_smoke.py')
 
 
 class SmokeInputsTest(unittest.TestCase):
+    def test_formula_only_requires_the_local_worker_configuration(self):
+        result = subprocess.run(
+            [sys.executable, SCRIPT.with_name('ocr_server.py'), '--formula-only'],
+            text=True, capture_output=True, timeout=10,
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn('--formula-only requires', result.stderr)
+
     def test_missing_model_is_a_clear_gate(self):
         with tempfile.TemporaryDirectory() as root:
             result = subprocess.run(

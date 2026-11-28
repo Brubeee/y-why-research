@@ -16,8 +16,9 @@ const el = (tag, text, cls) => {
   if (cls) item.className = cls;
   return item;
 };
-// The opt-in private candidate never falls back to another OCR route silently.
-const formulaPhoto = new URLSearchParams(window.location?.search ?? '').get('formula') === '1';
+// A formula-only rehearsal selects the engine in the served document.
+const formulaPhoto = document.documentElement?.dataset?.photoEngine === 'formula' ||
+  new URLSearchParams(window.location?.search ?? '').get('formula') === '1';
 const photoEndpoint = formulaPhoto ? '/api/formula-draft' : '/api/ocr';
 if (formulaPhoto) {
   $('ocr-note').textContent = 'Experimental whole-page formula OCR on the local host. Use one question per photo. Compare the complete ordered draft with the photo before checking.';
