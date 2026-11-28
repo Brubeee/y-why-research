@@ -1305,7 +1305,7 @@ test('formula photo route preserves ordered evidence and requires every confirma
     get('photo').files=[new Blob(['synthetic page'],{type:'image/jpeg'})];
     await get('photo').dispatch('change');
   };
-  const check=()=>get('verify').dispatch('click');
+  const check=()=>{ get('verify').focus(); get('verify').dispatch('click'); };
   const mark=(row,value=true)=>{
     const cb=row.children[2].children[0];
     cb.checked=value;cb.dispatch('change');
@@ -1323,9 +1323,11 @@ test('formula photo route preserves ordered evidence and requires every confirma
   check();
   assert.match(get('verdict').words(),/No verdict was issued/);
   assert.doesNotMatch(get('verdict').words(),/First verified change/);
+  assert.equal(document.activeElement,get('verify'),'an incomplete review stays at the review controls');
   mark(rows[2]);get('anchor-check').checked=false;check();
   assert.match(get('verdict').words(),/No verdict was issued/);
   get('anchor-check').checked=true;check();
+  assert.equal(document.activeElement,get('result-heading'),'checking a fully reviewed photo reaches the result');
   assert.match(get('verdict').words(),/Line 2 · First verified change.*7x\s*=\s*48/);
   next={...payload,limitHit:true};
   await upload();

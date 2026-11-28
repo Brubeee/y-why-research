@@ -758,12 +758,13 @@ $('edit-typed').addEventListener('click', () => {
   status('Editing the typed draft. Confirm it again before checking.');
   $('typed-work').focus();
 });
-$('verify').addEventListener('click', checkSelectedWork);
-function checkSelectedWork() {
+$('verify').addEventListener('click', () => checkSelectedWork({focusResult:true}));
+function checkSelectedWork({focusResult=false} = {}) {
   if (currentTypedActionIsLive()) {
     // Preserve the proof, repair and first-attempt record for the exact same
     // confirmed source. An actual source edit still invalidates them.
     advanceDraft();
+    if (focusResult) $('result-heading').focus();
     return;
   }
   resetResult(undefined,false);
@@ -849,6 +850,7 @@ function checkSelectedWork() {
       out.append(detail);
     }
   }
+  if (focusResult) $('result-heading').focus();
   const i = result.rows.findIndex(r => r.status === 'changed');
   if (i < 0) return;
   const before = picked[i], after = picked[i+1];
